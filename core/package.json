@@ -2,7 +2,12 @@
   "name": "@chaos_team/blbui-core",
   "version": "0.0.1",
   "description": "Framework-agnostic industrial admin components based on Web Components.",
+  "homepage": "https://github.com/chao2hang/blbui#readme",
   "license": "AGPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chao2hang/blbui"
+  },
   "files": [
     "dist",
     "src",
@@ -38,8 +43,8 @@
   "publishConfig": {
     "access": "public"
   },
+  "scripts": {},
   "peerDependencies": {
     "lit": ">=3.0.0"
-  },
-  "scripts": {}
+  }
 }

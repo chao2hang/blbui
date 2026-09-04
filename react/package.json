@@ -2,7 +2,12 @@
   "name": "@chaos_team/blbui-react",
   "version": "0.0.1",
   "description": "React bindings for the Chaos industrial admin component library.",
+  "homepage": "https://github.com/chao2hang/blbui#readme",
   "license": "AGPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chao2hang/blbui"
+  },
   "files": [
     "dist",
     "src",
@@ -22,9 +27,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "scripts": {},
   "peerDependencies": {
     "@chaos_team/blbui-core": "^0.0.1",
     "react": ">=18.0.0"
-  },
-  "scripts": {}
+  }
 }

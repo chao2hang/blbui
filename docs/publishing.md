@@ -58,7 +58,7 @@ Token 建议使用 npm granular access token：
 更推荐的长期方案是 npm Trusted Publishing：
 
 1. 在 npm package settings 中为每个 package 配置 GitHub Actions trusted publisher。
-2. 指定仓库：`chao2hang/chaos-api`。
+2. 指定仓库：`chao2hang/blbui`。
 3. 指定 workflow 文件：`publish-blbui.yml`。
 4. 指定发布环境：`npm`（如果启用 environment）。
 5. 配置完成后可以移除 `NPM_TOKEN`，把 publish step 改为 npm 11.5.1+ 的 OIDC trusted publishing 模式。
