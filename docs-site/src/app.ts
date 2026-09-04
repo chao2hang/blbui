@@ -90,7 +90,7 @@ root.innerHTML = `
     <div class="sidebar-rule"></div>
     <label class="docs-search"><span aria-hidden="true">⌕</span><input id="docs-search" type="search" placeholder="SEARCH COMPONENTS" aria-label="Search components" /></label>
     <nav class="docs-nav" aria-label="Documentation navigation"></nav>
-    <div class="sidebar-footer"><span class="pulse"></span><span>CORE STATUS / STABLE</span><span class="version">v0.1.0</span></div>
+    <div class="sidebar-footer"><span class="pulse"></span><span>CORE STATUS / STABLE</span><span class="version">v0.0.1</span></div>
   </aside>
   <div class="docs-main">
     <header class="docs-header">
@@ -99,7 +99,7 @@ root.innerHTML = `
     </header>
     <main class="docs-content">
       <section class="docs-hero" id="overview">
-        <div class="hero-kicker"><span></span> OBSIDIAN INDUSTRIAL CONSOLE / 0.1.0</div>
+        <div class="hero-kicker"><span></span> OBSIDIAN INDUSTRIAL CONSOLE / 0.0.1</div>
         <h1>BLBUI<br><em>DOCUMENTATION</em></h1>
         <p class="hero-lede">A sharp, data-first component system for operational interfaces. Built once for the web, React, Vue and Svelte.</p>
         <div class="hero-actions"><aui-button variant="primary" id="hero-explore">EXPLORE COMPONENTS</aui-button><a class="text-link" href="#frameworks">VIEW FRAMEWORKS <span>→</span></a></div>
