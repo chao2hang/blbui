@@ -24,8 +24,8 @@
 触发方式：
 
 ```bash
-git tag blbui-v0.0.1
-git push origin blbui-v0.0.1
+git tag blbui-v0.0.2
+git push origin blbui-v0.0.2
 ```
 
 或者在 GitHub Actions 中手动执行 `Publish BLBUI packages`。
@@ -85,4 +85,4 @@ npm pack --dry-run --prefix business-react
 
 ## 当前版本
 
-当前 package version 是 `0.0.1`。已经发布后不能重复发布同一个版本，需要先统一修改六个 package 的 version，再创建新的 tag。
+当前 package version 是 `0.0.2`。已经发布后不能重复发布同一个版本，需要先统一修改六个 package 的 version，再创建新的 tag。

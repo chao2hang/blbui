@@ -1,6 +1,6 @@
 {
   "name": "@chaos_team/blbui-core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Framework-agnostic industrial admin components based on Web Components.",
   "homepage": "https://github.com/chao2hang/blbui#readme",
   "license": "AGPL-3.0-or-later",
