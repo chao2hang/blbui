@@ -103,12 +103,8 @@ export class AdminMetricGridElement extends AdminElement {
   `;
   items: AdminMetricItem[] = [];
   columns = 4;
-  connectedCallback(): void {
-    super.connectedCallback();
-    this.style.setProperty("--aui-metric-columns", String(this.columns));
-  }
   render() {
-    return html`<div class="grid">
+    return html`<div class="grid" style=${`--aui-metric-columns:${this.columns}`}>
       ${this.items.map(
         (item) =>
           html`<aui-metric-card
@@ -177,14 +173,15 @@ export class AdminBarChartElement extends AdminElement {
   data: Array<{ label: string; value: number }> = [];
   height = "220px";
   label = "Chart";
-  connectedCallback(): void {
-    super.connectedCallback();
-    this.style.setProperty("--aui-bar-height", this.height);
-  }
   render() {
     const max = Math.max(...this.data.map((item) => item.value), 1);
     const peak = max;
-    return html`<div class="chart" role="img" aria-label=${this.label}>
+    return html`<div
+      class="chart"
+      style=${`--aui-bar-height:${this.height}`}
+      role="img"
+      aria-label=${this.label}
+    >
       ${this.data.map(
         (item) =>
           html`<div class="bar-wrap">
@@ -231,10 +228,6 @@ export class AdminSparklineElement extends AdminElement {
   values: number[] = [];
   label = "Trend";
   color = "#ffffff";
-  connectedCallback(): void {
-    super.connectedCallback();
-    this.style.setProperty("--aui-sparkline-color", this.color);
-  }
   render() {
     const max = Math.max(...this.values, 1);
     const min = Math.min(...this.values, 0);
@@ -245,7 +238,12 @@ export class AdminSparklineElement extends AdminElement {
           `${this.values.length > 1 ? (index / (this.values.length - 1)) * 100 : 50},${48 - ((value - min) / range) * 42}`,
       )
       .join(" ");
-    return html`<svg viewBox="0 0 100 52" role="img" aria-label=${this.label}>
+    return html`<svg
+      viewBox="0 0 100 52"
+      role="img"
+      aria-label=${this.label}
+      style=${`--aui-sparkline-color:${this.color}`}
+    >
       <line class="baseline" x1="0" y1="49" x2="100" y2="49"></line>
       <polyline points=${points}></polyline>
     </svg>`;

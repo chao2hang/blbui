@@ -5,78 +5,106 @@ it under the terms of the GNU Affero General Public License.
 */
 
 :root {
-  --aui-bg: #0a0a0a;
-  --aui-surface: #0f0f0f;
-  --aui-surface-subtle: #0c0c0c;
-  --aui-header: #18181b;
-  --aui-border: #262626;
-  --aui-border-hover: #404040;
-  --aui-focus: #a1a1aa;
-  --aui-text: #e5e5e5;
-  --aui-text-primary: #ffffff;
-  --aui-text-secondary: #737373;
-  --aui-text-muted: #52525b;
-  --aui-text-inverse: #000000;
-  --aui-success: #10b981;
-  --aui-danger: #ef4444;
-  --aui-danger-hover: #f87171;
-  --aui-warning: #f59e0b;
-  --aui-info: #60a5fa;
-  --aui-font-ui: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --aui-font-mono:
-    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --aui-radius: 0px;
-  --aui-control-height: 36px;
-  --aui-control-height-compact: 32px;
-  --aui-sidebar-width: 256px;
-  --aui-header-height: 64px;
-  --aui-page-padding: 32px;
-  --aui-transition: 160ms ease-in-out;
+    --aui-bg: #0a0a0a;
+    --aui-surface: #0f0f0f;
+    --aui-surface-subtle: #0c0c0c;
+    --aui-header: #18181b;
+    --aui-border: #262626;
+    --aui-border-hover: #404040;
+    --aui-focus: #a1a1aa;
+    --aui-text: #e5e5e5;
+    --aui-text-primary: #ffffff;
+    --aui-text-secondary: #737373;
+    --aui-text-muted: #52525b;
+    --aui-text-inverse: #000000;
+    --aui-success: #10b981;
+    --aui-danger: #ef4444;
+    --aui-danger-hover: #f87171;
+    --aui-danger-faint: rgb(239 68 68 / 5%);
+    --aui-danger-soft: rgb(239 68 68 / 10%);
+    --aui-danger-border: rgb(239 68 68 / 40%);
+    --aui-danger-strong: rgb(239 68 68 / 45%);
+    --aui-danger-text: #fca5a5;
+    --aui-warning: #f59e0b;
+    --aui-info: #60a5fa;
+    --aui-shadow-pop: 8px 8px 0 rgb(0 0 0 / 22%);
+    --aui-grid-line-strong: rgb(38 38 38 / 45%);
+    --aui-grid-line: rgb(38 38 38 / 25%);
+    --aui-code-text: #d4d4d8;
+    --aui-json-text: #a5f3fc;
+    --aui-white-3: rgb(255 255 255 / 3%);
+    --aui-white-5: rgb(255 255 255 / 5%);
+    --aui-white-20: rgb(255 255 255 / 20%);
+    /* Fonts are intentionally NOT @imported here: a component package should not
+   * silently fetch third-party fonts. Hosts that want the exact look should
+   * load "Space Grotesk" and "JetBrains Mono" themselves (e.g. via
+   * @fontsource or a <link>); otherwise the system fallbacks below apply. */
+    --aui-font-ui:
+        "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --aui-font-mono:
+        "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --aui-radius: 0px;
+    --aui-control-height: 36px;
+    --aui-control-height-compact: 32px;
+    /* Text inputs stay 12px for the dense console look, but iOS Safari
+   * auto-zooms when a focused input renders below 16px. On small screens the
+   * variable is raised (below) so the shadow-DOM inputs never trigger zoom. */
+    --aui-input-font-size: 12px;
+    --aui-sidebar-width: 256px;
+    --aui-header-height: 64px;
+    --aui-page-padding: 32px;
+    --aui-transition: 160ms ease-in-out;
 }
 
 .aui-root,
 .aui-root :where(*) {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .aui-root {
-  color: var(--aui-text);
-  background: var(--aui-bg);
-  font-family: var(--aui-font-ui);
-  line-height: 1.45;
+    color: var(--aui-text);
+    background: var(--aui-bg);
+    font-family: var(--aui-font-ui);
+    line-height: 1.45;
 }
 
 .aui-mono {
-  font-family: var(--aui-font-mono);
-  font-variant-numeric: tabular-nums;
+    font-family: var(--aui-font-mono);
+    font-variant-numeric: tabular-nums;
 }
 
 .aui-root :where(button, input, select, textarea) {
-  font: inherit;
+    font: inherit;
+}
+
+@media (max-width: 768px) {
+    :root {
+        --aui-input-font-size: 16px;
+    }
 }
 
 .aui-root :where(button, [role="button"], a, input, select, textarea):focus-visible {
-  outline: 1px solid var(--aui-focus);
-  outline-offset: 2px;
+    outline: 1px solid var(--aui-focus);
+    outline-offset: 2px;
 }
 
 .aui-root :where(button, [role="button"]):disabled,
 .aui-root :where([aria-disabled="true"]) {
-  cursor: not-allowed;
-  opacity: 0.3;
+    cursor: not-allowed;
+    opacity: 0.3;
 }
 
 @media (max-width: 767px) {
-  .aui-root :where(input, select, textarea) {
-    font-size: 16px;
-  }
+    .aui-root :where(input, select, textarea) {
+        font-size: 16px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .aui-root :where(*) {
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-  }
+    .aui-root :where(*) {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
 }

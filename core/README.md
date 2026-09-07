@@ -14,4 +14,4 @@ registerAdminElements();
 <aui-status-tag status="success">Online</aui-status-tag>
 ```
 
-All components use the `--aui-*` design tokens and emit structured `aui-*` CustomEvents.
+All 78 components use the `--aui-*` design tokens. Interactive components emit structured `aui-*` CustomEvents (the full event table is in the repository README); display-only components such as `Badge`, `Avatar`, `Kbd` and `ColorTag` are passive.

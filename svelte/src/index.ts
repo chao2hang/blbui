@@ -12,9 +12,9 @@ export { registerAdminElements };
 export * from "@chaos_team/blbui-core";
 
 export function adminUi(node: HTMLElement): { destroy: () => void } {
-  registerAdminElements();
-  node.classList.add("aui-root");
-  return { destroy: () => node.classList.remove("aui-root") };
+    registerAdminElements();
+    node.classList.add("aui-root");
+    return { destroy: () => node.classList.remove("aui-root") };
 }
 
 export * from "./components";

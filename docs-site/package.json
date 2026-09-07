@@ -9,9 +9,9 @@
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "typecheck": "node_modules/.bin/tsc -p tsconfig.json",
-    "lint": "node_modules/.bin/oxlint -c ../../../web/.oxlintrc.json src",
-    "format": "node_modules/.bin/oxfmt --write src index.html vite.config.ts",
-    "format:check": "node_modules/.bin/oxfmt --check src index.html vite.config.ts",
+    "lint": "oxlint src",
+    "format": "oxfmt --write src index.html vite.config.ts",
+    "format:check": "oxfmt --check src index.html vite.config.ts",
     "test:smoke": "node_modules/.bin/tsc -p tsconfig.json && node_modules/.bin/vite build"
   },
   "dependencies": {

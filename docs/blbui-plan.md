@@ -1,41 +1,30 @@
 # BLBUI 组件库实施计划
 
+> **状态（0.0.2 更新）**：本计划 Phase 0–4 已全部落地——Core 现有 **78 个组件**、Business 9 个、React/Vue 为 78:1 完整绑定、Svelte 提供注册入口与 7 个封装；Phase 2 的测试基线（Vitest 行为测试 + a11y 契约测试）已就位；Phase 6 的文档站（`docs-site/`）已可构建。
+> 下文历史路径说明：`docs/admin-style-guide.md` 位于 `chaos-ui` 风格规范仓库（本仓库不复制全文，tokens 已提取进 `core/src/tokens.css`）；`packages/blbui` 与 `web/` 是规划阶段的占位命名，实际落地为仓库顶层的 `core/ react/ vue/ svelte/ business/ business-react/ docs-site/` workspace。
+
 ## 目标
 
-基于 `docs/admin-style-guide.md` 建立可独立消费的工业风后台组件库，统一支持 React、Vue 3、Svelte 5，并逐步替换 `web/src/components/admin` 中重复的样式和交互实现。
+基于 Obsidian Industrial Console 风格规范建立可独立消费的工业风后台组件库，统一支持 React、Vue 3、Svelte 5，并逐步替换宿主应用中重复的样式和交互实现。
 
-## 已完成（Phase 0-1）
+## 已完成（Phase 0-4 落地）
 
 - [x] 盘点现有 React 后台外壳、`admin-theme.css`、`@chaos_team/chaos-ui` 使用情况。
 - [x] 确认技术路线：Lit/Web Components 核心 + React/Vue/Svelte 绑定。
-- [x] 创建 `packages/blbui` 包结构和独立 package metadata。
+- [x] 创建 monorepo 包结构（顶层 `core/ react/ vue/ svelte/ business/ business-react/ docs-site/`）与独立 package metadata。
 - [x] 从样式规范提取 tokens：背景、表面、边框、文字、状态色、字体、尺寸、动效。
 - [x] 将核心样式限定在 `.aui-root` / `aui-*`，不复制当前全局 `* { border-radius: 0 !important }`。
-- [x] 建立 `@chaos_team/blbui-core`。
-- [x] 建立 `@chaos_team/blbui-react`。
-- [x] 建立 `@chaos_team/blbui-vue`。
-- [x] 建立 `@chaos_team/blbui-svelte` 注册/类型入口。
-- [x] 完成第一批组件：
-  - [x] Button
-  - [x] Card
-  - [x] Input
-  - [x] Select
-  - [x] StatusTag
-  - [x] Spinner
-  - [x] EmptyState
-  - [x] ErrorState
-  - [x] Shell
-  - [x] Page / PageHeader
-  - [x] Stat
-  - [x] FilterBar
-  - [x] Table
-  - [x] Pagination
-  - [x] Tabs
-  - [x] Dialog
-  - [x] Nav / Breadcrumb
-- [x] 统一 `aui-*` 事件和跨框架 API 文档。
+- [x] 建立 `@chaos_team/blbui-core`（78 组件）。
+- [x] 建立 `@chaos_team/blbui-react`（78 绑定）。
+- [x] 建立 `@chaos_team/blbui-vue`（78 绑定）。
+- [x] 建立 `@chaos_team/blbui-svelte` 注册/类型入口与 7 个封装。
+- [x] 建立 `@chaos_team/blbui-business`（9 组件）与 `@chaos_team/blbui-business-react`。
+- [x] 统一 `aui-*` 事件和跨框架 API 文档（README 完整事件表）。
 - [x] 完成架构说明、第三方交互设计借鉴边界和迁移策略。
-- [x] core/react 类型检查、lint、格式检查通过。
+- [x] core 行为测试 + a11y 契约测试（抽屉焦点、popover、dropdown 键盘、tabs 漫游、field 关联、rating 键盘、file-upload 键盘、tooltip ARIA）。
+- [x] core/react/vue/business/business-react 类型检查、oxlint、oxfmt 检查通过。
+- [x] Phase 3 常用业务组件：Field、Textarea/Checkbox/RadioGroup/Switch、Dropdown/Popover/Tooltip、Combobox/MultiSelect、Calendar/CalendarGrid/DateRange、ConfirmDialog/Toast、CopyableText、Skeleton。
+- [x] Phase 4 数据密集能力：DataGrid（列/行/加载/空态）、Table（loading/empty/error）、服务端分页字段、ChartContainer、LogViewer、Kanban。
 
 ## Phase 2：质量基线
 

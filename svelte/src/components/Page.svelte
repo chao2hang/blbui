@@ -21,6 +21,6 @@ it under the terms of the GNU Affero General Public License.
 </script>
 
 <aui-page bind:this={element} class={className}>
-  <span slot="actions"><slot name="actions" /></span>
+  <span slot="actions" style="display:contents"><slot name="actions" /></span>
   <slot />
 </aui-page>

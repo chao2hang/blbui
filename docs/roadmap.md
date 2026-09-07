@@ -6,17 +6,17 @@
 
 当前 Core 使用 Lit + Web Components，目标是让同一个组件可以被原生 Web、React、Vue、Svelte、Angular、Solid、Astro 和任意 Custom Elements 宿主消费。
 
-- Primitives：Button、Badge、Avatar、Progress、Rating、Kbd、ColorTag
-- Forms：Input、Textarea、Select、Combobox、MultiSelect、Checkbox、RadioGroup、Switch、Slider、NumberInput、PasswordInput、FileUpload、TagInput、Field、InputGroup、Search
-- Navigation：Breadcrumb、Nav、Tabs、Pagination、Accordion、Collapsible、Stepper、Segmented、List、Tree、Timeline、Toggle
+- Primitives：Button、IconButton、Badge、StatusTag、Avatar、Progress、Rating、Kbd、ColorTag
+- Forms：Input、Textarea、Select、Combobox、MultiSelect、Checkbox、RadioGroup、Switch、Slider、NumberInput、PasswordInput、FileUpload、TagInput、Field、InputGroup、Search、ColorPicker
+- Navigation：Breadcrumb、Nav、Tabs、Pagination、Accordion、Collapsible、Stepper、Segmented、List、Tree、Timeline、Toggle、ToggleGroup
 - Feedback：Alert、Result、EmptyState、ErrorState、Spinner、Skeleton、Toast、Separator、CopyableText
 - Overlay：Tooltip、Popover、Dropdown、Command、Dialog、ConfirmDialog、Drawer
-- Data：Table、DataGrid、DataList、Calendar、CalendarGrid、DateRange、JSONViewer、LogViewer、ChartContainer、Kanban
+- Data：Table、DataGrid、DataList、Calendar、CalendarGrid、DateRange、JSONViewer、LogViewer、ChartContainer、Kanban、CodeBlock
 - Layout：Shell、Page、PageHeader、FilterBar、Stat、Container、Stack、Grid、Splitter、AspectRatio、ScrollArea
 
 ### Business / Domain packages
 
-参考 `chaos-ui` 中的企业系统能力，后续独立为可选包，不让 Core 绑定大型业务依赖：
+当前已落地单一 `@chaos_team/blbui-business`（9 组件：CrudPage、CrudToolbar、AdvancedTable、FormBuilder、ApprovalTimeline、MetricCard、MetricGrid、BarChart、Sparkline），并配 `@chaos_team/blbui-business-react` 适配。参考 `chaos-ui` 中的企业系统能力，后续可独立拆分为可选包，不让 Core 绑定大型业务依赖：
 
 - `@chaos_team/blbui-business-crud`
   - CrudPage
@@ -67,7 +67,7 @@
 
 ## 当前状态
 
-当前已注册 78 个 Core Custom Elements，并通过 React 适配层提供高级组件入口。Vue/Svelte 的基础适配已经可用，下一步补齐高级组件的同构绑定和独立示例。
+当前已注册 78 个 Core Custom Elements。React 与 Vue 均提供 78:1 的完整同构绑定（`Admin*` 命名），Svelte 提供核心注册入口（`registerAdminElements` / `adminUi`）、core 类型再导出和 7 个常用组件封装。文档站 `docs-site/` 覆盖全部 87 个组件（含 9 个 Business）的实时预览与四框架用法。下一步：DataGrid 增强、三框架最小示例应用、Playwright 行为矩阵。
 
 ## 依赖边界
 

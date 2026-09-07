@@ -5,6 +5,6 @@ it under the terms of the GNU Affero General Public License.
 */
 
 declare module "*.svelte" {
-  const component: unknown;
-  export default component;
+    const component: unknown;
+    export default component;
 }

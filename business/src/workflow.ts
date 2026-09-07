@@ -124,6 +124,7 @@ export class AdminFormBuilderElement extends AdminElement {
     const value = this.values[field.name] ?? field.value ?? "";
     if (field.type === "textarea") {
       return html`<textarea
+        id=${field.name}
         name=${field.name}
         .value=${String(value)}
         ?required=${field.required}
@@ -132,6 +133,7 @@ export class AdminFormBuilderElement extends AdminElement {
     }
     if (field.type === "select") {
       return html`<select
+        id=${field.name}
         name=${field.name}
         .value=${String(value)}
         ?required=${field.required}
@@ -143,6 +145,7 @@ export class AdminFormBuilderElement extends AdminElement {
       </select>`;
     }
     return html`<input
+      id=${field.name}
       name=${field.name}
       type=${field.type ?? "text"}
       .value=${field.type === "checkbox" ? undefined : String(value)}

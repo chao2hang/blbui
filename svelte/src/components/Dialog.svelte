@@ -25,5 +25,5 @@ it under the terms of the GNU Affero General Public License.
 
 <aui-dialog bind:this={element} {open} {title} {description} {closeLabel}>
   <slot />
-  <span slot="footer"><slot name="footer" /></span>
+  <span slot="footer" style="display:contents"><slot name="footer" /></span>
 </aui-dialog>

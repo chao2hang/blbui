@@ -15,13 +15,21 @@
 
 ## 组件清单
 
-- 基础：`Button`、`Card`、`Input`、`Textarea`、`Select`、`Checkbox`、`Switch`、`StatusTag`
-- 反馈：`Spinner`、`Skeleton`、`EmptyState`、`ErrorState`、`Separator`、`CopyableText`
-- 布局：`Shell`、`Page`、`PageHeader`、`Stat`、`FilterBar`
-- 数据：`Table`、`Pagination`、`Tabs`
-- 导航：`Nav`、`Breadcrumb`
-- 叠加层：`Dialog`、`ConfirmDialog`、`Tooltip`、`Popover`、`Dropdown`、`Command`、`Drawer`、`Toast`
-- 高级通用：`Combobox`、`MultiSelect`、`DateRange`、`Tree`、`Timeline`、`Kanban`、`DataGrid`、`JSONViewer`、`LogViewer`、`CodeBlock`
+Core（78 个 Web Components，`@chaos_team/blbui-core`）：
+
+- **基础原语**（9）：`Button`、`IconButton`、`Badge`、`StatusTag`、`Avatar`、`Progress`、`Rating`、`Kbd`、`ColorTag`
+- **表单控件**（17）：`Input`、`Textarea`、`Select`、`Combobox`、`MultiSelect`、`NumberInput`、`PasswordInput`、`Checkbox`、`Switch`、`RadioGroup`、`Slider`、`TagInput`、`InputGroup`、`Field`、`FileUpload`、`Search`、`ColorPicker`
+- **导航**（13）：`Tabs`、`Breadcrumb`、`Nav`、`Pagination`、`Accordion`、`Collapsible`、`Stepper`、`List`、`Tree`、`Timeline`、`Toggle`、`ToggleGroup`、`Segmented`
+- **反馈与状态**（9）：`Alert`、`Result`、`EmptyState`、`ErrorState`、`Spinner`、`Skeleton`、`Toast`、`CopyableText`、`Separator`
+- **叠加层与弹窗**（7）：`Tooltip`、`Popover`、`Dropdown`、`Command`、`Dialog`、`ConfirmDialog`、`Drawer`
+- **数据展示**（11）：`Table`、`DataList`、`DataGrid`、`Calendar`、`CalendarGrid`、`DateRange`、`ChartContainer`、`JSONViewer`、`LogViewer`、`Kanban`、`CodeBlock`
+- **布局与表面**（12）：`Card`、`Container`、`Stack`、`Grid`、`Splitter`、`Shell`、`Page`、`PageHeader`、`FilterBar`、`Stat`、`AspectRatio`、`ScrollArea`
+
+Business（9 个，`@chaos_team/blbui-business`）：
+
+- **业务套件**（9）：`CrudPage`、`CrudToolbar`、`AdvancedTable`、`FormBuilder`、`ApprovalTimeline`、`MetricCard`、`MetricGrid`、`BarChart`、`Sparkline`
+
+React / Vue 提供全部 78 个 Core 组件的 1:1 绑定（`Admin*` 命名）；Svelte 提供核心注册入口与 7 个常用组件封装。
 
 ## 设计原则
 
@@ -132,16 +140,42 @@ Svelte 直接使用 Custom Elements；在应用入口调用 `registerAdminElemen
 
 Core 事件使用 `aui-*` 前缀并通过 `CustomEvent.detail` 传递结构化数据：
 
-| 事件              | detail              |
-| ----------------- | ------------------- |
-| `aui-input`       | `{ value: string }` |
-| `aui-change`      | `{ value: string }` |
-| `aui-page-change` | `{ page: number }`  |
-| `aui-tab-change`  | `{ id: string }`    |
-| `aui-close`       | `{ open: false }`   |
-| `aui-nav-change`  | `{ id: string }`    |
+| 事件                        | detail                          |
+| --------------------------- | ------------------------------- |
+| `aui-input`                 | `{ value: string }`             |
+| `aui-change`                | `{ value: string }` / `{ values: string[] }` |
+| `aui-number-change`         | `{ value: number }`             |
+| `aui-checked-change`        | `{ checked: boolean }`          |
+| `aui-radio-change`          | `{ value: string }`             |
+| `aui-slider-change`         | `{ value: number }`             |
+| `aui-range-change`          | `{ start: string; end: string }` |
+| `aui-rating-change`         | `{ value: number }`             |
+| `aui-segment-change`        | `{ value: string }`             |
+| `aui-search`                | `{ value: string }`             |
+| `aui-tags-change`           | `{ values: string[] }`          |
+| `aui-files-change`          | `{ files: File[] }`             |
+| `aui-color-change`          | `{ value: string }`             |
+| `aui-copy`                  | `{ text: string }`              |
+| `aui-page-change`           | `{ page: number }`              |
+| `aui-tab-change`            | `{ id: string }`                |
+| `aui-nav-change`            | `{ id: string }`                |
+| `aui-menu-select`           | `{ id: string }`                |
+| `aui-command`               | `{ id: string; item }`          |
+| `aui-list-change`           | `{ id: string }`                |
+| `aui-tree-change`           | `{ id: string }`                |
+| `aui-kanban-change`         | `{ itemId: string; columnId: string }` |
+| `aui-toggle-change`         | `{ pressed: boolean }`          |
+| `aui-toggle-group-change`   | `{ value: string; values?: string[] }` |
+| `aui-date-change`           | `{ value: string }`             |
+| `aui-splitter-change`       | `{ percent: number }`           |
+| `aui-open-change`           | `{ open: boolean }`             |
+| `aui-close` / `aui-cancel` / `aui-confirm` | `{ open: boolean }`   |
+| `aui-press`                 | `{ label: string }`             |
 
-React/Vue 绑定会将这些事件映射为 `onValueChange`、`@value-change`、`onPageChange`、`@page-change` 等框架惯用 API。
+绑定层映射规则：
+
+- **React**：输入类（`Input`/`Select`/`Textarea`）为 `onValueChange`，勾选类为 `onCheckedChange`，其余按语义命名（`onChange`、`onPageChange`、`onTabChange`、`onNavigate`、`onOpenChange`、`onSelect`、`onToggle`、`onSplit`、`onCopy`、`onColorChange`、`onFilesChange`、`onSearch` 等）。
+- **Vue**：值类双发 `update:value` + `value-change`（支持 `v-model:value`）；开关类双发 `update:open` + `open-change`；其余事件为 kebab-case（`@page-change`、`@tab-change`、`@navigate`、`@copy` 等）。
 
 ## 组件矩阵与业务扩展
 
@@ -160,9 +194,16 @@ React/Vue 绑定会将这些事件映射为 `onValueChange`、`@value-change`、
 ## 校验
 
 ```bash
-cd .
-bun run typecheck
-bun run check:svelte
-./web/node_modules/.bin/oxlint -c web/.oxlintrc.json ./core/src ./react/src ./vue/src ./svelte/src
-./web/node_modules/.bin/oxfmt --check ./core/src ./react/src ./vue/src ./svelte/src
+bun run typecheck       # 6 个包的 TypeScript 检查
+bun run test            # Vitest 单元/行为测试
+bun run check:svelte    # Svelte 组件语法 + dist/src 同步校验
+bun run catalog:check   # 目录完整性 + 文档示例导入校验
+bun run docs:check      # 文档站 tsc + vite build 冒烟
+bun run format:check    # oxfmt 格式检查
+bun run pack:check      # 构建全部包并 npm pack --dry-run
+bun run release:check   # 上述关键项的发布前组合
 ```
+
+## 许可证
+
+AGPL-3.0-or-later。每个发布包内置 `dist/LICENSE` 副本，仓库根目录的 `LICENSE` 为权威文本。

@@ -21,9 +21,6 @@
       ],
       "@chaos_team/blbui-core/*": [
         "../core/src/*"
-      ],
-      "react": [
-        "../../../web/node_modules/@types/react/index.d.ts"
       ]
     }
   },

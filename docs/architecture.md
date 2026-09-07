@@ -27,11 +27,15 @@
 - Dialog 使用原生 `<dialog>`，支持 ESC 关闭和 backdrop 点击关闭。
 - 每个需要传达状态的区域拥有 `role=status` 或 `role=alert`。
 
+## 构建与发布
+
+- 依赖顺序固定为 core → business → react → vue → business-react；`bun run build:packages` 先对 TS 源做 `useDefineForClassFields: false` 预编译（Lit 响应式属性依赖原型访问器，ES2022 class fields 的 `[[Define]]` 语义会在 dist 里覆盖它们），再用 Bun 打包。
+- Svelte 包以源码 `.svelte` 发布，`dist/index.js` 与 `dist/components.js` 由构建从 `src/components.ts` barrel 再生成，`check:svelte` 校验 dist/src 导出同步。
+- `catalog:check` 校验目录完整性（87 个组件）与文档示例中每个 `Admin*` 导入、每个 `aui-*` 标签在对应包里真实存在。
+
 ## 下一阶段
 
-- Dropdown / Combobox / DatePicker
-- ConfirmDialog / Toast
-- Checkbox / Switch / Textarea / Field
-- 可配置列的 DataTable 与虚拟滚动适配
-- SSR hydration 检查和三框架最小示例应用
-- Playwright 跨框架行为矩阵
+- DataGrid 排序/筛选/选择与批量操作（当前为列/行/加载/空态骨架）。
+- 虚拟滚动适配，保持核心包不绑定 TanStack Table。
+- SSR hydration 检查和三框架最小示例应用。
+- Playwright 跨框架行为矩阵与 `axe` 无障碍检查。

@@ -11,13 +11,13 @@
   "files": [
     "dist",
     "src",
-    "README.md",
-    "LICENSE"
+    "README.md"
   ],
   "type": "module",
   "sideEffects": [
     "./dist/register.js",
-    "./dist/styles.css"
+    "./dist/styles.css",
+    "./dist/tokens.css"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",

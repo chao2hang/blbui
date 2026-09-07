@@ -41,6 +41,21 @@ function useBusinessElement(
   };
 }
 
+/** Everything that is not an explicitly handled prop (id, style, aria-*, data-*, ...). */
+function restProps(props: CommonProps, known: string[]): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(props)) {
+    if (!known.includes(key) && key !== "children" && value !== undefined) result[key] = value;
+  }
+  return result;
+}
+
+function slotNode(name: string, content: ReactNode): ReactNode {
+  return content
+    ? createElement("span", { slot: name, key: name, style: { display: "contents" } }, content)
+    : null;
+}
+
 export interface AdminCrudPageProps extends CommonProps {
   title?: string;
   description?: string;
@@ -56,20 +71,21 @@ export function AdminCrudPage(props: AdminCrudPageProps) {
     description: props.description,
     loading: props.loading,
   });
-  return createElement("aui-crud-page", { ref, className: props.className }, [
-    props.actions
-      ? createElement("span", { slot: "actions", key: "actions" }, props.actions)
-      : null,
-    props.filters
-      ? createElement("span", { slot: "filters", key: "filters" }, props.filters)
-      : null,
-    props.toolbar
-      ? createElement("span", { slot: "toolbar", key: "toolbar" }, props.toolbar)
-      : null,
+  const rest = restProps(props, [
+    "title",
+    "description",
+    "loading",
+    "actions",
+    "filters",
+    "toolbar",
+    "pagination",
+  ]);
+  return createElement("aui-crud-page", { ...rest, ref, className: props.className }, [
+    slotNode("actions", props.actions),
+    slotNode("filters", props.filters),
+    slotNode("toolbar", props.toolbar),
     props.children,
-    props.pagination
-      ? createElement("span", { slot: "pagination", key: "pagination" }, props.pagination)
-      : null,
+    slotNode("pagination", props.pagination),
   ]);
 }
 
@@ -96,7 +112,15 @@ export function AdminCrudToolbar(props: AdminCrudToolbarProps) {
       "aui-refresh": props.onRefresh ? () => props.onRefresh?.() : undefined,
     },
   );
-  return createElement("aui-crud-toolbar", { ref, className: props.className }, props.children);
+  const rest = restProps(props, [
+    "selected",
+    "searchPlaceholder",
+    "searchValue",
+    "loading",
+    "onSearch",
+    "onRefresh",
+  ]);
+  return createElement("aui-crud-toolbar", { ...rest, ref, className: props.className }, props.children);
 }
 
 export interface AdminAdvancedTableProps extends CommonProps {
@@ -128,7 +152,17 @@ export function AdminAdvancedTable(props: AdminAdvancedTableProps) {
         : undefined,
     },
   );
-  return createElement("aui-advanced-table", { ref, className: props.className });
+  const rest = restProps(props, [
+    "columns",
+    "rows",
+    "selectable",
+    "loading",
+    "emptyLabel",
+    "selectedKeys",
+    "onSelectionChange",
+    "onSortChange",
+  ]);
+  return createElement("aui-advanced-table", { ...rest, ref, className: props.className });
 }
 
 export interface AdminFormBuilderProps extends CommonProps {
@@ -136,7 +170,7 @@ export interface AdminFormBuilderProps extends CommonProps {
   submitLabel?: string;
   loading?: boolean;
   onSubmit?: (values: Record<string, string | number | boolean>) => void;
-  onChange?: (detail: unknown) => void;
+  onChange?: (detail: { name: string; value: string | number | boolean; values: Record<string, string | number | boolean> }) => void;
 }
 export function AdminFormBuilder(props: AdminFormBuilderProps) {
   const { ref } = useBusinessElement(
@@ -146,10 +180,11 @@ export function AdminFormBuilder(props: AdminFormBuilderProps) {
         ? (detail: { values: Record<string, string | number | boolean> }) =>
             props.onSubmit?.(detail.values)
         : undefined,
-      "aui-form-change": props.onChange ? (detail: unknown) => props.onChange?.(detail) : undefined,
+      "aui-form-change": props.onChange ? (detail: unknown) => props.onChange?.(detail as never) : undefined,
     },
   );
-  return createElement("aui-form-builder", { ref, className: props.className });
+  const rest = restProps(props, ["fields", "submitLabel", "loading", "onSubmit", "onChange"]);
+  return createElement("aui-form-builder", { ...rest, ref, className: props.className });
 }
 
 export interface AdminApprovalTimelineProps extends CommonProps {
@@ -161,7 +196,8 @@ export function AdminApprovalTimeline(props: AdminApprovalTimelineProps) {
     items: props.items,
     active: props.active,
   });
-  return createElement("aui-approval-timeline", { ref, className: props.className });
+  const rest = restProps(props, ["items", "active"]);
+  return createElement("aui-approval-timeline", { ...rest, ref, className: props.className });
 }
 
 export interface AdminMetricCardProps extends CommonProps {
@@ -179,7 +215,8 @@ export function AdminMetricCard(props: AdminMetricCardProps) {
     trend: props.trend,
     tone: props.tone,
   });
-  return createElement("aui-metric-card", { ref, className: props.className });
+  const rest = restProps(props, ["label", "value", "unit", "trend", "tone"]);
+  return createElement("aui-metric-card", { ...rest, ref, className: props.className });
 }
 
 export interface AdminMetricGridProps extends CommonProps {
@@ -191,7 +228,8 @@ export function AdminMetricGrid(props: AdminMetricGridProps) {
     items: props.items,
     columns: props.columns,
   });
-  return createElement("aui-metric-grid", { ref, className: props.className });
+  const rest = restProps(props, ["items", "columns"]);
+  return createElement("aui-metric-grid", { ...rest, ref, className: props.className });
 }
 
 export interface AdminBarChartProps extends CommonProps {
@@ -205,7 +243,8 @@ export function AdminBarChart(props: AdminBarChartProps) {
     height: props.height,
     label: props.label,
   });
-  return createElement("aui-bar-chart", { ref, className: props.className });
+  const rest = restProps(props, ["data", "height", "label"]);
+  return createElement("aui-bar-chart", { ...rest, ref, className: props.className });
 }
 
 export interface AdminSparklineProps extends CommonProps {
@@ -219,5 +258,6 @@ export function AdminSparkline(props: AdminSparklineProps) {
     label: props.label,
     color: props.color,
   });
-  return createElement("aui-sparkline", { ref, className: props.className });
+  const rest = restProps(props, ["values", "label", "color"]);
+  return createElement("aui-sparkline", { ...rest, ref, className: props.className });
 }
