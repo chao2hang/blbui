@@ -430,3 +430,36 @@ describe("accessibility contracts", () => {
     expect(tooltip.shadowRoot?.querySelector(`#${describedBy}`)).not.toBeNull();
   });
 });
+
+
+describe("table state sizing (issue #1)", () => {
+  it("keeps loading/empty/error block height overridable via tokens", async () => {
+    const table = document.createElement("aui-table") as HTMLElement & {
+        empty: boolean;
+        updateComplete: Promise<boolean>;
+    };
+    table.empty = true;
+    document.body.append(table);
+    await table.updateComplete;
+
+    const styleText = Array.from(table.shadowRoot?.querySelectorAll("style") ?? [])
+        .map((style) => style.textContent ?? "")
+        .join("\n");
+    expect(styleText).toContain("var(--aui-table-state-min-height");
+    expect(styleText).toContain("var(--aui-table-state-padding");
+    expect(styleText).not.toContain("min-height: 160px");
+    expect(styleText).not.toContain("padding: 48px");
+  });
+
+  it("ships compact token defaults", async () => {
+    const { readFile } = await import("node:fs/promises");
+    const { fileURLToPath } = await import("node:url");
+    // Vite rewrites the `new URL(x, import.meta.url)` pattern for asset
+    // analysis, which breaks in vite-node; assign the URL to a variable first.
+    const selfUrl = import.meta.url;
+    const tokensPath = fileURLToPath(new URL("../core/src/tokens.css", selfUrl));
+    const css = await readFile(tokensPath, "utf8");
+    expect(css).toContain("--aui-table-state-min-height: 96px");
+    expect(css).toContain("--aui-table-state-padding: 16px");
+  });
+});

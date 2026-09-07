@@ -53,6 +53,10 @@ it under the terms of the GNU Affero General Public License.
     --aui-sidebar-width: 256px;
     --aui-header-height: 64px;
     --aui-page-padding: 32px;
+    /* Table loading/empty/error state height. Kept as a token (issue #1) so
+   * hosts can tighten the block without overriding Shadow DOM styles. */
+    --aui-table-state-min-height: 96px;
+    --aui-table-state-padding: 16px;
     --aui-transition: 160ms ease-in-out;
 }
 

@@ -33,7 +33,7 @@ export class AdminTableElement extends AdminElement {
         :host([loading]) .scroll,
         :host([empty]) .scroll,
         :host([error]) .scroll {
-            min-height: 160px;
+            min-height: var(--aui-table-state-min-height, 96px);
         }
         :host([loading]) .scroll,
         :host([empty]) .scroll,
@@ -42,10 +42,10 @@ export class AdminTableElement extends AdminElement {
         }
         .state {
             display: none;
-            min-height: 160px;
+            min-height: var(--aui-table-state-min-height, 96px);
             align-items: center;
             justify-content: center;
-            padding: 48px 16px;
+            padding: var(--aui-table-state-padding, 16px);
             color: var(--aui-text-muted);
             text-align: center;
             font: 12px/1.45 var(--aui-font-mono);
