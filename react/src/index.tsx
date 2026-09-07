@@ -629,13 +629,25 @@ export function AdminNav(props: AdminNavProps) {
 }
 
 export interface AdminBreadcrumbProps extends ElementProps {
-    items: string[];
+    items: Array<string | { label: string; href?: string }>;
+    maxItems?: number;
+    overflowLabel?: string;
+    onOverflowChange?: (open: boolean) => void;
 }
 
 export function AdminBreadcrumb(props: AdminBreadcrumbProps) {
     const { element, setRef } = useAdminElement(undefined);
-    const { className, items, ...rest } = props;
-    useElementProperties(element as RefObject<CustomElement | null>, { items });
+    const { className, items, maxItems, overflowLabel, onOverflowChange, ...rest } = props;
+    useElementProperties(element as RefObject<CustomElement | null>, {
+        items,
+        maxItems,
+        overflowLabel,
+    });
+    useCustomEvent(
+        element,
+        "aui-breadcrumb-overflow",
+        onOverflowChange ? (detail: { open: boolean }) => onOverflowChange(detail.open) : undefined,
+    );
     return createElement("aui-breadcrumb", { ...rest, className, ref: setRef });
 }
 
@@ -670,6 +682,7 @@ export {
     AdminCommand,
     AdminContainer,
     AdminContextMenu,
+    AdminColumnSettings,
     AdminDataGrid,
     AdminDataList,
     AdminDateRange,
@@ -680,6 +693,8 @@ export {
     AdminField,
     AdminFilePreview,
     AdminFileUpload,
+    AdminForm,
+    AdminFormItem,
     AdminGrid,
     AdminHoverCard,
     AdminIconButton,
@@ -689,6 +704,7 @@ export {
     AdminKbd,
     AdminList,
     AdminLogViewer,
+    AdminLoadingOverlay,
     AdminMenu,
     AdminMultiSelect,
     AdminNavbar,
@@ -698,12 +714,14 @@ export {
     AdminPinInput,
     AdminPopover,
     AdminProgress,
+    AdminProgressRing,
     AdminRadioGroup,
     AdminRating,
     AdminResult,
     AdminScrollArea,
     AdminSidebar,
     AdminSearch,
+    AdminSchemaForm,
     AdminSegmented,
     AdminSlider,
     AdminSpinner,
@@ -718,6 +736,7 @@ export {
     AdminToggleGroup,
     AdminTooltip,
     AdminTree,
+    AdminTruncatedText,
     AdminTransfer,
     AdminUploadList,
 } from "./advanced";
@@ -736,6 +755,7 @@ export type {
     AdminComboboxProps,
     AdminContainerProps,
     AdminContextMenuProps,
+    AdminColumnSettingsProps,
     AdminDataGridProps,
     AdminDataListProps,
     AdminDateRangeProps,
@@ -746,11 +766,14 @@ export type {
     AdminFieldProps,
     AdminFilePreviewProps,
     AdminFileUploadProps,
+    AdminFormItemProps,
+    AdminFormProps,
     AdminIconButtonProps,
     AdminHoverCardProps,
     AdminKanbanProps,
     AdminListProps,
     AdminLogViewerProps,
+    AdminLoadingOverlayProps,
     AdminMenuProps,
     AdminMultiSelectProps,
     AdminNavbarProps,
@@ -760,12 +783,14 @@ export type {
     AdminPinInputProps,
     AdminPopoverProps,
     AdminProgressProps,
+    AdminProgressRingProps,
     AdminRadioGroupProps,
     AdminRatingProps,
     AdminResultProps,
     AdminScrollAreaProps,
     AdminSidebarProps,
     AdminSearchProps,
+    AdminSchemaFormProps,
     AdminSegmentedProps,
     AdminSliderProps,
     AdminSplitterProps,
@@ -778,6 +803,7 @@ export type {
     AdminToggleProps,
     AdminTooltipProps,
     AdminTreeProps,
+    AdminTruncatedTextProps,
     AdminTransferProps,
     AdminUploadListProps,
 } from "./advanced";

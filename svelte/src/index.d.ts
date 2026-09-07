@@ -23,10 +23,18 @@ declare namespace svelte.JSX {
         "on:aui-notification-close"?: (event: CustomEvent<{ id: string }>) => void;
         "on:aui-notification-action"?: (event: CustomEvent<{ id: string; item: unknown }>) => void;
         "on:aui-notifications-change"?: (event: CustomEvent<{ notifications: unknown[] }>) => void;
+        "on:aui-notifications-clear"?: (event: CustomEvent<{ ids: string[] }>) => void;
         "on:aui-upload-remove"?: (event: CustomEvent<{ id: string; file: unknown }>) => void;
         "on:aui-upload-retry"?: (event: CustomEvent<{ id: string; file: unknown }>) => void;
         "on:aui-upload-preview"?: (event: CustomEvent<{ id: string; file: unknown }>) => void;
         "on:aui-upload-change"?: (event: CustomEvent<{ files: unknown[] }>) => void;
+        "on:aui-sort-change"?: (event: CustomEvent<{ key: string; direction: string }>) => void;
+        "on:aui-filter-change"?: (
+            event: CustomEvent<{ filters: Record<string, string>; key: string; value: string }>,
+        ) => void;
+        "on:aui-selection-change"?: (event: CustomEvent<{ keys: Array<string | number> }>) => void;
+        "on:aui-batch-action"?: (event: CustomEvent<unknown>) => void;
+        "on:aui-column-settings-change"?: (event: CustomEvent<unknown>) => void;
         "on:aui-file-preview-close"?: (event: CustomEvent<{ file: unknown }>) => void;
         "on:aui-file-download"?: (event: CustomEvent<{ file: unknown }>) => void;
         items?: unknown;

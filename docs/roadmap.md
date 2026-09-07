@@ -6,68 +6,68 @@
 
 当前 Core 使用 Lit + Web Components，目标是让同一个组件可以被原生 Web、React、Vue、Svelte、Angular、Solid、Astro 和任意 Custom Elements 宿主消费。
 
-- Primitives：Button、IconButton、Badge、StatusTag、Avatar、Progress、Rating、Kbd、ColorTag
-- Forms：Input、Textarea、Select、Combobox、MultiSelect、Checkbox、RadioGroup、Switch、Slider、NumberInput、PasswordInput、FileUpload、TagInput、Field、InputGroup、Search、ColorPicker
+- Primitives：Button、IconButton、Badge、StatusTag、Avatar、Progress、ProgressRing、Rating、Kbd、ColorTag
+- Forms：Input、Textarea、Select、Combobox、MultiSelect、Checkbox、RadioGroup、Switch、Slider、NumberInput、PasswordInput、FileUpload、TagInput、Field、InputGroup、Search、ColorPicker、DatePicker、TimePicker、PinInput、Cascader、Transfer、UploadList、Form、FormItem、SchemaForm
 - Navigation：Breadcrumb、Nav、Tabs、Pagination、Accordion、Collapsible、Stepper、Segmented、List、Tree、Timeline、Toggle、ToggleGroup
-- Feedback：Alert、Result、EmptyState、ErrorState、Spinner、Skeleton、Toast、Separator、CopyableText
+- Feedback：Alert、Result、EmptyState、ErrorState、Spinner、Skeleton、Toast、NotificationCenter、Separator、CopyableText、TruncatedText、LoadingOverlay
 - Overlay：Tooltip、Popover、Dropdown、Command、Dialog、ConfirmDialog、Drawer
-- Data：Table、DataGrid、DataList、Calendar、CalendarGrid、DateRange、JSONViewer、LogViewer、ChartContainer、Kanban、CodeBlock
-- Layout：Shell、Page、PageHeader、FilterBar、Stat、Container、Stack、Grid、Splitter、AspectRatio、ScrollArea
+- Data：Table、DataGrid、DataList、Calendar、CalendarGrid、DateRange、JSONViewer、LogViewer、ChartContainer、Kanban、CodeBlock、Descriptions、FilePreview、ColumnSettings
+- Layout：Shell、Page、PageHeader、FilterBar、Stat、Container、Stack、Grid、Splitter、AspectRatio、ScrollArea、Sidebar、Navbar
 
 ### Business / Domain packages
 
 当前已落地单一 `@chaos_team/blbui-business`（9 组件：CrudPage、CrudToolbar、AdvancedTable、FormBuilder、ApprovalTimeline、MetricCard、MetricGrid、BarChart、Sparkline），并配 `@chaos_team/blbui-business-react` 适配。参考 `chaos-ui` 中的企业系统能力，后续可独立拆分为可选包，不让 Core 绑定大型业务依赖：
 
 - `@chaos_team/blbui-business-crud`
-  - CrudPage
-  - CrudToolbar
-  - AdvancedDataTable
-  - BrowseDialog
-  - ImportDialog
-  - ExportButton
-  - BulkActionsToolbar
+    - CrudPage
+    - CrudToolbar
+    - AdvancedDataTable
+    - BrowseDialog
+    - ImportDialog
+    - ExportButton
+    - BulkActionsToolbar
 - `@chaos_team/blbui-business-charts`
-  - LineChart
-  - BarChart
-  - AreaChart
-  - PieChart
-  - Gauge
-  - Heatmap
-  - FunnelChart
-  - GanttChart
+    - LineChart
+    - BarChart
+    - AreaChart
+    - PieChart
+    - Gauge
+    - Heatmap
+    - FunnelChart
+    - GanttChart
 - `@chaos_team/blbui-business-workflow`
-  - FormWizard
-  - FormBuilder
-  - ApprovalFlow
-  - ApprovalTimeline
-  - KanbanBoard
-  - FlowTracker
+    - FormWizard
+    - FormBuilder
+    - ApprovalFlow
+    - ApprovalTimeline
+    - KanbanBoard
+    - FlowTracker
 - `@chaos_team/blbui-business-content`
-  - MarkdownEditor
-  - MarkdownViewer
-  - CodeEditor
-  - JsonEditor
-  - DiffViewer
-  - ImageGallery
-  - FileManager
+    - MarkdownEditor
+    - MarkdownViewer
+    - CodeEditor
+    - JsonEditor
+    - DiffViewer
+    - ImageGallery
+    - FileManager
 - `@chaos_team/blbui-business-communication`
-  - ChatShell
-  - ChatConversation
-  - MessageCenter
-  - NotificationCenter
-  - ActivityFeed
+    - ChatShell
+    - ChatConversation
+    - MessageCenter
+    - NotificationCenter
+    - ActivityFeed
 - `@chaos_team/blbui-business-enterprise`
-  - OrgChart
-  - PermissionMatrix
-  - AuditLog
-  - OperationLog
-  - Timeline
-  - EmployeePicker
-  - DepartmentPicker
+    - OrgChart
+    - PermissionMatrix
+    - AuditLog
+    - OperationLog
+    - Timeline
+    - EmployeePicker
+    - DepartmentPicker
 
 ## 当前状态
 
-当前已注册 92 个 Core Custom Elements。React 与 Vue 均提供 92:1 的完整同构绑定（`Admin*` 命名），Svelte 提供核心注册入口（`registerAdminElements` / `adminUi`）、core 类型再导出和 14 个常用组件封装。文档站 `docs-site/` 覆盖全部 101 个组件（含 9 个 Business）的实时预览与四框架用法。主题基础设施已包含 9 套主题和 light/dark 模式。下一步：DataGrid 增强、三框架最小示例应用、Playwright 行为矩阵。
+当前已注册 99 个 Core Custom Elements。React 与 Vue 均提供 99:1 的完整同构绑定（`Admin*` 命名），Svelte 提供核心注册入口（`registerAdminElements` / `adminUi`）、core 类型再导出和 22 个常用组件封装，共 24 个公开导出。文档站 `docs-site/` 覆盖全部 108 个组件（含 9 个 Business）的实时预览与四框架用法。主题基础设施已包含 9 套主题和 light/dark 模式；DataGrid、组合式表单、移动端 Drawer、Breadcrumb 溢出、通知持久化和 Playwright/a11y 矩阵已落地。下一步：三框架最小示例应用、SSR/hydration 验证、视觉截图基线和复杂业务组件 adapter。
 
 ## 依赖边界
 

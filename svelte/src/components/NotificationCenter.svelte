@@ -11,6 +11,8 @@ it under the terms of the GNU Affero General Public License.
   export let notifications: AdminNotificationItem[] = []
   export let position: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left' = 'bottom-right'
   export let max = 5
+  export let persistKey = ''
+  export let clearLabel = 'CLEAR ALL'
   export let onClose: ((id: string) => void) | undefined = undefined
   export let onAction: ((id: string, item: AdminNotificationItem) => void) | undefined = undefined
   export let onChange: ((notifications: AdminNotificationItem[]) => void) | undefined = undefined
@@ -38,6 +40,8 @@ it under the terms of the GNU Affero General Public License.
     element.notifications = notifications
     element.position = position
     element.max = max
+    element.persistKey = persistKey
+    element.clearLabel = clearLabel
   }
 </script>
 

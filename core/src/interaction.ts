@@ -102,7 +102,7 @@ export class AdminCascaderElement extends AdminElement {
             font: 11px/1.2 var(--aui-font-mono);
         }
         .search:focus {
-            box-shadow: inset 0 -1px var(--aui-focus);
+            box-shadow: var(--aui-focus-inset);
         }
         .levels {
             display: flex;
@@ -423,7 +423,7 @@ export class AdminTransferElement extends AdminElement {
             font: 10px/1.2 var(--aui-font-mono);
         }
         .search:focus {
-            box-shadow: inset 0 -1px var(--aui-focus);
+            box-shadow: var(--aui-focus-inset);
         }
         .options {
             min-height: 150px;
@@ -993,6 +993,8 @@ export class AdminNotificationCenterElement extends AdminElement {
         notifications: { attribute: false },
         position: { type: String, reflect: true },
         max: { type: Number },
+        persistKey: { type: String, attribute: "persist-key" },
+        clearLabel: { type: String, attribute: "clear-label" },
     };
 
     static styles = css`
@@ -1022,6 +1024,28 @@ export class AdminNotificationCenterElement extends AdminElement {
         .center {
             display: grid;
             gap: 8px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            color: var(--aui-text-muted);
+            font: 10px/1.2 var(--aui-font-mono);
+            text-transform: uppercase;
+        }
+        .clear {
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: var(--aui-text-secondary);
+            cursor: pointer;
+            font: inherit;
+            text-decoration: underline;
+        }
+        .clear:hover,
+        .clear:focus-visible {
+            color: var(--aui-text-primary);
         }
         .notification {
             position: relative;
@@ -1104,14 +1128,55 @@ export class AdminNotificationCenterElement extends AdminElement {
     notifications: AdminNotificationItem[] = [];
     position = "bottom-right";
     max = 5;
+    persistKey = "";
+    clearLabel = "CLEAR ALL";
 
     private timers = new Map<string, number>();
+    private restoring = true;
+
+    private restore(): void {
+        if (!this.persistKey || typeof localStorage === "undefined") {
+            this.restoring = false;
+            return;
+        }
+        try {
+            const raw = localStorage.getItem(this.persistKey);
+            if (raw && !this.notifications.length) {
+                const value = JSON.parse(raw) as unknown;
+                if (Array.isArray(value)) {
+                    this.notifications = value.filter((item): item is AdminNotificationItem =>
+                        Boolean(
+                            item && typeof item === "object" && "id" in item && "message" in item,
+                        ),
+                    );
+                }
+            }
+        } catch {
+            // Storage is optional and can be blocked by privacy settings.
+        }
+        this.restoring = false;
+        this.requestUpdate();
+    }
+
+    private persist(): void {
+        if (this.restoring || !this.persistKey || typeof localStorage === "undefined") return;
+        try {
+            localStorage.setItem(this.persistKey, JSON.stringify(this.notifications));
+        } catch {
+            // Storage is optional and can be blocked by privacy settings.
+        }
+    }
+
+    protected firstUpdated(): void {
+        this.restore();
+    }
 
     push(item: Omit<AdminNotificationItem, "id"> & { id?: string }): string {
         const id = item.id ?? nextUid("notification");
         const notification = { ...item, id } as AdminNotificationItem;
         this.notifications = [...this.notifications, notification];
         this.dispatchDetail("aui-notifications-change", { notifications: this.notifications });
+        this.persist();
         this.requestUpdate();
         return id;
     }
@@ -1124,6 +1189,22 @@ export class AdminNotificationCenterElement extends AdminElement {
         this.timers.delete(id);
         this.dispatchDetail("aui-notification-close", { id });
         this.dispatchDetail("aui-notifications-change", { notifications: this.notifications });
+        this.persist();
+        this.requestUpdate();
+    }
+
+    clear(): void {
+        if (!this.notifications.length) return;
+        const ids = this.notifications.map((item) => item.id);
+        for (const id of ids) {
+            const timer = this.timers.get(id);
+            if (timer !== undefined) window.clearTimeout(timer);
+        }
+        this.timers.clear();
+        this.notifications = [];
+        this.dispatchDetail("aui-notifications-clear", { ids });
+        this.dispatchDetail("aui-notifications-change", { notifications: this.notifications });
+        this.persist();
         this.requestUpdate();
     }
 
@@ -1157,6 +1238,19 @@ export class AdminNotificationCenterElement extends AdminElement {
             aria-label="Notifications"
             aria-live="polite"
         >
+            ${
+                visible.length
+                    ? html`<header class="header">
+                          <span
+                              >${visible.length}
+                              NOTIFICATION${visible.length === 1 ? "" : "S"}</span
+                          >
+                          <button class="clear" type="button" @click=${this.clear}>
+                              ${this.clearLabel}
+                          </button>
+                      </header>`
+                    : null
+            }
             ${visible.map(
                 (item) => html`<article
                     class="notification"

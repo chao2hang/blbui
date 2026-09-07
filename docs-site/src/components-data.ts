@@ -1414,7 +1414,8 @@ export const components: ComponentItem[] = [
         tag: "aui-menu",
         name: "Menu",
         category: "navigation",
-        description: "Tokenized action and navigation menu with active, danger and shortcut states.",
+        description:
+            "Tokenized action and navigation menu with active, danger and shortcut states.",
         status: "stable",
         props: ["items", "value", "orientation", "compact"],
         events: ["aui-menu-select"],
@@ -1432,7 +1433,8 @@ export const components: ComponentItem[] = [
         tag: "aui-sidebar",
         name: "Sidebar",
         category: "layout",
-        description: "Collapsible application rail with navigation, footer and responsive visibility state.",
+        description:
+            "Collapsible application rail with navigation, footer and responsive visibility state.",
         status: "stable",
         props: ["open", "title", "width", "close-label"],
         events: ["aui-open-change"],
@@ -1535,7 +1537,8 @@ export const components: ComponentItem[] = [
         tag: "aui-cascader",
         name: "Cascader",
         category: "forms",
-        description: "Hierarchical option picker for regions, resources and nested configuration paths.",
+        description:
+            "Hierarchical option picker for regions, resources and nested configuration paths.",
         status: "stable",
         props: ["options", "value", "placeholder", "disabled", "open", "searchable"],
         events: ["aui-cascader-change", "aui-open-change"],
@@ -1553,7 +1556,8 @@ export const components: ComponentItem[] = [
         tag: "aui-transfer",
         name: "Transfer",
         category: "forms",
-        description: "Dual-list assignment control for moving users, permissions and resources between sets.",
+        description:
+            "Dual-list assignment control for moving users, permissions and resources between sets.",
         status: "stable",
         props: ["options", "values", "source-title", "target-title", "searchable", "disabled"],
         events: ["aui-transfer-change"],
@@ -1571,7 +1575,8 @@ export const components: ComponentItem[] = [
         tag: "aui-context-menu",
         name: "Context Menu",
         category: "overlay",
-        description: "Keyboard-friendly right-click action menu with separators, shortcuts and safe dismissal.",
+        description:
+            "Keyboard-friendly right-click action menu with separators, shortcuts and safe dismissal.",
         status: "stable",
         props: ["items", "open", "x", "y", "label"],
         events: ["aui-menu-select", "aui-open-change"],
@@ -1589,7 +1594,8 @@ export const components: ComponentItem[] = [
         tag: "aui-hover-card",
         name: "Hover Card",
         category: "overlay",
-        description: "Delayed pointer and focus preview for resource metadata without interrupting the workflow.",
+        description:
+            "Delayed pointer and focus preview for resource metadata without interrupting the workflow.",
         status: "stable",
         props: ["open", "title", "side", "delay", "close-delay"],
         events: ["aui-open-change"],
@@ -1606,7 +1612,8 @@ export const components: ComponentItem[] = [
         tag: "aui-notification-center",
         name: "Notification Center",
         category: "feedback",
-        description: "Tokenized toast stack with placement, duration, dismiss and action events for global feedback.",
+        description:
+            "Tokenized toast stack with placement, duration, dismiss and action events for global feedback.",
         status: "stable",
         props: ["notifications", "position", "max"],
         events: ["aui-notification-close", "aui-notification-action", "aui-notifications-change"],
@@ -1624,10 +1631,24 @@ export const components: ComponentItem[] = [
         tag: "aui-upload-list",
         name: "Upload List",
         category: "forms",
-        description: "Manage selected files with status, progress, retry, preview and remove actions.",
+        description:
+            "Manage selected files with status, progress, retry, preview and remove actions.",
         status: "stable",
-        props: ["files", "removable", "retryable", "previewable", "compact", "disabled", "empty-label"],
-        events: ["aui-upload-change", "aui-upload-remove", "aui-upload-retry", "aui-upload-preview"],
+        props: [
+            "files",
+            "removable",
+            "retryable",
+            "previewable",
+            "compact",
+            "disabled",
+            "empty-label",
+        ],
+        events: [
+            "aui-upload-change",
+            "aui-upload-remove",
+            "aui-upload-retry",
+            "aui-upload-preview",
+        ],
         initKey: "upload-list",
         previewHtml: `<div style="width:100%;max-width:420px;"><aui-upload-list id="preview-upload-list"></aui-upload-list></div>`,
         usage: {
@@ -1642,7 +1663,8 @@ export const components: ComponentItem[] = [
         tag: "aui-file-preview",
         name: "File Preview",
         category: "data",
-        description: "Modal preview surface for images, PDFs and file metadata with download hooks.",
+        description:
+            "Modal preview surface for images, PDFs and file metadata with download hooks.",
         status: "stable",
         props: ["file", "open", "title", "close-label", "download-label", "downloadable"],
         events: ["aui-file-preview-close", "aui-file-download"],
@@ -1657,6 +1679,134 @@ export const components: ComponentItem[] = [
     },
 
     // -------------------------------------------------------------
+    {
+        id: "form",
+        tag: "aui-form",
+        name: "Form",
+        category: "forms",
+        description: "Accessible form shell with validation, loading and responsive actions.",
+        status: "stable",
+        props: ["layout", "loading", "submit-label", "reset-label", "show-actions"],
+        events: ["aui-submit", "aui-invalid", "aui-reset"],
+        previewHtml: `<div style="width:100%;max-width:360px;"><aui-form id="preview-form"><aui-form-item label="CHANNEL NAME" required><aui-input placeholder="production-gateway"></aui-input></aui-form-item></aui-form></div>`,
+        usage: {
+            wc: `<aui-form>
+  <aui-form-item label="Channel name" required><aui-input name="channel"></aui-input></aui-form-item>
+</aui-form>`,
+            react: `import { AdminForm, AdminFormItem, AdminInput } from '@chaos_team/blbui-react'\n\n<AdminForm onSubmit={handleSubmit}>\n  <AdminFormItem label="Channel name" required><AdminInput /></AdminFormItem>\n</AdminForm>`,
+            vue: `<AdminForm @submit="submit">\n  <AdminFormItem label="Channel name" required><AdminInput /></AdminFormItem>\n</AdminForm>`,
+            svelte: `import { AdminForm } from '@chaos_team/blbui-svelte'\n\n<AdminForm onSubmit={handleSubmit}><aui-input /></AdminForm>`,
+        },
+    },
+    {
+        id: "form-item",
+        tag: "aui-form-item",
+        name: "Form Item",
+        category: "forms",
+        description: "Label, description and error semantics for any slotted form control.",
+        status: "stable",
+        props: ["label", "description", "error", "required", "name"],
+        events: [],
+        previewHtml: `<div style="width:100%;max-width:320px;"><aui-form-item label="API TOKEN" description="Rotate every 90 days." required><aui-input placeholder="sk-live-..."></aui-input></aui-form-item></div>`,
+        usage: {
+            wc: `<aui-form-item label="API token" description="Rotate every 90 days." required>\n  <aui-input name="token"></aui-input>\n</aui-form-item>`,
+            react: `import { AdminFormItem, AdminInput } from '@chaos_team/blbui-react'\n\n<AdminFormItem label="API token" description="Rotate every 90 days." required><AdminInput /></AdminFormItem>`,
+            vue: `<AdminFormItem label="API token" description="Rotate every 90 days." required><AdminInput /></AdminFormItem>`,
+            svelte: `<aui-form-item label="API token" required><aui-input /></aui-form-item>`,
+        },
+    },
+    {
+        id: "schema-form",
+        tag: "aui-schema-form",
+        name: "Schema Form",
+        category: "forms",
+        description:
+            "Dependency-free form renderer for text, number, select, date and checkbox fields.",
+        status: "stable",
+        props: ["fields", "values", "layout", "loading", "submit-label", "reset-label"],
+        events: ["aui-change", "aui-submit", "aui-reset"],
+        initKey: "schema-form",
+        previewHtml: `<div style="width:100%;max-width:360px;"><aui-schema-form id="preview-schema-form"></aui-schema-form></div>`,
+        usage: {
+            wc: `<aui-schema-form id="settings-form"></aui-schema-form>\n<script>\nsettingsForm.fields = fields\n</script>`,
+            react: `import { AdminSchemaForm } from '@chaos_team/blbui-react'\n\n<AdminSchemaForm fields={fields} values={values} onSubmit={handleSubmit} />`,
+            vue: `<AdminSchemaForm :fields="fields" v-model:values="values" @submit="submit" />`,
+            svelte: `import { AdminSchemaForm } from '@chaos_team/blbui-svelte'\n\n<AdminSchemaForm {fields} bind:values onSubmit={handleSubmit} />`,
+        },
+    },
+    {
+        id: "progress-ring",
+        tag: "aui-progress-ring",
+        name: "Progress Ring",
+        category: "primitives",
+        description: "Circular progress for jobs, quotas and asynchronous enterprise workflows.",
+        status: "stable",
+        props: ["value", "max", "size", "stroke-width", "label", "show-value"],
+        events: [],
+        previewHtml: `<div class="demo-row"><aui-progress-ring value="72" label="DEPLOYMENT"></aui-progress-ring><aui-progress-ring value="34" size="64" show-value="false" label="QUOTA"></aui-progress-ring></div>`,
+        usage: {
+            wc: `<aui-progress-ring value="72" label="Deployment"></aui-progress-ring>`,
+            react: `import { AdminProgressRing } from '@chaos_team/blbui-react'\n\n<AdminProgressRing value={72} label="Deployment" />`,
+            vue: `<AdminProgressRing :value="72" label="Deployment" />`,
+            svelte: `<AdminProgressRing value={72} label="Deployment" />`,
+        },
+    },
+    {
+        id: "truncated-text",
+        tag: "aui-truncated-text",
+        name: "Truncated Text",
+        category: "feedback",
+        description:
+            "Line-clamped text that keeps the complete value available to users and assistive technology.",
+        status: "stable",
+        props: ["text", "lines", "label"],
+        events: [],
+        previewHtml: `<div style="width:100%;max-width:260px;"><aui-truncated-text text="cluster-us-east-production-gateway-with-a-long-resource-name" lines="2"></aui-truncated-text></div>`,
+        usage: {
+            wc: `<aui-truncated-text text="A long resource name" lines="2"></aui-truncated-text>`,
+            react: `import { AdminTruncatedText } from '@chaos_team/blbui-react'\n\n<AdminTruncatedText text={resource.name} lines={2} />`,
+            vue: `<AdminTruncatedText :text="resource.name" :lines="2" />`,
+            svelte: `<AdminTruncatedText text={resource.name} lines={2} />`,
+        },
+    },
+    {
+        id: "loading-overlay",
+        tag: "aui-loading-overlay",
+        name: "Loading Overlay",
+        category: "feedback",
+        description:
+            "Blocking loading state that preserves the panel layout and exposes aria-busy.",
+        status: "stable",
+        props: ["open", "label", "fullscreen"],
+        events: [],
+        previewHtml: `<div style="width:100%;min-height:120px;"><aui-loading-overlay open label="SYNCING CONFIGURATION"><div style="padding:28px;color:var(--aui-text-secondary);font:11px var(--aui-font-mono);">Configuration panel content</div></aui-loading-overlay></div>`,
+        usage: {
+            wc: `<aui-loading-overlay open label="Syncing configuration">\n  <section>Panel content</section>\n</aui-loading-overlay>`,
+            react: `import { AdminLoadingOverlay } from '@chaos_team/blbui-react'\n\n<AdminLoadingOverlay open label="Syncing configuration"><Panel /></AdminLoadingOverlay>`,
+            vue: `<AdminLoadingOverlay v-model:open="loading" label="Syncing configuration"><Panel /></AdminLoadingOverlay>`,
+            svelte: `<AdminLoadingOverlay open label="Syncing configuration"><Panel /></AdminLoadingOverlay>`,
+        },
+    },
+    {
+        id: "column-settings",
+        tag: "aui-column-settings",
+        name: "Column Settings",
+        category: "data",
+        description:
+            "Column visibility menu designed to pair with DataGrid and dense operational tables.",
+        status: "stable",
+        props: ["columns", "visible-keys", "open", "title", "close-label"],
+        events: ["aui-column-settings-change", "aui-open-change"],
+        initKey: "column-settings",
+        previewHtml: `<div style="width:100%;display:flex;justify-content:flex-end;"><aui-column-settings id="preview-column-settings"></aui-column-settings></div>`,
+        usage: {
+            wc: `<aui-column-settings id="columns"></aui-column-settings>\n<script>columns.columns = schema</script>`,
+            react: `import { AdminColumnSettings } from '@chaos_team/blbui-react'\n\n<AdminColumnSettings columns={columns} visibleKeys={visibleKeys} onChange={setVisibleKeys} />`,
+            vue: `<AdminColumnSettings :columns="columns" v-model:visible-keys="visibleKeys" />`,
+            svelte: `import { AdminColumnSettings } from '@chaos_team/blbui-svelte'\n\n<AdminColumnSettings {columns} bind:visibleKeys />`,
+        },
+    },
+
     // BUSINESS (9)
     // -------------------------------------------------------------
     {
@@ -1857,14 +2007,24 @@ export function initComponentDemo(root: HTMLElement): void {
             value: "china",
             label: "China",
             children: [
-                { value: "east", label: "East China", children: [{ value: "sh", label: "Shanghai" }] },
-                { value: "north", label: "North China", children: [{ value: "bj", label: "Beijing" }] },
+                {
+                    value: "east",
+                    label: "East China",
+                    children: [{ value: "sh", label: "Shanghai" }],
+                },
+                {
+                    value: "north",
+                    label: "North China",
+                    children: [{ value: "bj", label: "Beijing" }],
+                },
             ],
         },
         {
             value: "us",
             label: "United States",
-            children: [{ value: "east", label: "US East", children: [{ value: "va", label: "Virginia" }] }],
+            children: [
+                { value: "east", label: "US East", children: [{ value: "va", label: "Virginia" }] },
+            ],
         },
     ]);
     setProp("#preview-transfer", "options", [
@@ -1959,6 +2119,7 @@ export function initComponentDemo(root: HTMLElement): void {
         { label: "Channels", href: "#" },
         { label: "us-east-cluster" },
     ]);
+    setProp("#preview-breadcrumb", "maxItems", 3);
     setProp("#preview-nav", "items", [
         { id: "dash", label: "Dashboard", active: true },
         { id: "nodes", label: "Clusters & Nodes" },
@@ -1981,7 +2142,7 @@ export function initComponentDemo(root: HTMLElement): void {
     setProp("#preview-descriptions", "items", [
         { label: "REGION", value: "us-east-1", description: "Primary" },
         { label: "STATUS", value: "ONLINE" },
-        { label: "VERSION", value: "v0.0.4" },
+        { label: "VERSION", value: "v0.0.5" },
         { label: "OWNER", value: "Platform Ops" },
     ]);
     setProp("#preview-accordion", "items", [
@@ -2060,6 +2221,27 @@ export function initComponentDemo(root: HTMLElement): void {
         root.querySelector("#preview-drawer")?.setAttribute("open", "");
     });
 
+    // Composed forms, async states and data-grid controls
+    setProp("#preview-schema-form", "fields", [
+        {
+            name: "name",
+            label: "CHANNEL NAME",
+            type: "text",
+            required: true,
+            placeholder: "production",
+        },
+        {
+            name: "region",
+            label: "REGION",
+            type: "select",
+            options: [
+                { value: "us-east", label: "US EAST" },
+                { value: "eu-west", label: "EU WEST" },
+            ],
+        },
+        { name: "timeout", label: "TIMEOUT (MS)", type: "number", value: 5000 },
+    ]);
+
     // Data & Tables
     setProp("#preview-data-list", "items", [
         { label: "REGION", value: "us-east-1" },
@@ -2067,13 +2249,31 @@ export function initComponentDemo(root: HTMLElement): void {
         { label: "HEALTH", value: "OPTIMAL" },
     ]);
     setProp("#preview-data-grid", "columns", [
-        { key: "id", title: "TARGET" },
-        { key: "status", title: "HEALTH" },
-        { key: "p99", title: "P99" },
+        { key: "id", title: "TARGET", sortable: true, filterable: true },
+        {
+            key: "status",
+            title: "HEALTH",
+            filterable: true,
+            filterOptions: [
+                { value: "ONLINE", label: "ONLINE" },
+                { value: "DEGRADED", label: "DEGRADED" },
+            ],
+        },
+        { key: "p99", title: "P99", sortable: true, align: "right" },
     ]);
     setProp("#preview-data-grid", "rows", [
         { id: "openai-gw", status: "ONLINE", p99: "184ms" },
         { id: "anthropic-gw", status: "ONLINE", p99: "210ms" },
+        { id: "edge-gw", status: "DEGRADED", p99: "480ms" },
+    ]);
+    setProp("#preview-data-grid", "selectable", true);
+    setProp("#preview-data-grid", "batchActions", [
+        { id: "archive", label: "ARCHIVE", danger: true },
+    ]);
+    setProp("#preview-column-settings", "columns", [
+        { key: "id", label: "TARGET" },
+        { key: "status", label: "HEALTH" },
+        { key: "p99", label: "P99" },
     ]);
     setProp("#preview-json-viewer", "value", {
         clusterId: "us-east-01",

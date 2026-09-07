@@ -18,6 +18,8 @@ import type {
     AdminAlertVariant,
     AdminCascaderOption,
     AdminDataGridColumn,
+    AdminDataGridBatchAction,
+    AdminDataGridSortDirection,
     AdminDescriptionItem,
     AdminKanbanColumn,
     AdminListItem,
@@ -30,6 +32,9 @@ import type {
     AdminTransferOption,
     AdminUploadItem,
     AdminTreeNode,
+    AdminFormLayout,
+    AdminSchemaFormField,
+    AdminSchemaFormValue,
 } from "@chaos_team/blbui-core";
 
 import "@chaos_team/blbui-core/styles.css";
@@ -713,13 +718,14 @@ export interface AdminDrawerProps extends ElementProps {
     title?: string;
     side?: "left" | "right";
     width?: string;
+    mobileMode?: "overlay" | "full";
     onOpenChange?: (open: boolean) => void;
 }
 export function AdminDrawer(props: AdminDrawerProps) {
-    const { open, title, side, width, onOpenChange, ...rest } = props;
+    const { open, title, side, width, mobileMode, onOpenChange, ...rest } = props;
     const { setRef } = useBinding(
         undefined,
-        { open, title, side, width },
+        { open, title, side, width, mobileMode },
         {
             "aui-close": onOpenChange
                 ? (detail: { open: boolean }) => onOpenChange(detail.open)
@@ -729,13 +735,227 @@ export function AdminDrawer(props: AdminDrawerProps) {
     return createElement(
         "aui-drawer",
         {
-            ...elementProps(props, ["open", "title", "side", "width"], ["onOpenChange"]),
+            ...elementProps(
+                props,
+                ["open", "title", "side", "width", "mobileMode"],
+                ["onOpenChange"],
+            ),
             ...rest,
             ref: setRef,
         },
         props.children,
     );
 }
+
+export interface AdminFormProps extends ElementProps {
+    layout?: AdminFormLayout;
+    loading?: boolean;
+    submitLabel?: string;
+    resetLabel?: string;
+    showActions?: boolean;
+    noValidate?: boolean;
+    onSubmit?: (detail: { valid: boolean }) => void;
+    onInvalid?: () => void;
+    onReset?: () => void;
+    actions?: ReactNode;
+}
+export function AdminForm(props: AdminFormProps) {
+    const {
+        children,
+        layout,
+        loading,
+        submitLabel,
+        resetLabel,
+        showActions,
+        noValidate,
+        onSubmit,
+        onInvalid,
+        onReset,
+        actions,
+        ...rest
+    } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { layout, loading, submitLabel, resetLabel, showActions, noValidate },
+        {
+            "aui-submit": onSubmit,
+            "aui-invalid": onInvalid,
+            "aui-reset": onReset,
+        },
+    );
+    return createElement(
+        "aui-form",
+        {
+            ...elementProps(
+                props,
+                [
+                    "layout",
+                    "loading",
+                    "submitLabel",
+                    "resetLabel",
+                    "showActions",
+                    "noValidate",
+                    "actions",
+                ],
+                ["onSubmit", "onInvalid", "onReset"],
+            ),
+            ...rest,
+            ref: setRef,
+        },
+        [children, renderSlot("actions", actions)],
+    );
+}
+
+export interface AdminFormItemProps extends ElementProps {
+    label?: string;
+    description?: string;
+    error?: string;
+    required?: boolean;
+    name?: string;
+}
+export function AdminFormItem(props: AdminFormItemProps) {
+    const { children, label, description, error, required, name, ...rest } = props;
+    const { setRef } = useBinding(undefined, { label, description, error, required, name });
+    return createElement(
+        "aui-form-item",
+        {
+            ...elementProps(props, ["label", "description", "error", "required", "name"]),
+            ...rest,
+            ref: setRef,
+        },
+        children,
+    );
+}
+
+export interface AdminSchemaFormProps extends ElementProps {
+    fields?: AdminSchemaFormField[];
+    values?: Record<string, AdminSchemaFormValue>;
+    layout?: AdminFormLayout;
+    loading?: boolean;
+    submitLabel?: string;
+    resetLabel?: string;
+    onChange?: (detail: {
+        name: string;
+        value: AdminSchemaFormValue;
+        values: Record<string, AdminSchemaFormValue>;
+    }) => void;
+    onSubmit?: (detail: { valid: boolean; values: Record<string, AdminSchemaFormValue> }) => void;
+    onReset?: (values: Record<string, AdminSchemaFormValue>) => void;
+}
+export function AdminSchemaForm(props: AdminSchemaFormProps) {
+    const {
+        fields,
+        values,
+        layout,
+        loading,
+        submitLabel,
+        resetLabel,
+        onChange,
+        onSubmit,
+        onReset,
+        ...rest
+    } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { fields, values, layout, loading, submitLabel, resetLabel },
+        {
+            "aui-change": onChange,
+            "aui-submit": onSubmit,
+            "aui-reset": onReset,
+        },
+    );
+    return createElement("aui-schema-form", {
+        ...elementProps(
+            props,
+            ["fields", "values", "layout", "loading", "submitLabel", "resetLabel"],
+            ["onChange", "onSubmit", "onReset"],
+        ),
+        ...rest,
+        ref: setRef,
+    });
+}
+
+export interface AdminTruncatedTextProps extends ElementProps {
+    text?: string;
+    lines?: number;
+    label?: string;
+}
+export function AdminTruncatedText(props: AdminTruncatedTextProps) {
+    const { children, text, lines, label, ...rest } = props;
+    const { setRef } = useBinding(undefined, { text, lines, label });
+    return createElement(
+        "aui-truncated-text",
+        { ...elementProps(props, ["text", "lines", "label"]), ...rest, ref: setRef },
+        children,
+    );
+}
+
+export interface AdminLoadingOverlayProps extends ElementProps {
+    open?: boolean;
+    label?: string;
+    fullscreen?: boolean;
+}
+export function AdminLoadingOverlay(props: AdminLoadingOverlayProps) {
+    const { children, open, label, fullscreen, ...rest } = props;
+    const { setRef } = useBinding(undefined, { open, label, fullscreen });
+    return createElement(
+        "aui-loading-overlay",
+        { ...elementProps(props, ["open", "label", "fullscreen"]), ...rest, ref: setRef },
+        children,
+    );
+}
+
+export interface AdminProgressRingProps extends ElementProps {
+    value: number;
+    max?: number;
+    size?: number;
+    strokeWidth?: number;
+    label?: string;
+    showValue?: boolean;
+}
+export function AdminProgressRing(props: AdminProgressRingProps) {
+    const { value, max, size, strokeWidth, label, showValue, ...rest } = props;
+    const { setRef } = useBinding(undefined, { value, max, size, strokeWidth, label, showValue });
+    return createElement("aui-progress-ring", {
+        ...elementProps(props, ["value", "max", "size", "strokeWidth", "label", "showValue"]),
+        ...rest,
+        ref: setRef,
+    });
+}
+
+export interface AdminColumnSettingsProps extends ElementProps {
+    columns?: AdminDataGridColumn[];
+    visibleKeys?: string[];
+    open?: boolean;
+    title?: string;
+    closeLabel?: string;
+    onChange?: (detail: { keys: string[]; columns: AdminDataGridColumn[] }) => void;
+    onOpenChange?: (open: boolean) => void;
+}
+export function AdminColumnSettings(props: AdminColumnSettingsProps) {
+    const { columns, visibleKeys, open, title, closeLabel, onChange, onOpenChange, ...rest } =
+        props;
+    const { setRef } = useBinding(
+        undefined,
+        { columns, visibleKeys, open, title, closeLabel },
+        {
+            "aui-column-settings-change": onChange,
+            "aui-open-change": onOpenChange
+                ? (detail: { open: boolean }) => onOpenChange(detail.open)
+                : undefined,
+        },
+    );
+    return createElement("aui-column-settings", {
+        ...elementProps(
+            props,
+            ["columns", "visibleKeys", "open", "title", "closeLabel"],
+            ["onChange", "onOpenChange"],
+        ),
+        ...rest,
+        ref: setRef,
+    });
+}
+
 export interface AdminToastProps extends ElementProps {
     open?: boolean;
     title?: string;
@@ -893,15 +1113,145 @@ export function AdminLogViewer(props: AdminLogViewerProps) {
 }
 export interface AdminDataGridProps extends ElementProps {
     columns?: AdminDataGridColumn[];
-    rows?: Array<Record<string, unknown>>;
+    rows?: Array<Record<string, unknown> & { id?: string | number }>;
     loading?: boolean;
+    error?: boolean;
+    selectable?: boolean;
+    mobileCards?: boolean;
+    virtual?: boolean;
+    serverSide?: boolean;
     emptyLabel?: string;
+    loadingLabel?: string;
+    errorLabel?: string;
+    sortKey?: string;
+    sortDirection?: AdminDataGridSortDirection;
+    selectedKeys?: Array<string | number>;
+    filters?: Record<string, string>;
+    batchActions?: AdminDataGridBatchAction[];
+    page?: number;
+    pageSize?: number;
+    total?: number;
+    pageSizeOptions?: number[];
+    rowHeight?: number;
+    virtualOverscan?: number;
+    rowKey?: string;
+    onSortChange?: (detail: { key: string; direction: AdminDataGridSortDirection }) => void;
+    onFilterChange?: (detail: {
+        filters: Record<string, string>;
+        key: string;
+        value: string;
+    }) => void;
+    onSelectionChange?: (detail: { keys: Array<string | number> }) => void;
+    onBatchAction?: (detail: {
+        id: string;
+        keys: Array<string | number>;
+        rows: Array<Record<string, unknown>>;
+    }) => void;
+    onPageChange?: (detail: { page: number; pageSize: number; total: number }) => void;
 }
 export function AdminDataGrid(props: AdminDataGridProps) {
-    const { columns, rows, loading, emptyLabel, ...rest } = props;
-    const { setRef } = useBinding(undefined, { columns, rows, loading, emptyLabel });
+    const {
+        columns,
+        rows,
+        loading,
+        error,
+        selectable,
+        mobileCards,
+        virtual,
+        serverSide,
+        emptyLabel,
+        loadingLabel,
+        errorLabel,
+        sortKey,
+        sortDirection,
+        selectedKeys,
+        filters,
+        batchActions,
+        page,
+        pageSize,
+        total,
+        pageSizeOptions,
+        rowHeight,
+        virtualOverscan,
+        rowKey,
+        onSortChange,
+        onFilterChange,
+        onSelectionChange,
+        onBatchAction,
+        onPageChange,
+        ...rest
+    } = props;
+    const { setRef } = useBinding(
+        undefined,
+        {
+            columns,
+            rows,
+            loading,
+            error,
+            selectable,
+            mobileCards,
+            virtual,
+            serverSide,
+            emptyLabel,
+            loadingLabel,
+            errorLabel,
+            sortKey,
+            sortDirection,
+            selectedKeys,
+            filters,
+            batchActions,
+            page,
+            pageSize,
+            total,
+            pageSizeOptions,
+            rowHeight,
+            virtualOverscan,
+            rowKey,
+        },
+        {
+            "aui-sort-change": onSortChange,
+            "aui-filter-change": onFilterChange,
+            "aui-selection-change": onSelectionChange,
+            "aui-batch-action": onBatchAction,
+            "aui-page-change": onPageChange,
+        },
+    );
     return createElement("aui-data-grid", {
-        ...elementProps(props, ["columns", "rows", "loading", "emptyLabel"]),
+        ...elementProps(
+            props,
+            [
+                "columns",
+                "rows",
+                "loading",
+                "error",
+                "selectable",
+                "mobileCards",
+                "virtual",
+                "serverSide",
+                "emptyLabel",
+                "loadingLabel",
+                "errorLabel",
+                "sortKey",
+                "sortDirection",
+                "selectedKeys",
+                "filters",
+                "batchActions",
+                "page",
+                "pageSize",
+                "total",
+                "pageSizeOptions",
+                "rowHeight",
+                "virtualOverscan",
+                "rowKey",
+            ],
+            [
+                "onSortChange",
+                "onFilterChange",
+                "onSelectionChange",
+                "onBatchAction",
+                "onPageChange",
+            ],
+        ),
         ...rest,
         ref: setRef,
     });
@@ -1526,15 +1876,27 @@ export interface AdminNotificationCenterProps extends ElementProps {
     notifications?: AdminNotificationItem[];
     position?: "bottom-right" | "bottom-left" | "top-right" | "top-left";
     max?: number;
+    persistKey?: string;
+    clearLabel?: string;
     onClose?: (id: string) => void;
     onAction?: (id: string, item: AdminNotificationItem) => void;
     onChange?: (notifications: AdminNotificationItem[]) => void;
 }
 export function AdminNotificationCenter(props: AdminNotificationCenterProps) {
-    const { notifications, position, max, onClose, onAction, onChange, ...rest } = props;
+    const {
+        notifications,
+        position,
+        max,
+        persistKey,
+        clearLabel,
+        onClose,
+        onAction,
+        onChange,
+        ...rest
+    } = props;
     const { setRef } = useBinding(
         undefined,
-        { notifications, position, max },
+        { notifications, position, max, persistKey, clearLabel },
         {
             "aui-notification-close": onClose
                 ? (detail: { id: string }) => onClose(detail.id)
@@ -1552,7 +1914,7 @@ export function AdminNotificationCenter(props: AdminNotificationCenterProps) {
     return createElement("aui-notification-center", {
         ...elementProps(
             props,
-            ["notifications", "position", "max"],
+            ["notifications", "position", "max", "persistKey", "clearLabel"],
             ["onClose", "onAction", "onChange"],
         ),
         ...rest,

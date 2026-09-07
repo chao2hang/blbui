@@ -288,7 +288,7 @@ export class AdminNumberInputElement extends AdminElement {
         }
         .number:focus-within {
             border-color: var(--aui-focus);
-            box-shadow: 0 0 0 1px var(--aui-focus);
+            box-shadow: var(--aui-focus-ring);
         }
         input {
             min-width: 0;
@@ -464,7 +464,7 @@ export class AdminColorTagElement extends AdminElement {
             background: var(--aui-tag-color, var(--aui-text-primary));
         }
     `;
-    color = "#ffffff";
+    color = "var(--aui-text-primary)";
     label = "";
     render() {
         return html`<span class="tag" style=${`--aui-tag-color:${this.color}`}>

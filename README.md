@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-当前版本为 `0.0.4`，已经提供 92 个已注册的无框架 Web Components，以及 React/Vue/Svelte 适配入口；连同 9 个 Business 组件，文档站共覆盖 101 个组件：
+当前版本为 `0.0.5`，已经提供 99 个已注册的无框架 Web Components，以及 React/Vue/Svelte 适配入口；连同 9 个 Business 组件，文档站共覆盖 108 个组件：
 
 | 包                         | 用途                                              |
 | -------------------------- | ------------------------------------------------- |
@@ -15,21 +15,21 @@
 
 ## 组件清单
 
-Core（92 个 Web Components，`@chaos_team/blbui-core`）：
+Core（99 个 Web Components，`@chaos_team/blbui-core`）：
 
-- **基础原语**（9）：`Button`、`IconButton`、`Badge`、`StatusTag`、`Avatar`、`Progress`、`Rating`、`Kbd`、`ColorTag`
-- **表单控件**（23）：`Input`、`Textarea`、`Select`、`Combobox`、`MultiSelect`、`NumberInput`、`PasswordInput`、`Checkbox`、`Switch`、`RadioGroup`、`Slider`、`TagInput`、`InputGroup`、`Field`、`FileUpload`、`Search`、`ColorPicker`、`DatePicker`、`TimePicker`、`PinInput`、`Cascader`、`Transfer`、`UploadList`
+- **基础原语**（10）：`Button`、`IconButton`、`Badge`、`StatusTag`、`Avatar`、`Progress`、`ProgressRing`、`Rating`、`Kbd`、`ColorTag`
+- **表单控件**（26）：`Input`、`Textarea`、`Select`、`Combobox`、`MultiSelect`、`NumberInput`、`PasswordInput`、`Checkbox`、`Switch`、`RadioGroup`、`Slider`、`TagInput`、`InputGroup`、`Field`、`FileUpload`、`Search`、`ColorPicker`、`DatePicker`、`TimePicker`、`PinInput`、`Cascader`、`Transfer`、`UploadList`、`Form`、`FormItem`、`SchemaForm`
 - **导航**（14）：`Tabs`、`Breadcrumb`、`Nav`、`Pagination`、`Accordion`、`Collapsible`、`Stepper`、`List`、`Tree`、`Timeline`、`Toggle`、`ToggleGroup`、`Segmented`、`Menu`
-- **反馈与状态**（10）：`Alert`、`Result`、`EmptyState`、`ErrorState`、`Spinner`、`Skeleton`、`Toast`、`NotificationCenter`、`CopyableText`、`Separator`
+- **反馈与状态**（12）：`Alert`、`Result`、`EmptyState`、`ErrorState`、`Spinner`、`Skeleton`、`Toast`、`NotificationCenter`、`CopyableText`、`Separator`、`TruncatedText`、`LoadingOverlay`
 - **叠加层与弹窗**（9）：`Tooltip`、`Popover`、`Dropdown`、`Command`、`ContextMenu`、`HoverCard`、`Dialog`、`ConfirmDialog`、`Drawer`
-- **数据展示**（13）：`Table`、`DataList`、`DataGrid`、`Calendar`、`CalendarGrid`、`DateRange`、`ChartContainer`、`JSONViewer`、`LogViewer`、`Kanban`、`CodeBlock`、`Descriptions`、`FilePreview`
+- **数据展示**（14）：`Table`、`DataList`、`DataGrid`、`Calendar`、`CalendarGrid`、`DateRange`、`ChartContainer`、`JSONViewer`、`LogViewer`、`Kanban`、`CodeBlock`、`Descriptions`、`FilePreview`、`ColumnSettings`
 - **布局与表面**（14）：`Card`、`Container`、`Stack`、`Grid`、`Splitter`、`Shell`、`Page`、`PageHeader`、`FilterBar`、`Stat`、`AspectRatio`、`ScrollArea`、`Sidebar`、`Navbar`
 
 Business（9 个，`@chaos_team/blbui-business`）：
 
 - **业务套件**（9）：`CrudPage`、`CrudToolbar`、`AdvancedTable`、`FormBuilder`、`ApprovalTimeline`、`MetricCard`、`MetricGrid`、`BarChart`、`Sparkline`
 
-React / Vue 提供全部 92 个 Core 组件的 1:1 绑定（`Admin*` 命名）；Svelte 提供核心注册入口与 14 个常用组件封装。
+React / Vue 提供全部 99 个 Core 组件的 1:1 绑定（`Admin*` 命名）；Svelte 提供核心注册入口、22 个常用组件封装，共 24 个公开导出。
 
 ## 主题与 CSS 工具层
 
@@ -66,32 +66,32 @@ registerAdminElements();
 
 ```html
 <div class="aui-root">
-  <aui-page title="Channels" description="Manage upstream channels.">
-    <span slot="actions">
-      <aui-button variant="primary">Deploy New</aui-button>
-    </span>
+    <aui-page title="Channels" description="Manage upstream channels.">
+        <span slot="actions">
+            <aui-button variant="primary">Deploy New</aui-button>
+        </span>
 
-    <aui-filter-bar>
-      <aui-input placeholder="Search channels"></aui-input>
-    </aui-filter-bar>
+        <aui-filter-bar>
+            <aui-input placeholder="Search channels"></aui-input>
+        </aui-filter-bar>
 
-    <aui-table>
-      <table>
-        <thead>
-          <tr>
-            <th>NAME</th>
-            <th>STATUS</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>OPENAI</td>
-            <td><aui-status-tag status="success">ONLINE</aui-status-tag></td>
-          </tr>
-        </tbody>
-      </table>
-    </aui-table>
-  </aui-page>
+        <aui-table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>NAME</th>
+                        <th>STATUS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>OPENAI</td>
+                        <td><aui-status-tag status="success">ONLINE</aui-status-tag></td>
+                    </tr>
+                </tbody>
+            </table>
+        </aui-table>
+    </aui-page>
 </div>
 ```
 
@@ -101,13 +101,13 @@ registerAdminElements();
 import { AdminButton, AdminInput, AdminPage, AdminStatusTag } from "@chaos_team/blbui-react";
 
 export function ChannelsPage() {
-  return (
-    <AdminPage title="Channels" description="Manage upstream channels.">
-      <AdminButton variant="primary">Deploy New</AdminButton>
-      <AdminInput placeholder="Search channels" onValueChange={setSearch} />
-      <AdminStatusTag status="success">ONLINE</AdminStatusTag>
-    </AdminPage>
-  );
+    return (
+        <AdminPage title="Channels" description="Manage upstream channels.">
+            <AdminButton variant="primary">Deploy New</AdminButton>
+            <AdminInput placeholder="Search channels" onValueChange={setSearch} />
+            <AdminStatusTag status="success">ONLINE</AdminStatusTag>
+        </AdminPage>
+    );
 }
 ```
 
@@ -122,10 +122,10 @@ const search = ref("");
 </script>
 
 <template>
-  <AdminPage title="Channels" description="Manage upstream channels.">
-    <AdminButton variant="primary">Deploy New</AdminButton>
-    <AdminInput v-model:value="search" placeholder="Search channels" />
-  </AdminPage>
+    <AdminPage title="Channels" description="Manage upstream channels.">
+        <AdminButton variant="primary">Deploy New</AdminButton>
+        <AdminInput v-model:value="search" placeholder="Search channels" />
+    </AdminPage>
 </template>
 ```
 
@@ -154,48 +154,48 @@ Svelte 直接使用 Custom Elements；在应用入口调用 `registerAdminElemen
 
 Core 事件使用 `aui-*` 前缀并通过 `CustomEvent.detail` 传递结构化数据：
 
-| 事件                        | detail                          |
-| --------------------------- | ------------------------------- |
-| `aui-input`                 | `{ value: string }`             |
-| `aui-change`                | `{ value: string }` / `{ values: string[] }` |
-| `aui-number-change`         | `{ value: number }`             |
-| `aui-checked-change`        | `{ checked: boolean }`          |
-| `aui-radio-change`          | `{ value: string }`             |
-| `aui-slider-change`         | `{ value: number }`             |
-| `aui-range-change`          | `{ start: string; end: string }` |
-| `aui-rating-change`         | `{ value: number }`             |
-| `aui-segment-change`        | `{ value: string }`             |
-| `aui-search`                | `{ value: string }`             |
-| `aui-tags-change`           | `{ values: string[] }`          |
-| `aui-files-change`          | `{ files: File[] }`             |
-| `aui-color-change`          | `{ value: string }`             |
-| `aui-cascader-change`       | `{ value: string[]; options: object[] }` |
-| `aui-transfer-change`       | `{ values: string[]; added: string[]; removed: string[] }` |
-| `aui-upload-change`         | `{ files: object[] }`          |
-| `aui-upload-remove`         | `{ id: string; file: object }` |
-| `aui-upload-retry`          | `{ id: string; file: object }` |
-| `aui-upload-preview`        | `{ id: string; file: object }` |
-| `aui-file-preview-close`    | `{ file: object | null }`      |
-| `aui-file-download`         | `{ file: object }`             |
-| `aui-copy`                  | `{ text: string }`              |
-| `aui-page-change`           | `{ page: number }`              |
-| `aui-tab-change`            | `{ id: string }`                |
-| `aui-nav-change`            | `{ id: string }`                |
-| `aui-menu-select`           | `{ id: string }`                |
-| `aui-notification-close`    | `{ id: string }`                |
-| `aui-notification-action`   | `{ id: string; item: object }`  |
-| `aui-notifications-change`   | `{ notifications: object[] }`  |
-| `aui-command`               | `{ id: string; item }`          |
-| `aui-list-change`           | `{ id: string }`                |
-| `aui-tree-change`           | `{ id: string }`                |
-| `aui-kanban-change`         | `{ itemId: string; columnId: string }` |
-| `aui-toggle-change`         | `{ pressed: boolean }`          |
-| `aui-toggle-group-change`   | `{ value: string; values?: string[] }` |
-| `aui-date-change`           | `{ value: string }`             |
-| `aui-splitter-change`       | `{ percent: number }`           |
-| `aui-open-change`           | `{ open: boolean }`             |
-| `aui-close` / `aui-cancel` / `aui-confirm` | `{ open: boolean }`   |
-| `aui-press`                 | `{ label: string }`             |
+| 事件                                       | detail                                                     |
+| ------------------------------------------ | ---------------------------------------------------------- |
+| `aui-input`                                | `{ value: string }`                                        |
+| `aui-change`                               | `{ value: string }` / `{ values: string[] }`               |
+| `aui-number-change`                        | `{ value: number }`                                        |
+| `aui-checked-change`                       | `{ checked: boolean }`                                     |
+| `aui-radio-change`                         | `{ value: string }`                                        |
+| `aui-slider-change`                        | `{ value: number }`                                        |
+| `aui-range-change`                         | `{ start: string; end: string }`                           |
+| `aui-rating-change`                        | `{ value: number }`                                        |
+| `aui-segment-change`                       | `{ value: string }`                                        |
+| `aui-search`                               | `{ value: string }`                                        |
+| `aui-tags-change`                          | `{ values: string[] }`                                     |
+| `aui-files-change`                         | `{ files: File[] }`                                        |
+| `aui-color-change`                         | `{ value: string }`                                        |
+| `aui-cascader-change`                      | `{ value: string[]; options: object[] }`                   |
+| `aui-transfer-change`                      | `{ values: string[]; added: string[]; removed: string[] }` |
+| `aui-upload-change`                        | `{ files: object[] }`                                      |
+| `aui-upload-remove`                        | `{ id: string; file: object }`                             |
+| `aui-upload-retry`                         | `{ id: string; file: object }`                             |
+| `aui-upload-preview`                       | `{ id: string; file: object }`                             |
+| `aui-file-preview-close`                   | `{ file: object                                            | null }` |
+| `aui-file-download`                        | `{ file: object }`                                         |
+| `aui-copy`                                 | `{ text: string }`                                         |
+| `aui-page-change`                          | `{ page: number }`                                         |
+| `aui-tab-change`                           | `{ id: string }`                                           |
+| `aui-nav-change`                           | `{ id: string }`                                           |
+| `aui-menu-select`                          | `{ id: string }`                                           |
+| `aui-notification-close`                   | `{ id: string }`                                           |
+| `aui-notification-action`                  | `{ id: string; item: object }`                             |
+| `aui-notifications-change`                 | `{ notifications: object[] }`                              |
+| `aui-command`                              | `{ id: string; item }`                                     |
+| `aui-list-change`                          | `{ id: string }`                                           |
+| `aui-tree-change`                          | `{ id: string }`                                           |
+| `aui-kanban-change`                        | `{ itemId: string; columnId: string }`                     |
+| `aui-toggle-change`                        | `{ pressed: boolean }`                                     |
+| `aui-toggle-group-change`                  | `{ value: string; values?: string[] }`                     |
+| `aui-date-change`                          | `{ value: string }`                                        |
+| `aui-splitter-change`                      | `{ percent: number }`                                      |
+| `aui-open-change`                          | `{ open: boolean }`                                        |
+| `aui-close` / `aui-cancel` / `aui-confirm` | `{ open: boolean }`                                        |
+| `aui-press`                                | `{ label: string }`                                        |
 
 绑定层映射规则：
 

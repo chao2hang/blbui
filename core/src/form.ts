@@ -45,7 +45,7 @@ export class AdminInputElement extends AdminElement {
         input:focus {
             outline: none;
             border-color: var(--aui-focus);
-            box-shadow: 0 0 0 1px var(--aui-focus);
+            box-shadow: var(--aui-focus-ring);
         }
         input:disabled {
             cursor: not-allowed;
@@ -128,7 +128,7 @@ export class AdminSelectElement extends AdminElement {
         select:focus {
             outline: none;
             border-color: var(--aui-focus);
-            box-shadow: 0 0 0 1px var(--aui-focus);
+            box-shadow: var(--aui-focus-ring);
         }
         select:disabled {
             cursor: not-allowed;
@@ -211,7 +211,7 @@ export class AdminTextareaElement extends AdminElement {
         textarea:focus {
             outline: none;
             border-color: var(--aui-focus);
-            box-shadow: 0 0 0 1px var(--aui-focus);
+            box-shadow: var(--aui-focus-ring);
         }
         textarea:disabled {
             cursor: not-allowed;

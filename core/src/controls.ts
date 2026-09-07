@@ -224,7 +224,7 @@ export class AdminComboboxElement extends AdminElement {
         }
         .control:focus-within {
             border-color: var(--aui-focus);
-            box-shadow: 0 0 0 1px var(--aui-focus);
+            box-shadow: var(--aui-focus-ring);
         }
         input {
             min-width: 0;
@@ -295,7 +295,7 @@ export class AdminComboboxElement extends AdminElement {
         }
     `;
     options: AdminOption[] = [];
-    value = "";
+    value = "#ffffff";
     placeholder = "Search or select";
     disabled = false;
     open = false;
@@ -452,7 +452,7 @@ export class AdminMultiSelectElement extends AdminElement {
         }
         .control:focus-within {
             border-color: var(--aui-focus);
-            box-shadow: 0 0 0 1px var(--aui-focus);
+            box-shadow: var(--aui-focus-ring);
         }
         .chips {
             min-width: 0;
@@ -894,7 +894,7 @@ export class AdminColorPickerElement extends AdminElement {
             font: 11px/1 var(--aui-font-mono);
         }
     `;
-    value = "#ffffff";
+    value = "";
     label = "Color";
     disabled = false;
     private change(event: Event): void {
@@ -1006,7 +1006,7 @@ export class AdminTagInputElement extends AdminElement {
         }
         .input:focus-within {
             border-color: var(--aui-focus);
-            box-shadow: 0 0 0 1px var(--aui-focus);
+            box-shadow: var(--aui-focus-ring);
         }
         .tag {
             display: inline-flex;

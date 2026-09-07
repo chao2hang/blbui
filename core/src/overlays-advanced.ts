@@ -339,6 +339,7 @@ export class AdminDrawerElement extends AdminElement {
         title: { type: String },
         side: { type: String, reflect: true },
         width: { type: String },
+        mobileMode: { type: String, attribute: "mobile-mode", reflect: true },
     };
     static styles = css`
         :host {
@@ -361,6 +362,9 @@ export class AdminDrawerElement extends AdminElement {
             flex-direction: column;
             border-left: 1px solid var(--aui-border);
             background: var(--aui-surface);
+        }
+        :host([mobile-mode="full"]) .panel {
+            width: min(var(--aui-drawer-width, 420px), 100vw);
         }
         :host([side="left"]) .panel {
             right: auto;
@@ -404,11 +408,24 @@ export class AdminDrawerElement extends AdminElement {
             border-top: 1px solid var(--aui-border);
             background: var(--aui-header);
         }
+        @media (max-width: 640px) {
+            :host([mobile-mode="full"]) .panel {
+                right: 0;
+                left: 0;
+                width: 100vw;
+                border-right: 0;
+                border-left: 0;
+            }
+            :host([mobile-mode="full"]) .body {
+                padding: 14px;
+            }
+        }
     `;
     open = false;
     title = "";
     side = "right";
     width = "420px";
+    mobileMode: "overlay" | "full" = "overlay";
     private lastFocused: HTMLElement | null = null;
     private readonly onDocumentKeydown = (event: KeyboardEvent) => {
         if (event.key === "Escape") this.close();

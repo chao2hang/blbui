@@ -31,7 +31,7 @@
 
 - 依赖顺序固定为 core → business → react → vue → business-react；`bun run build:packages` 先对 TS 源做 `useDefineForClassFields: false` 预编译（Lit 响应式属性依赖原型访问器，ES2022 class fields 的 `[[Define]]` 语义会在 dist 里覆盖它们），再用 Bun 打包。
 - Svelte 包以源码 `.svelte` 发布，`dist/index.js` 与 `dist/components.js` 由构建从 `src/components.ts` barrel 再生成，`check:svelte` 校验 dist/src 导出同步。
-- `catalog:check` 校验目录完整性（92 个 Core + 9 个 Business，共 101 个组件）与文档示例中每个 `Admin*` 导入、每个 `aui-*` 标签在对应包里真实存在。
+- `catalog:check` 校验目录完整性（99 个 Core + 9 个 Business，共 108 个组件）与文档示例中每个 `Admin*` 导入、每个 `aui-*` 标签在对应包里真实存在。
 
 ## 主题合同
 
@@ -42,7 +42,7 @@
 
 ## 下一阶段
 
-- DataGrid 排序/筛选/选择与批量操作（当前为列/行/加载/空态骨架）。
-- 虚拟滚动适配，保持核心包不绑定 TanStack Table。
-- SSR hydration 检查和三框架最小示例应用。
-- Playwright 跨框架行为矩阵与 `axe` 无障碍检查。
+- SSR hydration 检查和 React/Vue/Svelte 三框架最小示例应用。
+- 截图基线与像素级 diff，覆盖代表性组件状态和 9 × 2 主题矩阵。
+- DataGrid 的可选 TanStack Table / Virtual adapter，以及 TreeTable、FilterBuilder、QueryBuilder 等复杂交互。
+- 业务包中的权限矩阵、审计日志、导入导出和 workflow 组件。

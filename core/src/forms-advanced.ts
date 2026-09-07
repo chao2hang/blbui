@@ -83,7 +83,7 @@ export class AdminInputGroupElement extends AdminElement {
         }
         .group:focus-within {
             border-color: var(--aui-focus);
-            box-shadow: 0 0 0 1px var(--aui-focus);
+            box-shadow: var(--aui-focus-ring);
         }
         .prefix,
         .suffix {
@@ -271,7 +271,7 @@ export class AdminPasswordInputElement extends AdminElement {
         }
         .wrap:focus-within {
             border-color: var(--aui-focus);
-            box-shadow: 0 0 0 1px var(--aui-focus);
+            box-shadow: var(--aui-focus-ring);
         }
         input {
             min-width: 0;

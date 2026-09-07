@@ -118,6 +118,15 @@ import {
     AdminTransferElement,
 } from "./interaction";
 import { AdminFilePreviewElement, AdminUploadListElement } from "./file-components";
+import {
+    AdminColumnSettingsElement,
+    AdminFormElement,
+    AdminFormItemElement,
+    AdminLoadingOverlayElement,
+    AdminProgressRingElement,
+    AdminSchemaFormElement,
+    AdminTruncatedTextElement,
+} from "./composed";
 
 export function registerAdminElements(): void {
     if (typeof customElements === "undefined") return;
@@ -213,4 +222,11 @@ export function registerAdminElements(): void {
     defineOnce("aui-notification-center", AdminNotificationCenterElement);
     defineOnce("aui-upload-list", AdminUploadListElement);
     defineOnce("aui-file-preview", AdminFilePreviewElement);
+    defineOnce("aui-form", AdminFormElement);
+    defineOnce("aui-form-item", AdminFormItemElement);
+    defineOnce("aui-schema-form", AdminSchemaFormElement);
+    defineOnce("aui-truncated-text", AdminTruncatedTextElement);
+    defineOnce("aui-loading-overlay", AdminLoadingOverlayElement);
+    defineOnce("aui-progress-ring", AdminProgressRingElement);
+    defineOnce("aui-column-settings", AdminColumnSettingsElement);
 }

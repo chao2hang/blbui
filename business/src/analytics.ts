@@ -227,7 +227,7 @@ export class AdminSparklineElement extends AdminElement {
   `;
   values: number[] = [];
   label = "Trend";
-  color = "#ffffff";
+  color = "var(--aui-text-primary)";
   render() {
     const max = Math.max(...this.values, 1);
     const min = Math.min(...this.values, 0);

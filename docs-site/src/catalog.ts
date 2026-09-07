@@ -830,6 +830,68 @@ export const catalog: CatalogItem[] = [
 
 catalog.push(
     item(
+        "form",
+        "aui-form",
+        "Form",
+        "forms",
+        "Accessible form shell with loading, validation and action slots.",
+        ["layout", "loading", "submit-label", "reset-label", "show-actions", "no-validate"],
+        ["aui-submit", "aui-invalid", "aui-reset"],
+    ),
+    item(
+        "form-item",
+        "aui-form-item",
+        "Form Item",
+        "forms",
+        "Label, description and error association for slotted controls.",
+        ["label", "description", "error", "required", "name"],
+    ),
+    item(
+        "schema-form",
+        "aui-schema-form",
+        "Schema Form",
+        "forms",
+        "Dependency-free schema-driven form for common enterprise fields.",
+        ["fields", "values", "layout", "loading", "submit-label", "reset-label"],
+        ["aui-change", "aui-submit", "aui-reset"],
+    ),
+    item(
+        "progress-ring",
+        "aui-progress-ring",
+        "Progress Ring",
+        "primitives",
+        "Compact determinate circular progress indicator with ARIA range semantics.",
+        ["value", "max", "size", "stroke-width", "label", "show-value"],
+    ),
+    item(
+        "truncated-text",
+        "aui-truncated-text",
+        "Truncated Text",
+        "feedback",
+        "Line-clamped operational text with a full accessible label and title.",
+        ["text", "lines", "label"],
+    ),
+    item(
+        "loading-overlay",
+        "aui-loading-overlay",
+        "Loading Overlay",
+        "feedback",
+        "Theme-aware blocking loading state for panels, pages and full-screen workflows.",
+        ["open", "label", "fullscreen"],
+    ),
+    item(
+        "column-settings",
+        "aui-column-settings",
+        "Column Settings",
+        "data",
+        "Accessible column visibility menu for DataGrid and dense tables.",
+        ["columns", "visible-keys", "open", "title", "close-label"],
+        ["aui-column-settings-change", "aui-open-change"],
+    ),
+);
+
+catalog.push(
+    item(
         "crud-page",
         "aui-crud-page",
         "CRUD Page",

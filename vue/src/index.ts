@@ -26,6 +26,10 @@ import type {
     AdminTabItem,
     AdminTransferOption,
     AdminUploadItem,
+    AdminDataGridColumn,
+    AdminFormLayout,
+    AdminSchemaFormField,
+    AdminSchemaFormValue,
 } from "@chaos_team/blbui-core";
 
 import "@chaos_team/blbui-core/styles.css";
@@ -899,7 +903,7 @@ export const AdminHoverCard = adminElement({
 export const AdminNotificationCenter = adminElement({
     name: "AdminNotificationCenter",
     tag: "aui-notification-center",
-    properties: ["notifications", "position", "max"],
+    properties: ["notifications", "position", "max", "persistKey", "clearLabel"],
     events: [
         {
             name: "aui-notification-close",
@@ -925,6 +929,8 @@ export const AdminNotificationCenter = adminElement({
         notifications: { type: Array as PropType<AdminNotificationItem[]>, default: () => [] },
         position: String,
         max: Number,
+        persistKey: String,
+        clearLabel: String,
     },
 });
 
@@ -1015,10 +1021,17 @@ export const AdminFilePreview = adminElement({
 export const AdminBreadcrumb = defineComponent({
     name: "AdminBreadcrumb",
     inheritAttrs: false,
-    props: { items: { type: Array as PropType<string[]>, default: () => [] } },
+    props: {
+        items: {
+            type: Array as PropType<Array<string | { label: string; href?: string }>>,
+            default: () => [],
+        },
+        maxItems: Number,
+        overflowLabel: String,
+    },
     setup(props, context) {
         return setupVueAdminComponent(
-            { tag: "aui-breadcrumb", properties: ["items"] },
+            { tag: "aui-breadcrumb", properties: ["items", "maxItems", "overflowLabel"] },
             props,
             context,
             {},
@@ -1237,12 +1250,63 @@ export const AdminContainer = adminElement({
 export const AdminDataGrid = adminElement({
     name: "AdminDataGrid",
     tag: "aui-data-grid",
-    properties: ["columns", "rows", "loading", "emptyLabel"],
+    properties: [
+        "columns",
+        "rows",
+        "loading",
+        "error",
+        "selectable",
+        "mobileCards",
+        "virtual",
+        "serverSide",
+        "emptyLabel",
+        "loadingLabel",
+        "errorLabel",
+        "sortKey",
+        "sortDirection",
+        "selectedKeys",
+        "filters",
+        "batchActions",
+        "page",
+        "pageSize",
+        "total",
+        "pageSizeOptions",
+        "rowHeight",
+        "virtualOverscan",
+        "rowKey",
+    ],
+    events: [
+        { name: "aui-sort-change", emit: "sort-change" },
+        { name: "aui-filter-change", emit: "filter-change" },
+        { name: "aui-selection-change", emit: "selection-change" },
+        { name: "aui-batch-action", emit: "batch-action" },
+        { name: "aui-page-change", emit: "page-change" },
+    ],
+    emits: ["sort-change", "filter-change", "selection-change", "batch-action", "page-change"],
     props: {
         columns: objectArray,
         rows: objectArray,
         loading: Boolean,
+        error: Boolean,
+        selectable: Boolean,
+        mobileCards: Boolean,
+        virtual: Boolean,
+        serverSide: Boolean,
         emptyLabel: String,
+        loadingLabel: String,
+        errorLabel: String,
+        sortKey: String,
+        sortDirection: String,
+        selectedKeys: objectArray,
+        filters: { type: Object as PropType<Record<string, string>>, default: () => ({}) },
+        batchActions: objectArray,
+        page: Number,
+        pageSize: Number,
+        total: Number,
+        pageSizeOptions: objectArray,
+        rowHeight: Number,
+        virtualOverscan: Number,
+        rowKey: String,
     },
 });
 
@@ -1271,7 +1335,7 @@ export const AdminDateRange = adminElement({
 export const AdminDrawer = adminElement({
     name: "AdminDrawer",
     tag: "aui-drawer",
-    properties: ["open", "title", "side", "width"],
+    properties: ["open", "title", "side", "width", "mobileMode"],
     events: [
         {
             name: "aui-close",
@@ -1282,7 +1346,113 @@ export const AdminDrawer = adminElement({
     ],
     slots: ["trigger", "title", "footer"],
     emits: ["close", "update:open"],
-    props: { open: Boolean, title: String, side: String, width: String },
+    props: { open: Boolean, title: String, side: String, width: String, mobileMode: String },
+});
+
+export const AdminForm = adminElement({
+    name: "AdminForm",
+    tag: "aui-form",
+    properties: ["layout", "loading", "submitLabel", "resetLabel", "showActions", "noValidate"],
+    events: [
+        { name: "aui-submit", emit: "submit" },
+        { name: "aui-invalid", emit: "invalid" },
+        { name: "aui-reset", emit: "reset" },
+    ],
+    slots: ["actions"],
+    emits: ["submit", "invalid", "reset"],
+    props: {
+        layout: String as PropType<AdminFormLayout>,
+        loading: Boolean,
+        submitLabel: String,
+        resetLabel: String,
+        showActions: { type: Boolean, default: true },
+        noValidate: Boolean,
+    },
+});
+
+export const AdminFormItem = adminElement({
+    name: "AdminFormItem",
+    tag: "aui-form-item",
+    properties: ["label", "description", "error", "required", "name"],
+    props: { label: String, description: String, error: String, required: Boolean, name: String },
+});
+
+export const AdminSchemaForm = adminElement({
+    name: "AdminSchemaForm",
+    tag: "aui-schema-form",
+    properties: ["fields", "values", "layout", "loading", "submitLabel", "resetLabel"],
+    events: [
+        { name: "aui-change", emit: "change" },
+        { name: "aui-submit", emit: "submit" },
+        {
+            name: "aui-reset",
+            emit: "reset",
+            map: (detail) => [(detail as { values: Record<string, AdminSchemaFormValue> }).values],
+        },
+    ],
+    emits: ["change", "submit", "reset"],
+    props: {
+        fields: { type: Array as PropType<AdminSchemaFormField[]>, default: () => [] },
+        values: {
+            type: Object as PropType<Record<string, AdminSchemaFormValue>>,
+            default: undefined,
+        },
+        layout: String as PropType<AdminFormLayout>,
+        loading: Boolean,
+        submitLabel: String,
+        resetLabel: String,
+    },
+});
+
+export const AdminTruncatedText = adminElement({
+    name: "AdminTruncatedText",
+    tag: "aui-truncated-text",
+    properties: ["text", "lines", "label"],
+    props: { text: String, lines: Number, label: String },
+});
+
+export const AdminLoadingOverlay = adminElement({
+    name: "AdminLoadingOverlay",
+    tag: "aui-loading-overlay",
+    properties: ["open", "label", "fullscreen"],
+    props: { open: Boolean, label: String, fullscreen: Boolean },
+});
+
+export const AdminProgressRing = adminElement({
+    name: "AdminProgressRing",
+    tag: "aui-progress-ring",
+    properties: ["value", "max", "size", "strokeWidth", "label", "showValue"],
+    props: {
+        value: Number,
+        max: Number,
+        size: Number,
+        strokeWidth: Number,
+        label: String,
+        showValue: Boolean,
+    },
+});
+
+export const AdminColumnSettings = adminElement({
+    name: "AdminColumnSettings",
+    tag: "aui-column-settings",
+    properties: ["columns", "visibleKeys", "open", "title", "closeLabel"],
+    events: [
+        { name: "aui-column-settings-change", emit: "change" },
+        {
+            name: "aui-open-change",
+            emit: "open-change",
+            map: (detail) => [(detail as { open: boolean }).open],
+            model: "open",
+        },
+    ],
+    emits: ["change", "open-change", "update:open"],
+    props: {
+        columns: { type: Array as PropType<AdminDataGridColumn[]>, default: () => [] },
+        visibleKeys: { type: Array as PropType<string[]>, default: () => [] },
+        open: Boolean,
+        title: String,
+        closeLabel: String,
+    },
 });
 
 export const AdminDropdown = adminElement({

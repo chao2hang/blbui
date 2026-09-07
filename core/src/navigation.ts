@@ -87,7 +87,11 @@ export interface AdminBreadcrumbItem {
 }
 
 export class AdminBreadcrumbElement extends AdminElement {
-    static properties = { items: { attribute: false } };
+    static properties = {
+        items: { attribute: false },
+        maxItems: { type: Number, attribute: "max-items" },
+        overflowLabel: { type: String, attribute: "overflow-label" },
+    };
     static styles = css`
         :host {
             display: block;
@@ -113,6 +117,38 @@ export class AdminBreadcrumbElement extends AdminElement {
         li:last-child {
             color: var(--aui-text);
         }
+        .overflow {
+            position: relative;
+        }
+        .overflow-button {
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: var(--aui-text-secondary);
+            cursor: pointer;
+            font: inherit;
+            text-transform: inherit;
+        }
+        .overflow-button:hover,
+        .overflow-button:focus-visible {
+            color: var(--aui-text-primary);
+        }
+        .overflow-menu {
+            position: absolute;
+            z-index: 5;
+            top: calc(100% + 8px);
+            left: 0;
+            min-width: 170px;
+            padding: 5px;
+            border: 1px solid var(--aui-border);
+            background: var(--aui-surface-elevated);
+            box-shadow: var(--aui-shadow-md);
+        }
+        .overflow-menu a {
+            display: block;
+            padding: 7px 8px;
+            text-decoration: none;
+        }
         a {
             color: inherit;
             text-decoration: none;
@@ -123,19 +159,61 @@ export class AdminBreadcrumbElement extends AdminElement {
         }
     `;
     items: Array<string | AdminBreadcrumbItem> = [];
+    maxItems = 0;
+    overflowLabel = "MORE";
+    private overflowOpen = false;
+
+    private toggleOverflow(): void {
+        this.overflowOpen = !this.overflowOpen;
+        this.dispatchDetail("aui-breadcrumb-overflow", { open: this.overflowOpen });
+        this.requestUpdate();
+    }
+
     render() {
         const items: AdminBreadcrumbItem[] = this.items.map((item) =>
             typeof item === "string" ? { label: item } : item,
         );
+        const collapsed = this.maxItems >= 3 && items.length > this.maxItems;
+        const headCount = collapsed ? Math.max(1, this.maxItems - 2) : items.length;
+        const hidden = collapsed ? items.slice(headCount, -1) : [];
+        const visible = collapsed
+            ? [...items.slice(0, headCount), { label: this.overflowLabel }, items.at(-1)!]
+            : items;
         return html`<nav aria-label="Breadcrumb">
             <ol>
-                ${items.map((item, index) => {
-                    const isLast = index === items.length - 1;
+                ${visible.map((item, index) => {
+                    const isOverflow = collapsed && index === headCount;
+                    const isLast = !isOverflow && index === visible.length - 1;
                     return html`<li aria-current=${isLast ? "page" : undefined}>
                         ${
-                            isLast || !item.href
-                                ? html`${item.label}`
-                                : html`<a href=${item.href}>${item.label}</a>`
+                            isOverflow
+                                ? html`<span class="overflow"
+                                      ><button
+                                          class="overflow-button"
+                                          type="button"
+                                          aria-expanded=${this.overflowOpen ? "true" : "false"}
+                                          aria-haspopup="menu"
+                                          @click=${this.toggleOverflow}
+                                      >
+                                          ${this.overflowLabel}
+                                      </button>
+                                      ${
+                                          this.overflowOpen
+                                              ? html`<span class="overflow-menu" role="menu">
+                                                    ${hidden.map(
+                                                        (entry) => html`<a
+                                                            role="menuitem"
+                                                            href=${entry.href ?? "#"}
+                                                            >${entry.label}</a
+                                                        >`,
+                                                    )}
+                                                </span>`
+                                              : null
+                                      }</span
+                                  >`
+                                : isLast || !item.href
+                                  ? html`${item.label}`
+                                  : html`<a href=${item.href}>${item.label}</a>`
                         }
                     </li>`;
                 })}

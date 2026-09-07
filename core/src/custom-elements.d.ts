@@ -98,6 +98,13 @@ declare global {
         "aui-notification-center": import("./interaction").AdminNotificationCenterElement;
         "aui-upload-list": import("./file-components").AdminUploadListElement;
         "aui-file-preview": import("./file-components").AdminFilePreviewElement;
+        "aui-form": import("./composed").AdminFormElement;
+        "aui-form-item": import("./composed").AdminFormItemElement;
+        "aui-schema-form": import("./composed").AdminSchemaFormElement;
+        "aui-truncated-text": import("./composed").AdminTruncatedTextElement;
+        "aui-loading-overlay": import("./composed").AdminLoadingOverlayElement;
+        "aui-progress-ring": import("./composed").AdminProgressRingElement;
+        "aui-column-settings": import("./composed").AdminColumnSettingsElement;
     }
 }
 

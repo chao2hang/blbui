@@ -14,24 +14,24 @@
 
 ### P0：语义 Token 与主题合同
 
-当前已落地基础版本，后续持续收紧合同：
+0.0.5 已落地基础合同，后续持续收紧：
 
 - 固化 surface、text、border、focus、status、overlay、shadow、radius、motion、form color-scheme 等 token。
 - 9 套主题均维护 light/dark 两套值；新增主题必须提供同一份 token 清单。
 - `bun run theme:check` 已纳入发布检查，验证 9 × 2 选择器和核心语义 token 不缺失。
 - CSS utilities 只使用 AUI 命名空间，禁止把业务页面的硬编码颜色复制进组件样式。
-- 增加 token lint：扫描组件源码中的颜色字面量、固定圆角和固定阴影。
-- 对 glass、atmospheric 主题提供 backdrop-filter 不可用时的实色降级。
+- [x] 增加 token lint：扫描组件源码中的颜色字面量、固定圆角和固定阴影。
+- [x] 对 glass、atmospheric 主题提供 backdrop-filter 不可用时的实色降级。
 
 ### P1：常用组件补齐
 
-已补齐第一批 Menu、Sidebar、Navbar、DatePicker、TimePicker、PinInput、Descriptions；第二批已补齐 Cascader、Transfer、ContextMenu、HoverCard、NotificationCenter。下一批优先级：
+已补齐 Menu、Sidebar、Navbar、DatePicker、TimePicker、PinInput、Descriptions、Cascader、Transfer、ContextMenu、HoverCard、NotificationCenter、UploadList、FilePreview、Form、FormItem、SchemaForm、ProgressRing、TruncatedText、LoadingOverlay、ColumnSettings。DataGrid 已补齐排序、筛选、选择、批量操作、服务端分页、移动端卡片和轻量虚拟窗口。下一批优先级：
 
-1. 交互基础：Popover、Dropdown、Command 与已新增浮层组件的键盘、焦点和 outside-dismiss 合同统一。
-2. 表单高级：DateRangePicker 增强、FormItem、SchemaForm。（UploadList、FilePreview 已完成。）
-3. 数据展示：DataGrid 排序/筛选/选择/批量操作、TreeTable、ListView、ColumnSettings。
-4. 系统布局：AppShell 移动端抽屉、Breadcrumb overflow、PageHeader responsive actions。
-5. 反馈与状态：ProgressRing、Result action slots、全局 toast manager、通知历史持久化。
+1. 交互基础：统一已覆盖浮层的焦点恢复、outside-dismiss 和复杂嵌套场景。
+2. 表单高级：DateRangePicker 增强、FormWizard、FilterBuilder、QueryBuilder。
+3. 数据展示：TreeTable、ListView，以及可选 TanStack Table / Virtual adapter。
+4. 系统布局：PageHeader responsive actions、SSR/hydration 下的注册时机。
+5. 反馈与状态：Result action slots、全局 toast manager、通知跨标签页同步。
 
 每新增一个组件，必须同步：
 
@@ -45,7 +45,7 @@
 - 为属性名、事件名、受控/非受控行为建立映射表。
 - React 统一 value/change、checked/change、open/change、select 等回调签名。
 - Vue 统一 update:modelValue 或 update:value 的命名策略，避免同类组件各自为政。
-- Svelte 补充常用输入、overlay、data 组件封装和事件类型。
+- Svelte 已补充常用输入、overlay、data 组件封装和事件类型；后续补齐 parity playground 与更完整的受控属性类型。
 - 维护一个跨框架 parity 示例页面，任何 breaking change 先在示例中暴露。
 
 ### P3：复杂业务能力
@@ -58,8 +58,8 @@
 ### P4：SSR、无障碍与性能
 
 - 覆盖 SSR/静态 HTML 注册顺序、hydration 和无 DOM 环境的 theme API。
-- 用 Playwright 建立 keyboard、focus trap、escape、outside click、form validation 测试。
-- 用 axe 做组件目录级扫描，修复名称、描述、对比度、tab order 和 aria 状态问题。
+- [x] 用 Playwright 建立 keyboard、focus trap、escape、outside click、form validation 测试矩阵。
+- [x] 用 axe 做目录重点组件扫描，修复名称、描述、tab order 和 aria 状态问题。
 - 对 DataGrid、长列表和 docs playground 做性能预算：首屏、渲染节点数、主题切换耗时。
 - 验证 prefers-reduced-motion、forced-colors、键盘-only 和移动端 320px 宽度。
 
@@ -67,32 +67,31 @@
 
 - 每个组件至少保存四张基准：默认 dark、默认 light、代表性圆角主题、glass/atmospheric 主题。
 - 主题矩阵按 9 × 2 运行，重点组件再覆盖 hover、focus、disabled、loading、empty、error。
-- 发布前执行 catalog、typecheck、build、Svelte、docs smoke、unit、a11y、visual regression。
+- 发布前执行 catalog、typecheck、build、Svelte、docs smoke、unit、a11y 和视觉冒烟；像素级 visual regression 基线仍待接入。
 - 组件状态发生变化时更新 changelog、migration note 和截图基准。
 - 每季度清理一次重复组件、过期 token、未使用 utility 和文档示例漂移。
 
 ## 组件主题验收矩阵
 
-| 维度 | 必检内容 |
-| --- | --- |
-| 结构 | 默认尺寸、窄屏、slot 内容溢出、长文本、RTL 预留 |
-| 状态 | hover、focus-visible、active、selected、disabled、loading、empty、error |
+| 维度 | 必检内容                                                                    |
+| ---- | --------------------------------------------------------------------------- |
+| 结构 | 默认尺寸、窄屏、slot 内容溢出、长文本、RTL 预留                             |
+| 状态 | hover、focus-visible、active、selected、disabled、loading、empty、error     |
 | 语义 | 原生元素、role、label、description、aria-selected、aria-expanded、aria-busy |
-| 主题 | 9 套 preset × light/dark；surface、text、border、focus、status 均可读 |
-| 动效 | 默认 transition、reduced-motion、backdrop-filter 降级 |
-| 框架 | Web Components、React、Vue、Svelte 的属性与事件行为一致 |
-| 文档 | catalog 条目、预览、props/events、四框架 usage、截图和已知限制 |
+| 主题 | 9 套 preset × light/dark；surface、text、border、focus、status 均可读       |
+| 动效 | 默认 transition、reduced-motion、backdrop-filter 降级                       |
+| 框架 | Web Components、React、Vue、Svelte 的属性与事件行为一致                     |
+| 文档 | catalog 条目、预览、props/events、四框架 usage、截图和已知限制              |
 
-## 当前组件缺口
+## 当前组件缺口（0.0.5 后）
 
 短期缺口集中在可复用的复杂交互，而不是继续堆叠展示型组件：
 
-- DateRangePicker 增强 / FormItem / SchemaForm。
-- Drawer mobile mode / Toast manager / Notification history persistence。
-- DataGrid 的列配置、虚拟滚动、服务端分页和批量操作。
-- TreeTable、ColumnSettings、FilterBuilder、QueryBuilder。
-- FormWizard、SchemaForm、PermissionMatrix、AuditLog。
-- 更完整的 Svelte 常用封装和跨框架 parity 示例。
+- DateRangePicker 增强、FormWizard、FilterBuilder、QueryBuilder。
+- Toast manager、通知跨标签页同步、Result action slots。
+- TreeTable、ListView 和可选的 TanStack Table / Virtual adapter。
+- PermissionMatrix、AuditLog、导入导出和更完整的 workflow 业务组件。
+- React/Vue/Svelte parity playground、SSR/hydration 验证和截图像素基线。
 
 ## 每次迭代的完成定义
 

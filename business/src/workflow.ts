@@ -64,7 +64,7 @@ export class AdminFormBuilderElement extends AdminElement {
     textarea:focus,
     select:focus {
       border-color: var(--aui-focus);
-      box-shadow: 0 0 0 1px var(--aui-focus);
+      box-shadow: var(--aui-focus-ring);
     }
     .checkbox {
       display: flex;

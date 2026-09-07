@@ -6,6 +6,7 @@ it under the terms of the GNU Affero General Public License.
 
 import { css, html } from "lit";
 import { AdminElement } from "./base";
+import { getAdminVirtualRange } from "./virtual";
 
 export class AdminContainerElement extends AdminElement {
     static properties = {
@@ -393,28 +394,130 @@ export class AdminLogViewerElement extends AdminElement {
     }
 }
 
+export type AdminDataGridSortDirection = "asc" | "desc";
+
+export interface AdminDataGridFilterOption {
+    value: string;
+    label: string;
+}
+
 export interface AdminDataGridColumn {
     key: string;
-    label: string;
+    label?: string;
+    /** `title` is kept as a compatibility alias for the first DataGrid API. */
+    title?: string;
     align?: "left" | "right" | "center";
+    sortable?: boolean;
+    filterable?: boolean;
+    filterOptions?: AdminDataGridFilterOption[];
+    width?: string;
+    hidden?: boolean;
 }
+
+export interface AdminDataGridBatchAction {
+    id: string;
+    label: string;
+    danger?: boolean;
+    disabled?: boolean;
+}
+
+export type AdminDataGridRow = Record<string, unknown> & { id?: string | number };
 
 export class AdminDataGridElement extends AdminElement {
     static properties = {
         columns: { attribute: false },
         rows: { attribute: false },
         loading: { type: Boolean, reflect: true },
+        error: { type: Boolean, reflect: true },
+        selectable: { type: Boolean, reflect: true },
+        mobileCards: { type: Boolean, attribute: "mobile-cards", reflect: true },
+        virtual: { type: Boolean, reflect: true },
+        serverSide: { type: Boolean, attribute: "server-side", reflect: true },
         emptyLabel: { type: String, attribute: "empty-label" },
+        loadingLabel: { type: String, attribute: "loading-label" },
+        errorLabel: { type: String, attribute: "error-label" },
+        sortKey: { type: String, attribute: "sort-key" },
+        sortDirection: { type: String, attribute: "sort-direction" },
+        selectedKeys: { attribute: false },
+        filters: { attribute: false },
+        batchActions: { attribute: false },
+        page: { type: Number, reflect: true },
+        pageSize: { type: Number, attribute: "page-size" },
+        total: { type: Number },
+        pageSizeOptions: { attribute: false },
+        rowHeight: { type: Number, attribute: "row-height" },
+        virtualOverscan: { type: Number, attribute: "virtual-overscan" },
+        rowKey: { type: String, attribute: "row-key" },
     };
     static styles = css`
         :host {
             display: block;
             min-width: 0;
         }
-        .grid {
-            overflow-x: auto;
+        .frame {
+            overflow: hidden;
             border: 1px solid var(--aui-border);
             background: var(--aui-bg);
+        }
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            min-height: 40px;
+            padding: 6px 10px;
+            border-bottom: 1px solid var(--aui-border);
+            background: var(--aui-surface-subtle);
+            color: var(--aui-text-muted);
+            font: 10px/1.2 var(--aui-font-mono);
+        }
+        .selection {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .batch-actions,
+        .page-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .batch-actions button,
+        .page-actions button,
+        .page-actions select {
+            min-height: 28px;
+            padding: 4px 8px;
+            border: 1px solid var(--aui-border);
+            border-radius: var(--aui-radius-sm);
+            background: transparent;
+            color: var(--aui-text-secondary);
+            cursor: pointer;
+            font: 10px/1.1 var(--aui-font-mono);
+            text-transform: uppercase;
+        }
+        .batch-actions button:hover:not(:disabled),
+        .page-actions button:hover:not(:disabled),
+        .page-actions select:hover {
+            border-color: var(--aui-border-hover);
+            color: var(--aui-text-primary);
+        }
+        .batch-actions .danger {
+            border-color: var(--aui-danger-border);
+            color: var(--aui-danger);
+        }
+        button:disabled,
+        select:disabled {
+            cursor: not-allowed;
+            opacity: 0.35;
+        }
+        .scroll {
+            overflow-x: auto;
+        }
+        .scroll[data-virtual="true"] {
+            max-height: var(--aui-data-grid-virtual-height, 420px);
+            overflow-y: auto;
         }
         table {
             width: 100%;
@@ -425,74 +528,546 @@ export class AdminDataGridElement extends AdminElement {
             white-space: nowrap;
         }
         th {
-            padding: 11px 14px;
+            padding: 9px 12px;
             border-bottom: 1px solid var(--aui-border);
             background: var(--aui-header);
             color: var(--aui-text-secondary);
             font-weight: 500;
             text-align: left;
             text-transform: uppercase;
+            vertical-align: top;
+        }
+        th[aria-sort="ascending"],
+        th[aria-sort="descending"] {
+            color: var(--aui-text-primary);
+        }
+        .heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .sort {
+            min-width: 0;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: inherit;
+            cursor: pointer;
+            font: inherit;
+            text-align: left;
+            text-transform: inherit;
+        }
+        .sort:not(:disabled):hover {
+            color: var(--aui-text-primary);
+        }
+        .filter {
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 26px;
+            margin-top: 6px;
+            padding: 4px 6px;
+            border: 1px solid var(--aui-border);
+            border-radius: var(--aui-radius-sm);
+            outline: 0;
+            background: var(--aui-control-bg);
+            color: var(--aui-text);
+            font: 10px/1.2 var(--aui-font-mono);
+        }
+        .filter:focus {
+            border-color: var(--aui-focus);
+            box-shadow: var(--aui-focus-ring);
         }
         td {
-            padding: 13px 14px;
+            padding: 11px 12px;
             border-bottom: 1px solid var(--aui-border);
             color: var(--aui-text);
         }
-        tr:hover td {
+        tr:hover td,
+        tr[data-selected="true"] td {
             background: var(--aui-table-row-hover);
         }
+        tr[data-selected="true"] td {
+            color: var(--aui-text-primary);
+        }
+        .checkbox {
+            width: 15px;
+            height: 15px;
+            margin: 0;
+            accent-color: var(--aui-primary);
+        }
         .state {
-            padding: 42px 16px;
+            min-height: var(--aui-table-state-min-height, 96px);
+            display: grid;
+            place-items: center;
+            padding: var(--aui-table-state-padding, 16px);
             color: var(--aui-text-muted);
             text-align: center;
-            font: 11px/1 var(--aui-font-mono);
+            font: 11px/1.3 var(--aui-font-mono);
         }
-        :host([loading]) .table,
-        :host([loading]) .empty {
-            display: none;
+        .error-state {
+            color: var(--aui-danger);
         }
-        :host(:not([loading])) .loading {
+        .cards {
             display: none;
+            gap: 8px;
+            padding: 8px;
+        }
+        .card {
+            display: grid;
+            gap: 8px;
+            padding: 10px;
+            border: 1px solid var(--aui-border);
+            background: var(--aui-surface);
+        }
+        .card-header,
+        .card-pair {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .card-header {
+            color: var(--aui-text-primary);
+            font-weight: 700;
+        }
+        .card-pair {
+            color: var(--aui-text-secondary);
+            font-size: 11px;
+        }
+        .card-pair strong {
+            max-width: 65%;
+            overflow: hidden;
+            color: var(--aui-text);
+            font-weight: 400;
+            text-align: right;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 7px 10px;
+            border-top: 1px solid var(--aui-border);
+            background: var(--aui-surface-subtle);
+            color: var(--aui-text-muted);
+            font: 10px/1.2 var(--aui-font-mono);
+        }
+        @media (max-width: 640px) {
+            .toolbar,
+            .pagination {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+            :host([mobile-cards]) .scroll {
+                display: none;
+            }
+            :host([mobile-cards]) .cards {
+                display: grid;
+            }
         }
     `;
+
     columns: AdminDataGridColumn[] = [];
-    rows: Array<Record<string, unknown>> = [];
+    rows: AdminDataGridRow[] = [];
     loading = false;
+    error = false;
+    selectable = false;
+    mobileCards = true;
+    virtual = false;
+    serverSide = false;
     emptyLabel = "NO DATA AVAILABLE";
-    render() {
-        return html`<div class="grid">
-            <div class="state loading">LOADING...</div>
-            <div
-                class="state empty"
-                ?hidden=${(this.loading && this.rows.length > 0) || this.rows.length > 0}
+    loadingLabel = "LOADING...";
+    errorLabel = "FAILED TO LOAD DATA";
+    sortKey = "";
+    sortDirection: AdminDataGridSortDirection = "asc";
+    selectedKeys: Array<string | number> = [];
+    filters: Record<string, string> = {};
+    batchActions: AdminDataGridBatchAction[] = [];
+    page = 1;
+    pageSize = 10;
+    total = 0;
+    pageSizeOptions = [10, 25, 50];
+    rowHeight = 44;
+    virtualOverscan = 4;
+    rowKey = "id";
+
+    private virtualScrollTop = 0;
+    private readonly labelFor = (column: AdminDataGridColumn): string =>
+        column.label ?? column.title ?? column.key;
+    private readonly visibleColumns = (): AdminDataGridColumn[] =>
+        this.columns.filter((column) => !column.hidden);
+    private key(row: AdminDataGridRow, index: number): string | number {
+        const candidate = row[this.rowKey];
+        return typeof candidate === "string" || typeof candidate === "number"
+            ? candidate
+            : (row.id ?? index);
+    }
+    private valueFor(row: AdminDataGridRow, key: string): string {
+        const value = row[key];
+        return value === null || value === undefined || value === "" ? "—" : String(value);
+    }
+    private compare(left: unknown, right: unknown): number {
+        if (typeof left === "number" && typeof right === "number") return left - right;
+        return String(left ?? "").localeCompare(String(right ?? ""), undefined, {
+            numeric: true,
+            sensitivity: "base",
+        });
+    }
+    private processedRows(): Array<{ row: AdminDataGridRow; index: number }> {
+        let result = this.rows.map((row, index) => ({ row, index }));
+        if (!this.serverSide) {
+            result = result.filter(({ row }) =>
+                Object.entries(this.filters).every(([key, value]) =>
+                    this.valueFor(row, key).toLowerCase().includes(value.trim().toLowerCase()),
+                ),
+            );
+            if (this.sortKey) {
+                result.sort((left, right) => {
+                    const order = this.compare(left.row[this.sortKey], right.row[this.sortKey]);
+                    return this.sortDirection === "asc" ? order : -order;
+                });
+            }
+        }
+        if (this.serverSide || this.pageSize <= 0) return result;
+        const start = Math.max(0, (this.page - 1) * this.pageSize);
+        return result.slice(start, start + this.pageSize);
+    }
+    private totalPages(): number {
+        const sourceTotal = this.serverSide ? this.total || this.rows.length : this.rows.length;
+        return Math.max(1, this.pageSize > 0 ? Math.ceil(sourceTotal / this.pageSize) : 1);
+    }
+    private emitPageChange(): void {
+        const detail = {
+            page: this.page,
+            pageSize: this.pageSize,
+            total: this.serverSide ? this.total : this.rows.length,
+        };
+        this.dispatchDetail("aui-page-change", detail);
+        this.dispatchDetail("aui-data-grid-page-change", detail);
+    }
+    private changePage(page: number): void {
+        const next = Math.max(1, Math.min(this.totalPages(), page));
+        if (next === this.page) return;
+        this.page = next;
+        this.emitPageChange();
+        this.requestUpdate();
+    }
+    private changePageSize(event: Event): void {
+        const next = Math.max(1, Number((event.target as HTMLSelectElement).value) || 10);
+        if (next === this.pageSize) return;
+        this.pageSize = next;
+        this.page = 1;
+        this.emitPageChange();
+        this.requestUpdate();
+    }
+    private sort(column: AdminDataGridColumn): void {
+        if (!column.sortable) return;
+        const direction: AdminDataGridSortDirection =
+            this.sortKey === column.key && this.sortDirection === "asc" ? "desc" : "asc";
+        this.sortKey = column.key;
+        this.sortDirection = direction;
+        const detail = { key: column.key, direction };
+        this.dispatchDetail("aui-sort-change", detail);
+        this.dispatchDetail("aui-data-grid-sort-change", detail);
+        this.requestUpdate();
+    }
+    private changeFilter(key: string, event: Event): void {
+        const value = (event.target as HTMLInputElement | HTMLSelectElement).value;
+        this.filters = { ...this.filters, [key]: value };
+        if (!value) {
+            const next = { ...this.filters };
+            delete next[key];
+            this.filters = next;
+        }
+        this.page = 1;
+        const detail = { filters: this.filters, key, value };
+        this.dispatchDetail("aui-filter-change", detail);
+        this.dispatchDetail("aui-data-grid-filter-change", detail);
+        this.requestUpdate();
+    }
+    private toggleRow(key: string | number): void {
+        this.selectedKeys = this.selectedKeys.includes(key)
+            ? this.selectedKeys.filter((item) => item !== key)
+            : [...this.selectedKeys, key];
+        this.dispatchDetail("aui-selection-change", { keys: this.selectedKeys });
+        this.requestUpdate();
+    }
+    private toggleAll(event: Event, rows: Array<{ row: AdminDataGridRow; index: number }>): void {
+        const checked = (event.target as HTMLInputElement).checked;
+        const keys = rows.map(({ row, index }) => this.key(row, index));
+        this.selectedKeys = checked
+            ? [...new Set([...this.selectedKeys, ...keys])]
+            : this.selectedKeys.filter((key) => !keys.includes(key));
+        this.dispatchDetail("aui-selection-change", { keys: this.selectedKeys });
+        this.requestUpdate();
+    }
+    private batchAction(action: AdminDataGridBatchAction): void {
+        if (action.disabled || !this.selectedKeys.length) return;
+        const selectedRows = this.rows.filter((row, index) =>
+            this.selectedKeys.includes(this.key(row, index)),
+        );
+        this.dispatchDetail("aui-batch-action", {
+            id: action.id,
+            keys: this.selectedKeys,
+            rows: selectedRows,
+        });
+    }
+    private onScroll(event: Event): void {
+        if (!this.virtual) return;
+        this.virtualScrollTop = (event.currentTarget as HTMLElement).scrollTop;
+        this.requestUpdate();
+    }
+    private renderFilter(column: AdminDataGridColumn): unknown {
+        if (!column.filterable) return null;
+        if (column.filterOptions?.length) {
+            return html`<select
+                class="filter"
+                aria-label=${`Filter ${this.labelFor(column)}`}
+                .value=${this.filters[column.key] ?? ""}
+                @change=${(event: Event) => this.changeFilter(column.key, event)}
             >
-                ${this.emptyLabel}
+                <option value="">ALL</option>
+                ${column.filterOptions.map((option) => html`<option value=${option.value}>${option.label}</option>`)}
+            </select>`;
+        }
+        return html`<input
+            class="filter"
+            type="search"
+            aria-label=${`Filter ${this.labelFor(column)}`}
+            placeholder="FILTER"
+            .value=${this.filters[column.key] ?? ""}
+            @input=${(event: Event) => this.changeFilter(column.key, event)}
+        />`;
+    }
+    private renderHeader(
+        columns: AdminDataGridColumn[],
+        rows: Array<{ row: AdminDataGridRow; index: number }>,
+    ): unknown {
+        const allSelected =
+            rows.length > 0 &&
+            rows.every(({ row, index }) => this.selectedKeys.includes(this.key(row, index)));
+        return html`<thead>
+            <tr>
+                ${
+                    this.selectable
+                        ? html`<th aria-label="Selection">
+                              <input
+                                  class="checkbox"
+                                  type="checkbox"
+                                  aria-label="Select visible rows"
+                                  .checked=${allSelected}
+                                  @change=${(event: Event) => this.toggleAll(event, rows)}
+                              />
+                          </th>`
+                        : null
+                }
+                ${columns.map((column) => {
+                    const sort = this.sortKey === column.key ? this.sortDirection : undefined;
+                    return html`<th
+                        style=${column.width ? `width:${column.width};text-align:${column.align ?? "left"}` : `text-align:${column.align ?? "left"}`}
+                        aria-sort=${sort === "asc" ? "ascending" : sort === "desc" ? "descending" : "none"}
+                    >
+                        <div class="heading">
+                            ${
+                                column.sortable
+                                    ? html`<button
+                                          class="sort"
+                                          type="button"
+                                          @click=${() => this.sort(column)}
+                                      >
+                                          ${this.labelFor(column)}
+                                          ${sort === "asc" ? "↑" : sort === "desc" ? "↓" : "↕"}
+                                      </button>`
+                                    : html`<span>${this.labelFor(column)}</span>`
+                            }
+                        </div>
+                        ${this.renderFilter(column)}
+                    </th>`;
+                })}
+            </tr>
+        </thead>`;
+    }
+    private renderRow(
+        row: AdminDataGridRow,
+        index: number,
+        columns: AdminDataGridColumn[],
+    ): unknown {
+        const key = this.key(row, index);
+        return html`<tr
+            data-row-key=${String(key)}
+            data-selected=${this.selectedKeys.includes(key) ? "true" : "false"}
+        >
+            ${
+                this.selectable
+                    ? html`<td>
+                          <input
+                              class="checkbox"
+                              type="checkbox"
+                              aria-label=${`Select row ${key}`}
+                              .checked=${this.selectedKeys.includes(key)}
+                              @change=${() => this.toggleRow(key)}
+                          />
+                      </td>`
+                    : null
+            }
+            ${columns.map(
+                (column) => html`<td style=${`text-align:${column.align ?? "left"}`}>
+                    ${this.valueFor(row, column.key)}
+                </td>`,
+            )}
+        </tr>`;
+    }
+    private renderTable(
+        rows: Array<{ row: AdminDataGridRow; index: number }>,
+        columns: AdminDataGridColumn[],
+    ): unknown {
+        const rowCount = rows.length;
+        const span = columns.length + (this.selectable ? 1 : 0);
+        let renderRows = rows;
+        let top = 0;
+        let bottom = 0;
+        if (this.virtual && rowCount) {
+            const range = getAdminVirtualRange(
+                rowCount,
+                this.virtualScrollTop,
+                420,
+                this.rowHeight,
+                this.virtualOverscan,
+            );
+            renderRows = rows.slice(range.start, range.end);
+            top = range.top;
+            bottom = range.bottom;
+        }
+        return html`<table aria-rowcount=${this.serverSide && this.total ? this.total : rowCount}>
+            ${this.renderHeader(columns, rows)}
+            <tbody>
+                ${
+                    top
+                        ? html`<tr aria-hidden="true">
+                              <td
+                                  colspan=${span}
+                                  style=${`height:${top}px;padding:0;border:0`}
+                              ></td>
+                          </tr>`
+                        : null
+                }
+                ${renderRows.map(({ row, index }) => this.renderRow(row, index, columns))}
+                ${
+                    bottom
+                        ? html`<tr aria-hidden="true">
+                              <td
+                                  colspan=${span}
+                                  style=${`height:${bottom}px;padding:0;border:0`}
+                              ></td>
+                          </tr>`
+                        : null
+                }
+            </tbody>
+        </table>`;
+    }
+    private renderCards(
+        rows: Array<{ row: AdminDataGridRow; index: number }>,
+        columns: AdminDataGridColumn[],
+    ): unknown {
+        return html`<div class="cards">
+            ${rows.map(({ row, index }) => {
+                const key = this.key(row, index);
+                return html`<article
+                    class="card"
+                    data-row-key=${String(key)}
+                    data-selected=${this.selectedKeys.includes(key) ? "true" : "false"}
+                >
+                    <div class="card-header">
+                        <span>${this.valueFor(row, columns[0]?.key ?? this.rowKey)}</span>
+                        ${
+                            this.selectable
+                                ? html`<input
+                                      class="checkbox"
+                                      type="checkbox"
+                                      aria-label=${`Select row ${key}`}
+                                      .checked=${this.selectedKeys.includes(key)}
+                                      @change=${() => this.toggleRow(key)}
+                                  />`
+                                : null
+                        }
+                    </div>
+                    ${columns.slice(1).map((column) => html`<div class="card-pair"><span>${this.labelFor(column)}</span><strong>${this.valueFor(row, column.key)}</strong></div>`)}
+                </article>`;
+            })}
+        </div>`;
+    }
+    private renderPagination(): unknown {
+        if (this.pageSize <= 0 || this.totalPages() <= 1) return null;
+        const total = this.serverSide ? this.total : this.rows.length;
+        return html`<nav class="pagination" aria-label="Data grid pagination">
+            <span>PAGE ${this.page} / ${this.totalPages()} · ${total} ROWS</span>
+            <div class="page-actions">
+                <select
+                    aria-label="Rows per page"
+                    .value=${String(this.pageSize)}
+                    @change=${this.changePageSize}
+                >
+                    ${this.pageSizeOptions.map((size) => html`<option value=${size}>${size} / PAGE</option>`)}
+                </select>
+                <button
+                    type="button"
+                    ?disabled=${this.page <= 1}
+                    @click=${() => this.changePage(this.page - 1)}
+                >
+                    PREV
+                </button>
+                <button
+                    type="button"
+                    ?disabled=${this.page >= this.totalPages()}
+                    @click=${() => this.changePage(this.page + 1)}
+                >
+                    NEXT
+                </button>
             </div>
-            <table class="table" ?hidden=${this.loading || this.rows.length === 0}>
-                <thead>
-                    <tr>
-                        ${this.columns.map(
-                            (column) =>
-                                html`<th style=${`text-align:${column.align ?? "left"}`}>
-                                    ${column.label}
-                                </th>`,
-                        )}
-                    </tr>
-                </thead>
-                <tbody>
-                    ${this.rows.map(
-                        (row) =>
-                            html`<tr>
-                                ${this.columns.map(
-                                    (column) =>
-                                        html`<td style=${`text-align:${column.align ?? "left"}`}>
-                                            ${String(row[column.key] ?? "—")}
-                                        </td>`,
-                                )}
-                            </tr>`,
-                    )}
-                </tbody>
-            </table>
+        </nav>`;
+    }
+    render() {
+        const columns = this.visibleColumns();
+        const rows = this.processedRows();
+        const hasRows = rows.length > 0 || (this.serverSide && this.total > 0);
+        const content = this.loading
+            ? html`<div class="state" role="status" aria-live="polite">${this.loadingLabel}</div>`
+            : this.error
+              ? html`<div class="state error-state" role="alert">${this.errorLabel}</div>`
+              : !hasRows
+                ? html`<div class="state" role="status">${this.emptyLabel}</div>`
+                : html`<div
+                          class="scroll"
+                          data-virtual=${this.virtual ? "true" : "false"}
+                          @scroll=${this.onScroll}
+                      >
+                          ${this.renderTable(rows, columns)}
+                      </div>
+                      ${this.mobileCards ? this.renderCards(rows, columns) : null}`;
+        const selectedCount = this.selectedKeys.length;
+        return html`<div class="frame" aria-busy=${this.loading ? "true" : "false"}>
+            ${
+                this.batchActions.length
+                    ? html`<div class="toolbar">
+                          <span class="selection">${selectedCount} SELECTED</span>
+                          <div class="batch-actions">
+                              ${this.batchActions.map(
+                                  (action) => html`<button
+                                      type="button"
+                                      class=${action.danger ? "danger" : ""}
+                                      ?disabled=${action.disabled || !selectedCount}
+                                      @click=${() => this.batchAction(action)}
+                                  >
+                                      ${action.label}
+                                  </button>`,
+                              )}
+                          </div>
+                      </div>`
+                    : null
+            }
+            ${content} ${this.renderPagination()}
             <slot></slot>
         </div>`;
     }
