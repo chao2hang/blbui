@@ -8,10 +8,13 @@ it under the terms of the GNU Affero General Public License.
     --aui-bg: #0a0a0a;
     --aui-surface: #0f0f0f;
     --aui-surface-subtle: #0c0c0c;
+    --aui-surface-elevated: #18181b;
+    --aui-surface-translucent: rgb(15 15 15 / 88%);
     --aui-header: #18181b;
     --aui-border: #262626;
     --aui-border-hover: #404040;
     --aui-focus: #a1a1aa;
+    --aui-focus-ring: 0 0 0 2px rgb(161 161 170 / 28%);
     --aui-text: #e5e5e5;
     --aui-text-primary: #ffffff;
     --aui-text-secondary: #737373;
@@ -27,6 +30,9 @@ it under the terms of the GNU Affero General Public License.
     --aui-danger-text: #fca5a5;
     --aui-warning: #f59e0b;
     --aui-info: #60a5fa;
+    --aui-info-border: rgb(96 165 250 / 45%);
+    --aui-success-border: rgb(16 185 129 / 45%);
+    --aui-warning-border: rgb(245 158 11 / 45%);
     --aui-shadow-pop: 8px 8px 0 rgb(0 0 0 / 22%);
     --aui-grid-line-strong: rgb(38 38 38 / 45%);
     --aui-grid-line: rgb(38 38 38 / 25%);
@@ -44,8 +50,36 @@ it under the terms of the GNU Affero General Public License.
     --aui-font-mono:
         "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     --aui-radius: 0px;
+    --aui-radius-none: 0px;
+    --aui-radius-sm: 0px;
+    --aui-radius-md: 0px;
+    --aui-radius-lg: 0px;
+    --aui-radius-full: 999px;
     --aui-control-height: 36px;
     --aui-control-height-compact: 32px;
+    --aui-control-bg: #0c0c0c;
+    --aui-control-bg-hover: #18181b;
+    --aui-control-border-hover: #52525b;
+    --aui-primary: #ffffff;
+    --aui-primary-content: #000000;
+    --aui-secondary: #a1a1aa;
+    --aui-secondary-content: #000000;
+    --aui-accent: #60a5fa;
+    --aui-accent-content: #08111f;
+    --aui-neutral: #27272a;
+    --aui-neutral-content: #fafafa;
+    --aui-info-content: #08111f;
+    --aui-success-content: #031b13;
+    --aui-warning-content: #241402;
+    --aui-danger-content: #220404;
+    --aui-shadow-sm: 0 1px 2px rgb(0 0 0 / 24%);
+    --aui-shadow-md: 0 8px 24px rgb(0 0 0 / 28%);
+    --aui-shadow-lg: 0 20px 55px rgb(0 0 0 / 38%);
+    --aui-overlay: rgb(0 0 0 / 78%);
+    --aui-table-row-hover: rgb(39 39 42 / 50%);
+    --aui-code-bg: #080808;
+    --aui-backdrop-filter: none;
+    --aui-color-scheme: dark;
     /* Text inputs stay 12px for the dense console look, but iOS Safari
    * auto-zooms when a focused input renders below 16px. On small screens the
    * variable is raised (below) so the shadow-DOM inputs never trigger zoom. */

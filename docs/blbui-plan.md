@@ -1,6 +1,6 @@
 # BLBUI 组件库实施计划
 
-> **状态（0.0.3 更新）**：本计划 Phase 0–4 已全部落地——Core 现有 **78 个组件**、Business 9 个、React/Vue 为 78:1 完整绑定、Svelte 提供注册入口与 7 个封装；Phase 2 的测试基线（Vitest 行为测试 + a11y 契约测试）已就位；Phase 6 的文档站（`docs-site/`）已可构建。
+> **状态（0.0.4 更新）**：基础组件与主题基线已落地——Core 现有 **92 个组件**、Business 9 个、React/Vue 为 92:1 完整绑定、Svelte 提供注册入口与 14 个封装；新增 9 套 light/dark 主题与语义 CSS utilities；Vitest 行为测试、a11y 契约测试和文档站（`docs-site/`）已就位并可构建。复杂数据能力、跨框架测试和视觉回归仍按下方路线推进。
 > 下文历史路径说明：`docs/admin-style-guide.md` 位于 `chaos-ui` 风格规范仓库（本仓库不复制全文，tokens 已提取进 `core/src/tokens.css`）；`packages/blbui` 与 `web/` 是规划阶段的占位命名，实际落地为仓库顶层的 `core/ react/ vue/ svelte/ business/ business-react/ docs-site/` workspace。
 
 ## 目标
@@ -14,10 +14,10 @@
 - [x] 创建 monorepo 包结构（顶层 `core/ react/ vue/ svelte/ business/ business-react/ docs-site/`）与独立 package metadata。
 - [x] 从样式规范提取 tokens：背景、表面、边框、文字、状态色、字体、尺寸、动效。
 - [x] 将核心样式限定在 `.aui-root` / `aui-*`，不复制当前全局 `* { border-radius: 0 !important }`。
-- [x] 建立 `@chaos_team/blbui-core`（78 组件）。
-- [x] 建立 `@chaos_team/blbui-react`（78 绑定）。
-- [x] 建立 `@chaos_team/blbui-vue`（78 绑定）。
-- [x] 建立 `@chaos_team/blbui-svelte` 注册/类型入口与 7 个封装。
+- [x] 建立 `@chaos_team/blbui-core`（92 组件）。
+- [x] 建立 `@chaos_team/blbui-react`（92 绑定）。
+- [x] 建立 `@chaos_team/blbui-vue`（92 绑定）。
+- [x] 建立 `@chaos_team/blbui-svelte` 注册/类型入口与 14 个封装。
 - [x] 建立 `@chaos_team/blbui-business`（9 组件）与 `@chaos_team/blbui-business-react`。
 - [x] 统一 `aui-*` 事件和跨框架 API 文档（README 完整事件表）。
 - [x] 完成架构说明、第三方交互设计借鉴边界和迁移策略。
@@ -37,23 +37,24 @@
 
 ## Phase 3：常用业务组件
 
-- [ ] `Field` / `Label` / `FieldError` / `Form`。
-- [ ] `Textarea` / `Checkbox` / `Radio` / `Switch`。
-- [ ] `DropdownMenu` / `Popover` / `Tooltip`。
-- [ ] `Combobox` / `MultiSelect`。
-- [ ] `DatePicker` / `DateTimePicker`。
-- [ ] `ConfirmDialog` / `Toast` / `Notification`。
-- [ ] `CopyableText` / `TruncatedText` / `LogStatusTag`。
-- [ ] `Skeleton` / `LoadingOverlay`。
+- [x] `Field` / `Textarea` / `Checkbox` / `RadioGroup` / `Switch`。
+- [x] `Dropdown` / `Popover` / `Tooltip`。
+- [x] `Combobox` / `MultiSelect`。
+- [x] `DatePicker` / `TimePicker` / `PinInput`。
+- [x] `ConfirmDialog` / `Toast` / `NotificationCenter`。
+- [x] `CopyableText` / `Skeleton` / `Descriptions`。
+- [ ] `Form` / `FormItem` / `TruncatedText` / `LoadingOverlay`。
 
 ## Phase 4：数据密集型能力
 
-- [ ] DataTable column schema、排序、筛选、选择、批量操作。
-- [ ] 服务端分页、总数、页大小、空/加载/错误状态组合。
+- [x] DataGrid 基础 column/row schema、加载和空态。
+- [x] Table 的加载、空态、错误态和服务端分页字段。
+- [ ] DataGrid column schema 的排序、筛选、选择、批量操作。
+- [ ] 服务端分页交互、总数、页大小与 DataGrid 状态组合。
 - [ ] 响应式表格：横向滚动、移动端卡片降级。
 - [ ] 虚拟滚动适配，保持核心包不绑定 TanStack Table。
-- [ ] Chart 容器、图例、tooltip 主题 token。
-- [ ] 日志表格与 HTTP 状态语义。
+- [x] Chart 容器、日志查看器与主题 token。
+- [ ] 图例、tooltip 主题 token与 HTTP 状态语义增强。
 
 ## Phase 5：React 应用迁移
 

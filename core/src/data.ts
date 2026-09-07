@@ -168,7 +168,7 @@ export class AdminPaginationElement extends AdminElement {
             min-height: 32px;
             padding: 4px 10px;
             border: 1px solid var(--aui-border);
-            border-radius: 0;
+            border-radius: var(--aui-radius);
             background: transparent;
             color: var(--aui-text);
             cursor: pointer;

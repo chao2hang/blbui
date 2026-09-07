@@ -195,7 +195,12 @@ export class AdminSkeletonElement extends AdminElement {
         .skeleton {
             width: var(--aui-skeleton-width, 100%);
             height: var(--aui-skeleton-height, 16px);
-            background: linear-gradient(90deg, var(--aui-header), #27272a, var(--aui-header));
+            background: linear-gradient(
+                90deg,
+                var(--aui-header),
+                var(--aui-skeleton-highlight, var(--aui-header)),
+                var(--aui-header)
+            );
             background-size: 300% 100%;
             animation: shimmer 1.8s ease-in-out infinite;
         }
@@ -275,7 +280,7 @@ export class AdminCopyableTextElement extends AdminElement {
             height: 28px;
             flex: 0 0 28px;
             border: 1px solid var(--aui-border);
-            border-radius: 0;
+            border-radius: var(--aui-radius);
             background: transparent;
             color: var(--aui-text-secondary);
             cursor: pointer;

@@ -84,6 +84,20 @@ declare global {
         "aui-number-input": import("./common").AdminNumberInputElement;
         "aui-code-block": import("./common").AdminCodeBlockElement;
         "aui-color-tag": import("./common").AdminColorTagElement;
+        "aui-menu": import("./essentials").AdminMenuElement;
+        "aui-sidebar": import("./essentials").AdminSidebarElement;
+        "aui-navbar": import("./essentials").AdminNavbarElement;
+        "aui-date-picker": import("./essentials").AdminDatePickerElement;
+        "aui-time-picker": import("./essentials").AdminTimePickerElement;
+        "aui-pin-input": import("./essentials").AdminPinInputElement;
+        "aui-descriptions": import("./essentials").AdminDescriptionsElement;
+        "aui-cascader": import("./interaction").AdminCascaderElement;
+        "aui-transfer": import("./interaction").AdminTransferElement;
+        "aui-context-menu": import("./interaction").AdminContextMenuElement;
+        "aui-hover-card": import("./interaction").AdminHoverCardElement;
+        "aui-notification-center": import("./interaction").AdminNotificationCenterElement;
+        "aui-upload-list": import("./file-components").AdminUploadListElement;
+        "aui-file-preview": import("./file-components").AdminFilePreviewElement;
     }
 }
 

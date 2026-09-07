@@ -17,10 +17,15 @@ import { registerAdminElements } from "@chaos_team/blbui-core/register";
 import type {
     AdminButtonSize,
     AdminButtonVariant,
+    AdminCascaderOption,
+    AdminMenuEntry,
     AdminNavItem,
+    AdminNotificationItem,
     AdminSelectOption,
     AdminStatus,
     AdminTabItem,
+    AdminTransferOption,
+    AdminUploadItem,
 } from "@chaos_team/blbui-core";
 
 import "@chaos_team/blbui-core/styles.css";
@@ -674,6 +679,336 @@ export const AdminNav = defineComponent({
             {},
             { onNavigate },
         );
+    },
+});
+
+export const AdminMenu = adminElement({
+    name: "AdminMenu",
+    tag: "aui-menu",
+    properties: ["items", "value", "orientation", "compact"],
+    events: [
+        {
+            name: "aui-menu-select",
+            emit: "select",
+            map: (detail) => [(detail as { id: string }).id, (detail as { item: unknown }).item],
+        },
+    ],
+    emits: ["select"],
+    props: { items: objectArray, value: String, orientation: String, compact: Boolean },
+});
+
+export const AdminSidebar = adminElement({
+    name: "AdminSidebar",
+    tag: "aui-sidebar",
+    properties: ["open", "title", "width", "closeLabel"],
+    events: [
+        {
+            name: "aui-open-change",
+            emit: "open-change",
+            map: (detail) => [(detail as { open: boolean }).open],
+            model: "open",
+        },
+    ],
+    slots: ["footer"],
+    emits: ["open-change", "update:open"],
+    props: {
+        open: { type: Boolean, default: true },
+        title: { type: String, default: "Navigation" },
+        width: { type: String, default: "256px" },
+        closeLabel: { type: String, default: "Close navigation" },
+    },
+});
+
+export const AdminNavbar = adminElement({
+    name: "AdminNavbar",
+    tag: "aui-navbar",
+    properties: ["title", "sticky", "bordered"],
+    slots: ["brand", "actions"],
+    props: { title: String, sticky: Boolean, bordered: { type: Boolean, default: true } },
+});
+
+export const AdminDatePicker = adminElement({
+    name: "AdminDatePicker",
+    tag: "aui-date-picker",
+    properties: ["value", "min", "max", "label", "disabled"],
+    events: [
+        {
+            name: "aui-date-change",
+            emit: "date-change",
+            map: (detail) => [(detail as { value: string }).value],
+            model: "value",
+        },
+    ],
+    emits: ["date-change", "update:value"],
+    props: { value: String, min: String, max: String, label: String, disabled: Boolean },
+});
+
+export const AdminTimePicker = adminElement({
+    name: "AdminTimePicker",
+    tag: "aui-time-picker",
+    properties: ["value", "min", "max", "step", "label", "disabled"],
+    events: [
+        {
+            name: "aui-time-change",
+            emit: "time-change",
+            map: (detail) => [(detail as { value: string }).value],
+            model: "value",
+        },
+    ],
+    emits: ["time-change", "update:value"],
+    props: {
+        value: String,
+        min: String,
+        max: String,
+        step: Number,
+        label: String,
+        disabled: Boolean,
+    },
+});
+
+export const AdminPinInput = adminElement({
+    name: "AdminPinInput",
+    tag: "aui-pin-input",
+    properties: ["length", "value", "masked", "disabled", "label"],
+    events: [
+        {
+            name: "aui-pin-change",
+            emit: "pin-change",
+            map: (detail) => [detail],
+            model: "value",
+        },
+    ],
+    emits: ["pin-change", "update:value"],
+    props: { length: Number, value: String, masked: Boolean, disabled: Boolean, label: String },
+});
+
+export const AdminDescriptions = adminElement({
+    name: "AdminDescriptions",
+    tag: "aui-descriptions",
+    properties: ["items", "columns", "bordered", "compact"],
+    props: { items: objectArray, columns: Number, bordered: Boolean, compact: Boolean },
+});
+
+export const AdminCascader = adminElement({
+    name: "AdminCascader",
+    tag: "aui-cascader",
+    properties: ["options", "value", "placeholder", "disabled", "open", "searchable"],
+    events: [
+        {
+            name: "aui-cascader-change",
+            emit: "change",
+            map: (detail) => [
+                (detail as { value: string[]; options: AdminCascaderOption[] }).value,
+            ],
+            model: "value",
+        },
+        {
+            name: "aui-open-change",
+            emit: "open-change",
+            map: (detail) => [(detail as { open: boolean }).open],
+            model: "open",
+        },
+    ],
+    emits: ["change", "update:value", "open-change", "update:open"],
+    props: {
+        options: { type: Array as PropType<AdminCascaderOption[]>, default: () => [] },
+        value: { type: Array as PropType<string[]>, default: () => [] },
+        placeholder: String,
+        disabled: Boolean,
+        open: Boolean,
+        searchable: Boolean,
+    },
+});
+
+export const AdminTransfer = adminElement({
+    name: "AdminTransfer",
+    tag: "aui-transfer",
+    properties: ["options", "values", "sourceTitle", "targetTitle", "searchable", "disabled"],
+    events: [
+        {
+            name: "aui-transfer-change",
+            emit: "change",
+            map: (detail) => [(detail as { values: string[] }).values],
+            model: "values",
+        },
+    ],
+    emits: ["change", "update:values"],
+    props: {
+        options: { type: Array as PropType<AdminTransferOption[]>, default: () => [] },
+        values: { type: Array as PropType<string[]>, default: () => [] },
+        sourceTitle: String,
+        targetTitle: String,
+        searchable: Boolean,
+        disabled: Boolean,
+    },
+});
+
+export const AdminContextMenu = adminElement({
+    name: "AdminContextMenu",
+    tag: "aui-context-menu",
+    properties: ["items", "open", "x", "y", "label"],
+    events: [
+        {
+            name: "aui-menu-select",
+            emit: "select",
+            map: (detail) => [
+                (detail as { id: string }).id,
+                (detail as { item: AdminMenuEntry }).item,
+            ],
+        },
+        {
+            name: "aui-open-change",
+            emit: "open-change",
+            map: (detail) => [(detail as { open: boolean }).open],
+            model: "open",
+        },
+    ],
+    emits: ["select", "open-change", "update:open"],
+    props: {
+        items: { type: Array as PropType<AdminMenuEntry[]>, default: () => [] },
+        open: Boolean,
+        x: Number,
+        y: Number,
+        label: String,
+    },
+});
+
+export const AdminHoverCard = adminElement({
+    name: "AdminHoverCard",
+    tag: "aui-hover-card",
+    properties: ["open", "title", "side", "delay", "closeDelay"],
+    events: [
+        {
+            name: "aui-open-change",
+            emit: "open-change",
+            map: (detail) => [(detail as { open: boolean }).open],
+            model: "open",
+        },
+    ],
+    slots: ["trigger", "content"],
+    emits: ["open-change", "update:open"],
+    props: {
+        open: Boolean,
+        title: String,
+        side: String,
+        delay: Number,
+        closeDelay: Number,
+    },
+});
+
+export const AdminNotificationCenter = adminElement({
+    name: "AdminNotificationCenter",
+    tag: "aui-notification-center",
+    properties: ["notifications", "position", "max"],
+    events: [
+        {
+            name: "aui-notification-close",
+            emit: "close",
+            map: (detail) => [(detail as { id: string }).id],
+        },
+        {
+            name: "aui-notification-action",
+            emit: "action",
+            map: (detail) => [
+                (detail as { id: string }).id,
+                (detail as { item: AdminNotificationItem }).item,
+            ],
+        },
+        {
+            name: "aui-notifications-change",
+            emit: "change",
+            map: (detail) => [(detail as { notifications: AdminNotificationItem[] }).notifications],
+        },
+    ],
+    emits: ["close", "action", "change"],
+    props: {
+        notifications: { type: Array as PropType<AdminNotificationItem[]>, default: () => [] },
+        position: String,
+        max: Number,
+    },
+});
+
+export const AdminUploadList = adminElement({
+    name: "AdminUploadList",
+    tag: "aui-upload-list",
+    properties: [
+        "files",
+        "removable",
+        "retryable",
+        "previewable",
+        "compact",
+        "disabled",
+        "emptyLabel",
+    ],
+    events: [
+        {
+            name: "aui-upload-remove",
+            emit: "remove",
+            map: (detail) => [
+                (detail as { id: string }).id,
+                (detail as { file: AdminUploadItem }).file,
+            ],
+        },
+        {
+            name: "aui-upload-retry",
+            emit: "retry",
+            map: (detail) => [
+                (detail as { id: string }).id,
+                (detail as { file: AdminUploadItem }).file,
+            ],
+        },
+        {
+            name: "aui-upload-preview",
+            emit: "preview",
+            map: (detail) => [
+                (detail as { id: string }).id,
+                (detail as { file: AdminUploadItem }).file,
+            ],
+        },
+        {
+            name: "aui-upload-change",
+            emit: "change",
+            map: (detail) => [(detail as { files: AdminUploadItem[] }).files],
+            model: "files",
+        },
+    ],
+    emits: ["remove", "retry", "preview", "change", "update:files"],
+    props: {
+        files: { type: Array as PropType<AdminUploadItem[]>, default: () => [] },
+        removable: { type: Boolean, default: true },
+        retryable: { type: Boolean, default: true },
+        previewable: { type: Boolean, default: true },
+        compact: Boolean,
+        disabled: Boolean,
+        emptyLabel: String,
+    },
+});
+
+export const AdminFilePreview = adminElement({
+    name: "AdminFilePreview",
+    tag: "aui-file-preview",
+    properties: ["file", "open", "title", "closeLabel", "downloadLabel", "downloadable"],
+    events: [
+        {
+            name: "aui-file-preview-close",
+            emit: "close",
+            map: (detail) => [(detail as { file: AdminUploadItem | null }).file],
+            model: "open",
+        },
+        {
+            name: "aui-file-download",
+            emit: "download",
+            map: (detail) => [(detail as { file: AdminUploadItem }).file],
+        },
+    ],
+    emits: ["close", "update:open", "download"],
+    props: {
+        file: { type: Object as PropType<AdminUploadItem | null>, default: null },
+        open: Boolean,
+        title: String,
+        closeLabel: String,
+        downloadLabel: String,
+        downloadable: { type: Boolean, default: true },
     },
 });
 

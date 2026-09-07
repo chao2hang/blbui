@@ -23,11 +23,12 @@ export class AdminInputElement extends AdminElement {
             display: block;
         }
         input {
+            box-sizing: border-box;
             width: 100%;
             min-height: var(--aui-control-height);
             padding: 8px 10px;
             border: 1px solid var(--aui-border);
-            border-radius: 0;
+            border-radius: var(--aui-radius);
             background: var(--aui-bg);
             color: var(--aui-text);
             font: var(--aui-input-font-size, 12px)/1.2 var(--aui-font-mono);
@@ -111,11 +112,12 @@ export class AdminSelectElement extends AdminElement {
             display: block;
         }
         select {
+            box-sizing: border-box;
             width: 100%;
             min-height: var(--aui-control-height);
             padding: 8px 30px 8px 10px;
             border: 1px solid var(--aui-border);
-            border-radius: 0;
+            border-radius: var(--aui-radius);
             background: var(--aui-bg);
             color: var(--aui-text);
             font: var(--aui-input-font-size, 12px)/1.2 var(--aui-font-mono);
@@ -186,11 +188,12 @@ export class AdminTextareaElement extends AdminElement {
             display: block;
         }
         textarea {
+            box-sizing: border-box;
             width: 100%;
             min-height: 96px;
             padding: 10px;
             border: 1px solid var(--aui-border);
-            border-radius: 0;
+            border-radius: var(--aui-radius);
             background: var(--aui-bg);
             color: var(--aui-text);
             resize: vertical;
@@ -271,7 +274,7 @@ export class AdminCheckboxElement extends AdminElement {
             height: 16px;
             margin: 0;
             accent-color: var(--aui-text-primary);
-            border-radius: 0;
+            border-radius: var(--aui-radius);
         }
         label:has(input:disabled) {
             cursor: not-allowed;

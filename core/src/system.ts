@@ -82,6 +82,9 @@ export class AdminGridElement extends AdminElement {
     static styles = css`
         :host {
             display: block;
+            min-width: 0;
+            max-width: 100%;
+            container-type: inline-size;
         }
         .grid {
             display: grid;
@@ -91,7 +94,15 @@ export class AdminGridElement extends AdminElement {
             );
             gap: var(--aui-grid-gap, 16px);
         }
-        @media (max-width: 640px) {
+        ::slotted(*) {
+            min-width: 0;
+        }
+        @container (max-width: 720px) {
+            .grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @container (max-width: 460px) {
             .grid {
                 grid-template-columns: 1fr;
             }
@@ -424,11 +435,11 @@ export class AdminDataGridElement extends AdminElement {
         }
         td {
             padding: 13px 14px;
-            border-bottom: 1px solid #18181b;
+            border-bottom: 1px solid var(--aui-border);
             color: var(--aui-text);
         }
         tr:hover td {
-            background: rgb(39 39 42 / 50%);
+            background: var(--aui-table-row-hover);
         }
         .state {
             padding: 42px 16px;

@@ -25,3 +25,7 @@ export { registerAdminElements } from "./register";
 export * from "./controls";
 export * from "./system";
 export * from "./common";
+export * from "./essentials";
+export * from "./interaction";
+export * from "./file-components";
+export * from "./theme";

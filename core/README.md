@@ -14,4 +14,11 @@ registerAdminElements();
 <aui-status-tag status="success">Online</aui-status-tag>
 ```
 
-All 78 components use the `--aui-*` design tokens. Interactive components emit structured `aui-*` CustomEvents (the full event table is in the repository README); display-only components such as `Badge`, `Avatar`, `Kbd` and `ColorTag` are passive.
+All 92 components use the `--aui-*` design tokens. The package also ships nine light/dark theme presets and a namespaced utility layer in `themes.css` and `utilities.css`. Interactive components emit structured `aui-*` CustomEvents (the full event table is in the repository README); display-only components such as `Badge`, `Avatar`, `Kbd` and `ColorTag` are passive.
+
+```ts
+import { setAdminTheme } from "@chaos_team/blbui-core";
+import "@chaos_team/blbui-core/styles.css";
+
+setAdminTheme(document, "glass", "dark");
+```

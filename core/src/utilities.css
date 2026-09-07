@@ -1,0 +1,399 @@
+/*
+Copyright (C) 2023-2026 Chaos
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License.
+*/
+
+/* Small, semantic utility layer inspired by daisyUI. It is deliberately
+ * namespaced and only consumes --aui-* tokens, so host markup can be themed
+ * without importing a second design system. */
+.aui-root :where(.aui-btn) {
+    min-height: var(--aui-control-height);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border: 1px solid var(--aui-border);
+    border-radius: var(--aui-radius);
+    background: transparent;
+    color: var(--aui-text);
+    cursor: pointer;
+    font: 700 12px/1.2 var(--aui-font-mono);
+    text-transform: uppercase;
+    transition:
+        background var(--aui-transition),
+        border-color var(--aui-transition),
+        color var(--aui-transition),
+        box-shadow var(--aui-transition),
+        transform var(--aui-transition);
+}
+
+.aui-root :where(.aui-btn:hover:not(:disabled)) {
+    border-color: var(--aui-border-hover);
+    background: var(--aui-control-bg-hover);
+    color: var(--aui-text-primary);
+}
+
+.aui-root :where(.aui-btn:active:not(:disabled)) {
+    transform: translateY(1px);
+}
+
+.aui-root :where(.aui-btn-primary) {
+    border-color: var(--aui-primary);
+    background: var(--aui-primary);
+    color: var(--aui-primary-content);
+}
+
+.aui-root :where(.aui-btn-secondary) {
+    border-color: var(--aui-secondary);
+    background: var(--aui-secondary);
+    color: var(--aui-secondary-content);
+}
+
+.aui-root :where(.aui-btn-accent) {
+    border-color: var(--aui-accent);
+    background: var(--aui-accent);
+    color: var(--aui-accent-content);
+}
+
+.aui-root :where(.aui-btn-success) {
+    border-color: var(--aui-success);
+    background: var(--aui-success);
+    color: var(--aui-success-content);
+}
+
+.aui-root :where(.aui-btn-danger) {
+    border-color: var(--aui-danger);
+    background: var(--aui-danger);
+    color: var(--aui-danger-content);
+}
+
+.aui-root :where(.aui-btn-ghost) {
+    border-color: transparent;
+}
+
+.aui-root :where(.aui-btn-outline) {
+    background: transparent;
+}
+
+.aui-root :where(.aui-btn-sm) {
+    min-height: var(--aui-control-height-compact);
+    padding: 4px 10px;
+    font-size: 11px;
+}
+
+.aui-root :where(.aui-btn-lg) {
+    min-height: 44px;
+    padding-inline: 18px;
+}
+
+.aui-root :where(.aui-btn-block) {
+    width: 100%;
+}
+
+.aui-root :where(.aui-input, .aui-select, .aui-textarea) {
+    width: 100%;
+    min-height: var(--aui-control-height);
+    padding: 8px 10px;
+    border: 1px solid var(--aui-border);
+    border-radius: var(--aui-radius);
+    outline: 0;
+    background: var(--aui-control-bg);
+    color: var(--aui-text);
+    transition:
+        border-color var(--aui-transition),
+        box-shadow var(--aui-transition),
+        background var(--aui-transition);
+}
+
+.aui-root :where(.aui-input:hover, .aui-select:hover, .aui-textarea:hover) {
+    border-color: var(--aui-control-border-hover);
+}
+
+.aui-root :where(.aui-input:focus, .aui-select:focus, .aui-textarea:focus) {
+    border-color: var(--aui-focus);
+    box-shadow: var(--aui-focus-ring);
+}
+
+.aui-root :where(.aui-textarea) {
+    min-height: 96px;
+    resize: vertical;
+}
+
+.aui-root :where(.aui-checkbox, .aui-radio, .aui-toggle, .aui-range) {
+    accent-color: var(--aui-primary);
+}
+
+.aui-root :where(.aui-card) {
+    padding: 16px;
+    border: 1px solid var(--aui-border);
+    border-radius: var(--aui-radius-lg);
+    background: var(--aui-surface);
+    box-shadow: var(--aui-shadow-sm);
+}
+
+.aui-root :where(.aui-card-hover:hover) {
+    border-color: var(--aui-border-hover);
+    box-shadow: var(--aui-shadow-md);
+}
+
+.aui-root :where(.aui-alert) {
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--aui-border);
+    border-radius: var(--aui-radius);
+    background: var(--aui-surface);
+    color: var(--aui-text);
+}
+
+.aui-root :where(.aui-alert-info) {
+    border-color: color-mix(in srgb, var(--aui-info) 48%, var(--aui-border));
+    background: color-mix(in srgb, var(--aui-info) 8%, var(--aui-surface));
+}
+
+.aui-root :where(.aui-alert-success) {
+    border-color: color-mix(in srgb, var(--aui-success) 48%, var(--aui-border));
+    background: color-mix(in srgb, var(--aui-success) 8%, var(--aui-surface));
+}
+
+.aui-root :where(.aui-alert-warning) {
+    border-color: color-mix(in srgb, var(--aui-warning) 48%, var(--aui-border));
+    background: color-mix(in srgb, var(--aui-warning) 8%, var(--aui-surface));
+}
+
+.aui-root :where(.aui-alert-danger) {
+    border-color: color-mix(in srgb, var(--aui-danger) 48%, var(--aui-border));
+    background: color-mix(in srgb, var(--aui-danger) 8%, var(--aui-surface));
+}
+
+.aui-root :where(.aui-badge) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    padding: 3px 8px;
+    border: 1px solid var(--aui-border);
+    border-radius: var(--aui-radius-full);
+    background: var(--aui-neutral);
+    color: var(--aui-neutral-content);
+    font: 700 10px/1 var(--aui-font-mono);
+    text-transform: uppercase;
+}
+
+.aui-root :where(.aui-badge-primary) {
+    border-color: var(--aui-primary);
+    background: var(--aui-primary);
+    color: var(--aui-primary-content);
+}
+
+.aui-root :where(.aui-badge-success) {
+    border-color: var(--aui-success);
+    background: color-mix(in srgb, var(--aui-success) 14%, var(--aui-surface));
+    color: var(--aui-success);
+}
+
+.aui-root :where(.aui-badge-warning) {
+    border-color: var(--aui-warning);
+    background: color-mix(in srgb, var(--aui-warning) 14%, var(--aui-surface));
+    color: var(--aui-warning);
+}
+
+.aui-root :where(.aui-badge-danger) {
+    border-color: var(--aui-danger);
+    background: color-mix(in srgb, var(--aui-danger) 14%, var(--aui-surface));
+    color: var(--aui-danger);
+}
+
+.aui-root :where(.aui-progress) {
+    width: 100%;
+    height: 8px;
+    overflow: hidden;
+    border-radius: var(--aui-radius-full);
+    background: var(--aui-neutral);
+}
+
+.aui-root :where(.aui-progress > *) {
+    height: 100%;
+    border-radius: inherit;
+    background: var(--aui-primary);
+}
+
+.aui-root :where(.aui-skeleton) {
+    display: block;
+    min-height: 16px;
+    border-radius: var(--aui-radius-sm);
+    background: linear-gradient(
+        90deg,
+        var(--aui-header),
+        color-mix(in srgb, var(--aui-text-primary) 10%, var(--aui-header)),
+        var(--aui-header)
+    );
+    background-size: 300% 100%;
+    animation: aui-shimmer 1.8s ease-in-out infinite;
+}
+
+@keyframes aui-shimmer {
+    from {
+        background-position: 100% 50%;
+    }
+    to {
+        background-position: -100% 50%;
+    }
+}
+
+.aui-root :where(.aui-divider) {
+    height: 1px;
+    margin-block: 16px;
+    border: 0;
+    background: var(--aui-border);
+}
+
+.aui-root :where(.aui-table) {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--aui-surface);
+    color: var(--aui-text);
+    font: 12px/1.4 var(--aui-font-mono);
+    text-align: left;
+}
+
+.aui-root :where(.aui-table th, .aui-table td) {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--aui-border);
+}
+
+.aui-root :where(.aui-table th) {
+    background: var(--aui-header);
+    color: var(--aui-text-secondary);
+    text-transform: uppercase;
+}
+
+.aui-root :where(.aui-table tbody tr:hover) {
+    background: var(--aui-table-row-hover);
+}
+
+.aui-root :where(.aui-menu) {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 180px;
+    padding: 6px;
+    border: 1px solid var(--aui-border);
+    border-radius: var(--aui-radius);
+    background: var(--aui-surface);
+    box-shadow: var(--aui-shadow-md);
+}
+
+.aui-root :where(.aui-menu > a, .aui-menu > button) {
+    padding: 8px 10px;
+    border: 1px solid transparent;
+    border-radius: var(--aui-radius-sm);
+    background: transparent;
+    color: var(--aui-text-secondary);
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.aui-root :where(.aui-menu > a:hover, .aui-menu > button:hover:not(:disabled)) {
+    border-color: var(--aui-border-hover);
+    background: var(--aui-control-bg-hover);
+    color: var(--aui-text-primary);
+}
+
+.aui-root :where(.aui-tabs) {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--aui-border);
+}
+
+.aui-root :where(.aui-tab) {
+    padding: 9px 12px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--aui-text-secondary);
+    cursor: pointer;
+}
+
+.aui-root :where(.aui-tab[aria-selected="true"], .aui-tab:hover) {
+    border-bottom-color: var(--aui-primary);
+    color: var(--aui-text-primary);
+}
+
+.aui-root :where(.aui-join) {
+    display: inline-flex;
+}
+
+.aui-root :where(.aui-join > *) {
+    border-radius: 0;
+}
+
+.aui-root :where(.aui-join > :first-child) {
+    border-start-start-radius: var(--aui-radius);
+    border-end-start-radius: var(--aui-radius);
+}
+
+.aui-root :where(.aui-join > :last-child) {
+    border-start-end-radius: var(--aui-radius);
+    border-end-end-radius: var(--aui-radius);
+}
+
+.aui-root :where(.aui-stack) {
+    display: flex;
+    gap: var(--aui-stack-gap, 12px);
+}
+
+.aui-root :where(.aui-stack-column) {
+    flex-direction: column;
+}
+
+.aui-root :where(.aui-grid) {
+    display: grid;
+    grid-template-columns: repeat(var(--aui-grid-columns, 2), minmax(0, 1fr));
+    gap: var(--aui-grid-gap, 16px);
+}
+
+.aui-root :where(.aui-container) {
+    width: min(100%, var(--aui-container-width, 1200px));
+    margin-inline: auto;
+    padding-inline: var(--aui-page-padding, 32px);
+}
+
+.aui-root :where(.aui-link) {
+    color: var(--aui-accent);
+    text-underline-offset: 3px;
+}
+
+.aui-root :where(.aui-kbd) {
+    padding: 3px 6px;
+    border: 1px solid var(--aui-border);
+    border-bottom-width: 2px;
+    border-radius: var(--aui-radius-sm);
+    background: var(--aui-header);
+    color: var(--aui-text-secondary);
+    font: 11px/1 var(--aui-font-mono);
+}
+
+.aui-root :where(.aui-code) {
+    padding: 2px 4px;
+    border-radius: var(--aui-radius-sm);
+    background: var(--aui-code-bg);
+    color: var(--aui-code-text);
+    font: 0.9em var(--aui-font-mono);
+}
+
+.aui-root :where(.aui-glass) {
+    border: 1px solid var(--aui-border);
+    background: var(--aui-surface-translucent);
+    backdrop-filter: var(--aui-backdrop-filter);
+    box-shadow: var(--aui-shadow-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .aui-root :where(.aui-skeleton) {
+        animation: none;
+        background: var(--aui-header);
+    }
+}

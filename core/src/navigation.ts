@@ -33,7 +33,7 @@ export class AdminNavElement extends AdminElement {
             padding: 8px 12px;
             border: 0;
             border-left: 2px solid transparent;
-            border-radius: 0;
+            border-radius: var(--aui-radius);
             background: transparent;
             color: var(--aui-text-secondary);
             cursor: pointer;

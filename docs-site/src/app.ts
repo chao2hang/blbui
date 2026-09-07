@@ -11,6 +11,14 @@ import {
     type ComponentItem,
     type FrameworkType,
 } from "./components-data";
+import {
+    adminThemeLabels,
+    adminThemes,
+    getAdminTheme,
+    setAdminTheme,
+    toggleAdminThemeMode,
+    type AdminThemeName,
+} from "@chaos_team/blbui-core";
 
 // catalog.ts is the single source of truth for the props/events displayed on
 // each card; components-data.ts only owns previews and usage snippets.
@@ -24,6 +32,7 @@ const categoryCounts = catalog.reduce<Record<string, number>>((acc, entry) => {
 type SectionId =
     | "overview"
     | "tokens"
+    | "themes"
     | "components"
     | "cat-primitives"
     | "cat-forms"
@@ -41,6 +50,7 @@ type Section = { id: SectionId; label: string; eyebrow: string; category?: Catal
 const sections: Section[] = [
     { id: "overview", label: "Overview", eyebrow: "START HERE" },
     { id: "tokens", label: "Design Tokens", eyebrow: "FOUNDATION" },
+    { id: "themes", label: "Themes (" + adminThemes.length + ")", eyebrow: "FOUNDATION" },
     { id: "components", label: `All Components (${totalComponents})`, eyebrow: "LIBRARY" },
     {
         id: "cat-primitives",
@@ -100,6 +110,10 @@ const codeSamples: Record<string, string> = {
     svelte: `<script lang="ts">\nimport { registerAdminElements } from '@chaos_team/blbui-svelte'\nimport '@chaos_team/blbui-core/styles.css'\n\nregisterAdminElements()\n</script>\n\n<aui-page title="Channels">\n  <aui-button variant="primary">Deploy New</aui-button>\n</aui-page>`,
     web: `import { registerAdminElements } from '@chaos_team/blbui-core/register'\nimport '@chaos_team/blbui-core/styles.css'\n\nregisterAdminElements()\n\n<aui-button variant="primary">Deploy New</aui-button>`,
 };
+
+const themeOptions = adminThemes
+    .map((theme) => `<option value="${theme}">${adminThemeLabels[theme]}</option>`)
+    .join("");
 
 function escapeHtml(str: string): string {
     return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -167,25 +181,52 @@ function renderComponentCard(comp: ComponentItem, fw: FrameworkType = globalFram
 
 function tokenCards(): string {
     const tokens = [
-        ["CANVAS", "--aui-bg", "#0a0a0a"],
-        ["SURFACE", "--aui-surface", "#0f0f0f"],
-        ["HEADER", "--aui-header", "#18181b"],
-        ["BORDER", "--aui-border", "#262626"],
-        ["PRIMARY", "--aui-text-primary", "#ffffff"],
-        ["SUCCESS", "--aui-success", "#10b981"],
-        ["DANGER", "--aui-danger", "#ef4444"],
-        ["INFO", "--aui-info", "#60a5fa"],
+        ["CANVAS", "--aui-bg"],
+        ["SURFACE", "--aui-surface"],
+        ["HEADER", "--aui-header"],
+        ["BORDER", "--aui-border"],
+        ["PRIMARY", "--aui-text-primary"],
+        ["SUCCESS", "--aui-success"],
+        ["DANGER", "--aui-danger"],
+        ["INFO", "--aui-info"],
     ];
     return tokens
         .map(
-            ([label, variable, color]) =>
-                `<div class="token-card"><span class="swatch" style="background:${color}"></span><div><small>${label}</small><code>${variable}</code><strong>${color}</strong></div></div>`,
+            ([label, variable]) =>
+                `<div class="token-card"><span class="swatch" style="background:var(${variable})"></span><div><small>${label}</small><code>${variable}</code><strong data-token-value="${variable}"></strong></div></div>`,
+        )
+        .join("");
+}
+
+function themeCards(): string {
+    return adminThemes
+        .map(
+            (theme) => `
+        <article class="theme-card" data-aui-theme="${theme}" data-aui-mode="light">
+          <div class="theme-card-heading">
+            <div><span class="theme-card-kicker">AUI THEME</span><h3>${adminThemeLabels[theme]}</h3></div>
+            <span class="theme-card-name">${theme}</span>
+          </div>
+          <div class="theme-samples">
+            <div class="theme-sample" data-aui-theme="${theme}" data-aui-mode="light">
+              <div class="theme-sample-top"><span>LIGHT</span><i></i></div>
+              <strong>Operational surface</strong><small>Cards, controls, tables</small>
+              <div class="theme-sample-actions"><span></span><span></span><span></span></div>
+            </div>
+            <div class="theme-sample" data-aui-theme="${theme}" data-aui-mode="dark">
+              <div class="theme-sample-top"><span>DARK</span><i></i></div>
+              <strong>Operational surface</strong><small>Cards, controls, tables</small>
+              <div class="theme-sample-actions"><span></span><span></span><span></span></div>
+            </div>
+          </div>
+        </article>`,
         )
         .join("");
 }
 
 const root = document.createElement("div");
 root.className = "docs-app aui-root";
+setAdminTheme(document, "obsidian", "dark");
 root.innerHTML = `
   <aside class="docs-sidebar" id="docs-sidebar">
     <a class="brand" href="#overview" data-nav="overview" aria-label="BLBUI home">
@@ -195,16 +236,16 @@ root.innerHTML = `
     <div class="sidebar-rule"></div>
     <label class="docs-search"><span aria-hidden="true">⌕</span><input id="docs-search" type="search" placeholder="SEARCH ${totalComponents} COMPONENTS..." aria-label="Search components" /></label>
     <nav class="docs-nav" aria-label="Documentation navigation"></nav>
-    <div class="sidebar-footer"><span class="pulse"></span><span>CORE STATUS / STABLE</span><span class="version">v0.0.3</span></div>
+    <div class="sidebar-footer"><span class="pulse"></span><span>CORE STATUS / STABLE</span><span class="version">v0.0.4</span></div>
   </aside>
   <div class="docs-main">
     <header class="docs-header">
       <div class="header-path"><span>DOCS:</span> BLBUI <b>/</b> COMPONENT SYSTEM</div>
-      <div class="header-tools"><a href="https://github.com/chao2hang/blbui" target="_blank" rel="noreferrer">GITHUB ↗</a><button type="button" class="header-menu" aria-label="Toggle navigation" aria-expanded="false" aria-controls="docs-sidebar">MENU</button></div>
+      <div class="header-tools"><label class="theme-control"><span>THEME</span><select id="theme-select" aria-label="Select theme">${themeOptions}</select></label><button type="button" class="mode-toggle" id="mode-toggle" aria-label="Toggle light and dark mode">DAY</button><a href="https://github.com/chao2hang/blbui" target="_blank" rel="noreferrer">GITHUB ↗</a><button type="button" class="header-menu" aria-label="Toggle navigation" aria-expanded="false" aria-controls="docs-sidebar">MENU</button></div>
     </header>
     <main class="docs-content">
       <section class="docs-hero" id="overview">
-        <div class="hero-kicker"><span></span> OBSIDIAN INDUSTRIAL CONSOLE / 0.0.3</div>
+        <div class="hero-kicker"><span></span> OBSIDIAN INDUSTRIAL CONSOLE / 0.0.4</div>
         <h1>BLBUI<br><em>DOCUMENTATION</em></h1>
         <p class="hero-lede">A sharp, data-first cross-framework component system for enterprise operational consoles. All ${totalComponents} components with interactive previews, live properties, and usage across Web Components, React, Vue, and Svelte.</p>
         <div class="hero-actions"><aui-button variant="primary" id="hero-explore">EXPLORE ${totalComponents} COMPONENTS</aui-button><a class="text-link" href="#frameworks">VIEW FRAMEWORKS <span>→</span></a></div>
@@ -216,8 +257,15 @@ root.innerHTML = `
         <div class="token-layout"><div class="token-copy"><p>Every component inherits a compact, semantic token layer. Override variables at your application root to create a controlled variant without forking component CSS.</p><code>:root { --aui-bg: #0a0a0a; --aui-border: #262626; }</code></div><div class="token-grid">${tokenCards()}</div></div>
       </section>
 
+      <section class="content-section themes-section" id="themes">
+        <div class="section-heading"><span class="section-index">02</span><div><p class="eyebrow">THEME PRESETS / LIGHT + DARK</p><h2>One component system, nine surfaces.</h2></div></div>
+        <p class="section-intro">Every preset maps the same semantic token contract. Switch the application theme at runtime without changing component markup, framework bindings, or interaction behavior.</p>
+        <div class="theme-grid">${themeCards()}</div>
+        <div class="theme-contract"><div><strong>Theme contract</strong><span>Surfaces · text · status · focus · borders · shadows · radius · overlays</span></div><code>setAdminTheme(root, "enterprise", "light")</code></div>
+      </section>
+
       <section class="content-section" id="components">
-        <div class="section-heading"><span class="section-index">02</span><div><p class="eyebrow">LIBRARY INDEX &amp; PLAYGROUND</p><h2>All ${totalComponents} components &amp; usage</h2></div></div>
+        <div class="section-heading"><span class="section-index">03</span><div><p class="eyebrow">LIBRARY INDEX &amp; PLAYGROUND</p><h2>All ${totalComponents} components &amp; usage</h2></div></div>
         <p class="section-intro catalog-intro">Every custom element is rendered live with interactive controls, schema props, and instant code snippets for Web Components, React, Vue and Svelte.</p>
         
         <div class="catalog-toolbar">
@@ -262,7 +310,7 @@ root.innerHTML = `
       </section>
 
       <section class="content-section framework-section" id="frameworks">
-        <div class="section-heading"><span class="section-index">03</span><div><p class="eyebrow">INTEGRATION</p><h2>One system. Your stack.</h2></div></div>
+        <div class="section-heading"><span class="section-index">04</span><div><p class="eyebrow">INTEGRATION</p><h2>One system. Your stack.</h2></div></div>
         <p class="section-intro">The core owns behavior and visual language. Thin adapters make the same components feel native in every supported framework.</p>
         <div class="framework-tabs" role="tablist" aria-label="Framework examples">${["react", "vue", "svelte", "web"].map((framework, index) => `<button type="button" role="tab" aria-selected="${index === 0}" data-framework="${framework}">${framework === "web" ? "WEB COMPONENTS" : framework.toUpperCase()}</button>`).join("")}</div>
         <pre class="framework-code" aria-live="polite"></pre>
@@ -270,7 +318,7 @@ root.innerHTML = `
       </section>
 
       <section class="content-section accessibility-section" id="accessibility">
-        <div class="section-heading"><span class="section-index">04</span><div><p class="eyebrow">QUALITY BAR</p><h2>Accessible by default</h2></div></div>
+        <div class="section-heading"><span class="section-index">05</span><div><p class="eyebrow">QUALITY BAR</p><h2>Accessible by default</h2></div></div>
         <div class="a11y-list">
           <div><strong>01</strong><span>Native elements first</span><p>Buttons, inputs, select, table and dialog preserve browser semantics.</p></div>
           <div><strong>02</strong><span>State has meaning</span><p>Active, selected, disabled, loading and error states expose ARIA semantics.</p></div>
@@ -281,6 +329,28 @@ root.innerHTML = `
     <footer class="docs-footer"><span>BLBUI / DOCUMENTATION</span><span>BUILT FOR OPERATORS, NOT DECORATION.</span></footer>
   </div>
 `;
+
+const themeSelect = root.querySelector<HTMLSelectElement>("#theme-select");
+const modeToggle = root.querySelector<HTMLButtonElement>("#mode-toggle");
+function syncThemeControls(): void {
+    const current = getAdminTheme(document);
+    if (themeSelect) themeSelect.value = current.theme;
+    if (modeToggle) modeToggle.textContent = current.mode === "light" ? "NIGHT" : "DAY";
+    root.querySelectorAll<HTMLElement>("[data-token-value]").forEach((item) => {
+        const variable = item.dataset.tokenValue;
+        if (variable) item.textContent = getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+    });
+}
+themeSelect?.addEventListener("change", () => {
+    const theme = themeSelect.value as AdminThemeName;
+    setAdminTheme(document, theme, getAdminTheme(document).mode);
+    syncThemeControls();
+});
+modeToggle?.addEventListener("click", () => {
+    toggleAdminThemeMode(document);
+    syncThemeControls();
+});
+syncThemeControls();
 
 // Build sidebar navigation
 const nav = root.querySelector(".docs-nav") as HTMLElement;

@@ -16,13 +16,19 @@ import {
 import { registerAdminElements } from "@chaos_team/blbui-core/register";
 import type {
     AdminAlertVariant,
+    AdminCascaderOption,
     AdminDataGridColumn,
+    AdminDescriptionItem,
     AdminKanbanColumn,
     AdminListItem,
     AdminLogEntry,
+    AdminMenuEntry,
     AdminMenuItem,
+    AdminNotificationItem,
     AdminOption,
     AdminStatus,
+    AdminTransferOption,
+    AdminUploadItem,
     AdminTreeNode,
 } from "@chaos_team/blbui-core";
 
@@ -35,6 +41,12 @@ type ElementProps = {
     [key: string]: unknown;
 };
 type CustomElement = HTMLElement & Record<string, unknown>;
+
+function renderSlot(name: string, content: ReactNode): ReactNode {
+    return content
+        ? createElement("span", { slot: name, key: name, style: { display: "contents" } }, content)
+        : null;
+}
 
 type Binding = {
     element: RefObject<CustomElement | null>;
@@ -1164,4 +1176,490 @@ export function AdminColorTag(props: AdminColorTagProps) {
         { ...elementProps(props, ["color", "label"]), ...rest, ref: setRef },
         props.children,
     );
+}
+
+export interface AdminMenuProps extends ElementProps {
+    items?: AdminMenuEntry[];
+    value?: string;
+    orientation?: "vertical" | "horizontal";
+    compact?: boolean;
+    onSelect?: (id: string, item: AdminMenuEntry) => void;
+}
+export function AdminMenu(props: AdminMenuProps) {
+    const { items, value, orientation, compact, onSelect, ...rest } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { items, value, orientation, compact },
+        {
+            "aui-menu-select": onSelect
+                ? (detail: { id: string; item: AdminMenuEntry }) => onSelect(detail.id, detail.item)
+                : undefined,
+        },
+    );
+    return createElement("aui-menu", {
+        ...elementProps(props, ["items", "value", "orientation", "compact"], ["onSelect"]),
+        ...rest,
+        ref: setRef,
+    });
+}
+
+export interface AdminSidebarProps extends ElementProps {
+    open?: boolean;
+    title?: string;
+    width?: string;
+    closeLabel?: string;
+    footer?: ReactNode;
+    onOpenChange?: (open: boolean) => void;
+}
+export function AdminSidebar(props: AdminSidebarProps) {
+    const { children, open, title, width, closeLabel, footer, onOpenChange, ...rest } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { open, title, width, closeLabel },
+        {
+            "aui-open-change": onOpenChange
+                ? (detail: { open: boolean }) => onOpenChange(detail.open)
+                : undefined,
+        },
+    );
+    return createElement(
+        "aui-sidebar",
+        {
+            ...elementProps(
+                props,
+                ["open", "title", "width", "closeLabel", "footer"],
+                ["onOpenChange"],
+            ),
+            ...rest,
+            ref: setRef,
+        },
+        [children, renderSlot("footer", footer)],
+    );
+}
+
+export interface AdminNavbarProps extends ElementProps {
+    title?: string;
+    sticky?: boolean;
+    bordered?: boolean;
+    brand?: ReactNode;
+    actions?: ReactNode;
+}
+export function AdminNavbar(props: AdminNavbarProps) {
+    const { children, title, sticky, bordered, brand, actions, ...rest } = props;
+    const { setRef } = useBinding(undefined, { title, sticky, bordered });
+    return createElement(
+        "aui-navbar",
+        {
+            ...elementProps(props, ["title", "sticky", "bordered", "brand", "actions"]),
+            ...rest,
+            ref: setRef,
+        },
+        [renderSlot("brand", brand), children, renderSlot("actions", actions)],
+    );
+}
+
+export interface AdminDatePickerProps extends ElementProps {
+    value?: string;
+    min?: string;
+    max?: string;
+    label?: string;
+    disabled?: boolean;
+    onChange?: (value: string) => void;
+}
+export function AdminDatePicker(props: AdminDatePickerProps) {
+    const { value, min, max, label, disabled, onChange, ...rest } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { value, min, max, label, disabled },
+        {
+            "aui-date-change": onChange
+                ? (detail: { value: string }) => onChange(detail.value)
+                : undefined,
+        },
+    );
+    return createElement("aui-date-picker", {
+        ...elementProps(props, ["value", "min", "max", "label", "disabled"], ["onChange"]),
+        ...rest,
+        ref: setRef,
+    });
+}
+
+export interface AdminTimePickerProps extends ElementProps {
+    value?: string;
+    min?: string;
+    max?: string;
+    step?: number;
+    label?: string;
+    disabled?: boolean;
+    onChange?: (value: string) => void;
+}
+export function AdminTimePicker(props: AdminTimePickerProps) {
+    const { value, min, max, step, label, disabled, onChange, ...rest } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { value, min, max, step, label, disabled },
+        {
+            "aui-time-change": onChange
+                ? (detail: { value: string }) => onChange(detail.value)
+                : undefined,
+        },
+    );
+    return createElement("aui-time-picker", {
+        ...elementProps(props, ["value", "min", "max", "step", "label", "disabled"], ["onChange"]),
+        ...rest,
+        ref: setRef,
+    });
+}
+
+export interface AdminPinInputProps extends ElementProps {
+    length?: number;
+    value?: string;
+    masked?: boolean;
+    disabled?: boolean;
+    label?: string;
+    onChange?: (value: string, complete: boolean) => void;
+}
+export function AdminPinInput(props: AdminPinInputProps) {
+    const { length, value, masked, disabled, label, onChange, ...rest } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { length, value, masked, disabled, label },
+        {
+            "aui-pin-change": onChange
+                ? (detail: { value: string; complete: boolean }) =>
+                      onChange(detail.value, detail.complete)
+                : undefined,
+        },
+    );
+    return createElement("aui-pin-input", {
+        ...elementProps(props, ["length", "value", "masked", "disabled", "label"], ["onChange"]),
+        ...rest,
+        ref: setRef,
+    });
+}
+
+export interface AdminDescriptionsProps extends ElementProps {
+    items?: AdminDescriptionItem[];
+    columns?: number;
+    bordered?: boolean;
+    compact?: boolean;
+}
+export function AdminDescriptions(props: AdminDescriptionsProps) {
+    const { children, items, columns, bordered, compact, ...rest } = props;
+    const { setRef } = useBinding(undefined, { items, columns, bordered, compact });
+    return createElement(
+        "aui-descriptions",
+        {
+            ...elementProps(props, ["items", "columns", "bordered", "compact"]),
+            ...rest,
+            ref: setRef,
+        },
+        children,
+    );
+}
+
+export interface AdminCascaderProps extends ElementProps {
+    options?: AdminCascaderOption[];
+    value?: string[];
+    placeholder?: string;
+    disabled?: boolean;
+    open?: boolean;
+    searchable?: boolean;
+    onChange?: (value: string[], options: AdminCascaderOption[]) => void;
+    onOpenChange?: (open: boolean) => void;
+}
+export function AdminCascader(props: AdminCascaderProps) {
+    const {
+        options,
+        value,
+        placeholder,
+        disabled,
+        open,
+        searchable,
+        onChange,
+        onOpenChange,
+        ...rest
+    } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { options, value, placeholder, disabled, open, searchable },
+        {
+            "aui-cascader-change": onChange
+                ? (detail: { value: string[]; options: AdminCascaderOption[] }) =>
+                      onChange(detail.value, detail.options)
+                : undefined,
+            "aui-open-change": onOpenChange
+                ? (detail: { open: boolean }) => onOpenChange(detail.open)
+                : undefined,
+        },
+    );
+    return createElement("aui-cascader", {
+        ...elementProps(
+            props,
+            ["options", "value", "placeholder", "disabled", "open", "searchable"],
+            ["onChange", "onOpenChange"],
+        ),
+        ...rest,
+        ref: setRef,
+    });
+}
+
+export interface AdminTransferProps extends ElementProps {
+    options?: AdminTransferOption[];
+    values?: string[];
+    sourceTitle?: string;
+    targetTitle?: string;
+    searchable?: boolean;
+    disabled?: boolean;
+    onChange?: (values: string[], added: string[], removed: string[]) => void;
+}
+export function AdminTransfer(props: AdminTransferProps) {
+    const { options, values, sourceTitle, targetTitle, searchable, disabled, onChange, ...rest } =
+        props;
+    const { setRef } = useBinding(
+        undefined,
+        { options, values, sourceTitle, targetTitle, searchable, disabled },
+        {
+            "aui-transfer-change": onChange
+                ? (detail: { values: string[]; added: string[]; removed: string[] }) =>
+                      onChange(detail.values, detail.added, detail.removed)
+                : undefined,
+        },
+    );
+    return createElement("aui-transfer", {
+        ...elementProps(
+            props,
+            ["options", "values", "sourceTitle", "targetTitle", "searchable", "disabled"],
+            ["onChange"],
+        ),
+        ...rest,
+        ref: setRef,
+    });
+}
+
+export interface AdminContextMenuProps extends ElementProps {
+    items?: AdminMenuEntry[];
+    open?: boolean;
+    x?: number;
+    y?: number;
+    label?: string;
+    onSelect?: (id: string, item: AdminMenuEntry) => void;
+    onOpenChange?: (open: boolean) => void;
+}
+export function AdminContextMenu(props: AdminContextMenuProps) {
+    const { items, open, x, y, label, onSelect, onOpenChange, ...rest } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { items, open, x, y, label },
+        {
+            "aui-menu-select": onSelect
+                ? (detail: { id: string; item: AdminMenuEntry }) => onSelect(detail.id, detail.item)
+                : undefined,
+            "aui-open-change": onOpenChange
+                ? (detail: { open: boolean }) => onOpenChange(detail.open)
+                : undefined,
+        },
+    );
+    return createElement(
+        "aui-context-menu",
+        {
+            ...elementProps(
+                props,
+                ["items", "open", "x", "y", "label"],
+                ["onSelect", "onOpenChange"],
+            ),
+            ...rest,
+            ref: setRef,
+        },
+        props.children,
+    );
+}
+
+export interface AdminHoverCardProps extends ElementProps {
+    title?: string;
+    side?: "top" | "bottom" | "left" | "right";
+    delay?: number;
+    closeDelay?: number;
+    open?: boolean;
+    trigger?: ReactNode;
+    content?: ReactNode;
+    onOpenChange?: (open: boolean) => void;
+}
+export function AdminHoverCard(props: AdminHoverCardProps) {
+    const {
+        children,
+        title,
+        side,
+        delay,
+        closeDelay,
+        open,
+        trigger,
+        content,
+        onOpenChange,
+        ...rest
+    } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { title, side, delay, closeDelay, open },
+        {
+            "aui-open-change": onOpenChange
+                ? (detail: { open: boolean }) => onOpenChange(detail.open)
+                : undefined,
+        },
+    );
+    return createElement(
+        "aui-hover-card",
+        {
+            ...elementProps(
+                props,
+                ["title", "side", "delay", "closeDelay", "open", "trigger", "content"],
+                ["onOpenChange"],
+            ),
+            ...rest,
+            ref: setRef,
+        },
+        [renderSlot("trigger", trigger ?? children), renderSlot("content", content)],
+    );
+}
+
+export interface AdminNotificationCenterProps extends ElementProps {
+    notifications?: AdminNotificationItem[];
+    position?: "bottom-right" | "bottom-left" | "top-right" | "top-left";
+    max?: number;
+    onClose?: (id: string) => void;
+    onAction?: (id: string, item: AdminNotificationItem) => void;
+    onChange?: (notifications: AdminNotificationItem[]) => void;
+}
+export function AdminNotificationCenter(props: AdminNotificationCenterProps) {
+    const { notifications, position, max, onClose, onAction, onChange, ...rest } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { notifications, position, max },
+        {
+            "aui-notification-close": onClose
+                ? (detail: { id: string }) => onClose(detail.id)
+                : undefined,
+            "aui-notification-action": onAction
+                ? (detail: { id: string; item: AdminNotificationItem }) =>
+                      onAction(detail.id, detail.item)
+                : undefined,
+            "aui-notifications-change": onChange
+                ? (detail: { notifications: AdminNotificationItem[] }) =>
+                      onChange(detail.notifications)
+                : undefined,
+        },
+    );
+    return createElement("aui-notification-center", {
+        ...elementProps(
+            props,
+            ["notifications", "position", "max"],
+            ["onClose", "onAction", "onChange"],
+        ),
+        ...rest,
+        ref: setRef,
+    });
+}
+
+export interface AdminUploadListProps extends ElementProps {
+    files?: AdminUploadItem[];
+    removable?: boolean;
+    retryable?: boolean;
+    previewable?: boolean;
+    compact?: boolean;
+    disabled?: boolean;
+    emptyLabel?: string;
+    onRemove?: (id: string, file: AdminUploadItem) => void;
+    onRetry?: (id: string, file: AdminUploadItem) => void;
+    onPreview?: (id: string, file: AdminUploadItem) => void;
+    onChange?: (files: AdminUploadItem[]) => void;
+}
+export function AdminUploadList(props: AdminUploadListProps) {
+    const {
+        files,
+        removable,
+        retryable,
+        previewable,
+        compact,
+        disabled,
+        emptyLabel,
+        onRemove,
+        onRetry,
+        onPreview,
+        onChange,
+        ...rest
+    } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { files, removable, retryable, previewable, compact, disabled, emptyLabel },
+        {
+            "aui-upload-remove": onRemove
+                ? (detail: { id: string; file: AdminUploadItem }) =>
+                      onRemove(detail.id, detail.file)
+                : undefined,
+            "aui-upload-retry": onRetry
+                ? (detail: { id: string; file: AdminUploadItem }) => onRetry(detail.id, detail.file)
+                : undefined,
+            "aui-upload-preview": onPreview
+                ? (detail: { id: string; file: AdminUploadItem }) =>
+                      onPreview(detail.id, detail.file)
+                : undefined,
+            "aui-upload-change": onChange
+                ? (detail: { files: AdminUploadItem[] }) => onChange(detail.files)
+                : undefined,
+        },
+    );
+    return createElement("aui-upload-list", {
+        ...elementProps(
+            props,
+            ["files", "removable", "retryable", "previewable", "compact", "disabled", "emptyLabel"],
+            ["onRemove", "onRetry", "onPreview", "onChange"],
+        ),
+        ...rest,
+        ref: setRef,
+    });
+}
+
+export interface AdminFilePreviewProps extends ElementProps {
+    file?: AdminUploadItem | null;
+    open?: boolean;
+    title?: string;
+    closeLabel?: string;
+    downloadLabel?: string;
+    downloadable?: boolean;
+    onClose?: (file: AdminUploadItem | null) => void;
+    onDownload?: (file: AdminUploadItem) => void;
+}
+export function AdminFilePreview(props: AdminFilePreviewProps) {
+    const {
+        file,
+        open,
+        title,
+        closeLabel,
+        downloadLabel,
+        downloadable,
+        onClose,
+        onDownload,
+        ...rest
+    } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { file, open, title, closeLabel, downloadLabel, downloadable },
+        {
+            "aui-file-preview-close": onClose
+                ? (detail: { file: AdminUploadItem | null }) => onClose(detail.file)
+                : undefined,
+            "aui-file-download": onDownload
+                ? (detail: { file: AdminUploadItem }) => onDownload(detail.file)
+                : undefined,
+        },
+    );
+    return createElement("aui-file-preview", {
+        ...elementProps(
+            props,
+            ["file", "open", "title", "closeLabel", "downloadLabel", "downloadable"],
+            ["onClose", "onDownload"],
+        ),
+        ...rest,
+        ref: setRef,
+    });
 }

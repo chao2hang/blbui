@@ -5,7 +5,7 @@ it under the terms of the GNU Affero General Public License.
 */
 
 :root {
-    color-scheme: dark;
+    color-scheme: var(--aui-color-scheme, dark);
 }
 
 * {
@@ -13,13 +13,13 @@ it under the terms of the GNU Affero General Public License.
 }
 html {
     scroll-behavior: smooth;
-    background: #0a0a0a;
+    background: var(--aui-bg);
 }
 body {
     margin: 0;
     min-width: 320px;
-    background: #0a0a0a;
-    color: #e5e5e5;
+    background: var(--aui-bg);
+    color: var(--aui-text);
     font-family: var(--aui-font-ui);
 }
 button,
@@ -44,13 +44,13 @@ button {
     flex-direction: column;
     padding: 25px 24px 20px;
     border-right: 1px solid var(--aui-border);
-    background: #0a0a0a;
+    background: var(--aui-surface);
 }
 .brand {
     display: flex;
     align-items: center;
     gap: 12px;
-    color: white;
+    color: var(--aui-text-primary);
     text-decoration: none;
 }
 .brand-mark {
@@ -58,13 +58,13 @@ button {
     height: 22px;
     display: grid;
     place-items: center;
-    background: white;
+    background: var(--aui-text-primary);
 }
 .brand-mark i {
     width: 10px;
     height: 10px;
     display: block;
-    background: #0a0a0a;
+    background: var(--aui-bg);
 }
 .brand-copy {
     display: flex;
@@ -95,7 +95,7 @@ button {
 }
 .nav-eyebrow {
     margin: 14px 0 7px;
-    color: #52525b;
+    color: var(--aui-text-muted);
     font: 10px/1 var(--aui-font-mono);
     letter-spacing: 0.18em;
 }
@@ -105,7 +105,7 @@ button {
 .docs-nav a {
     padding: 8px 12px;
     border-left: 2px solid transparent;
-    color: #737373;
+    color: var(--aui-text-secondary);
     text-decoration: none;
     font: 12px/1.2 var(--aui-font-mono);
     transition:
@@ -114,12 +114,12 @@ button {
         background var(--aui-transition);
 }
 .docs-nav a:hover {
-    color: white;
+    color: var(--aui-text-primary);
 }
 .docs-nav a[aria-current="page"] {
-    border-left-color: white;
-    background: linear-gradient(90deg, rgb(255 255 255 / 4%), transparent);
-    color: white;
+    border-left-color: var(--aui-primary);
+    background: linear-gradient(90deg, color-mix(in srgb, var(--aui-primary) 8%, transparent), transparent);
+    color: var(--aui-text-primary);
 }
 .sidebar-footer {
     display: flex;
@@ -127,14 +127,14 @@ button {
     gap: 7px;
     padding-top: 17px;
     border-top: 1px solid var(--aui-border);
-    color: #737373;
+    color: var(--aui-text-secondary);
     font: 9px/1 var(--aui-font-mono);
     letter-spacing: 0.08em;
     white-space: nowrap;
 }
 .sidebar-footer .version {
     margin-left: auto;
-    color: #52525b;
+    color: var(--aui-text-muted);
 }
 .pulse {
     width: 6px;
@@ -156,20 +156,20 @@ button {
     justify-content: space-between;
     padding: 0 42px;
     border-bottom: 1px solid var(--aui-border);
-    background: rgb(10 10 10 / 94%);
-    backdrop-filter: blur(8px);
+    background: var(--aui-surface-translucent);
+    backdrop-filter: var(--aui-backdrop-filter);
 }
 .header-path {
-    color: #d4d4d8;
+    color: var(--aui-text);
     font: 10px/1 var(--aui-font-mono);
     letter-spacing: 0.08em;
 }
 .header-path span {
-    color: #52525b;
+    color: var(--aui-text-muted);
 }
 .header-path b {
     margin: 0 8px;
-    color: #404040;
+    color: var(--aui-border-hover);
     font-weight: 400;
 }
 .header-tools {
@@ -179,14 +179,14 @@ button {
 }
 .header-tools a,
 .header-menu {
-    color: #737373;
+    color: var(--aui-text-secondary);
     text-decoration: none;
     font: 10px/1 var(--aui-font-mono);
     letter-spacing: 0.08em;
 }
 .header-tools a:hover,
 .header-menu:hover {
-    color: white;
+    color: var(--aui-text-primary);
 }
 .header-menu {
     display: none;
@@ -210,7 +210,7 @@ button {
     display: flex;
     align-items: center;
     gap: 9px;
-    color: #737373;
+    color: var(--aui-text-secondary);
     font: 10px/1 var(--aui-font-mono);
     letter-spacing: 0.15em;
 }
@@ -221,19 +221,19 @@ button {
 }
 .docs-hero h1 {
     margin: 28px 0 22px;
-    color: white;
+    color: var(--aui-text-primary);
     font: 700 clamp(46px, 7vw, 92px)/0.88 var(--aui-font-mono);
     letter-spacing: -0.07em;
 }
 .docs-hero h1 em {
     color: transparent;
-    -webkit-text-stroke: 1px #52525b;
+    -webkit-text-stroke: 1px var(--aui-text-muted);
     font-style: normal;
 }
 .hero-lede {
     max-width: 550px;
     margin: 0;
-    color: #a3a3a3;
+    color: var(--aui-text-secondary);
     font: 15px/1.65 var(--aui-font-ui);
 }
 .hero-actions {
@@ -243,17 +243,17 @@ button {
     margin-top: 32px;
 }
 .text-link {
-    color: #a3a3a3;
+    color: var(--aui-text-secondary);
     text-decoration: none;
     font: 11px/1 var(--aui-font-mono);
     letter-spacing: 0.05em;
 }
 .text-link:hover {
-    color: white;
+    color: var(--aui-text-primary);
 }
 .text-link span {
     margin-left: 8px;
-    color: white;
+    color: var(--aui-text-primary);
 }
 .hero-grid {
     display: grid;
@@ -272,12 +272,12 @@ button {
 .token-card small,
 .component-slug,
 .component-status {
-    color: #52525b;
+    color: var(--aui-text-muted);
     font: 10px/1 var(--aui-font-mono);
     letter-spacing: 0.13em;
 }
 .hero-grid strong {
-    color: #d4d4d8;
+    color: var(--aui-code-text);
     font: 11px/1.2 var(--aui-font-mono);
     letter-spacing: 0.03em;
 }
@@ -304,7 +304,7 @@ button {
 }
 h2 {
     margin: 0;
-    color: white;
+    color: var(--aui-text-primary);
     font: 500 clamp(26px, 4vw, 42px)/1 var(--aui-font-mono);
     letter-spacing: -0.05em;
 }
@@ -316,7 +316,7 @@ h2 {
 .token-copy p,
 .section-intro {
     margin: 0;
-    color: #737373;
+    color: var(--aui-text-secondary);
     font: 13px/1.7 var(--aui-font-ui);
 }
 .token-copy code {
@@ -324,7 +324,7 @@ h2 {
     margin-top: 22px;
     padding: 14px;
     border: 1px solid var(--aui-border);
-    color: #a1a1aa;
+    color: var(--aui-code-text);
     font: 11px/1.5 var(--aui-font-mono);
 }
 .token-grid {
@@ -346,7 +346,7 @@ h2 {
     width: 25px;
     height: 25px;
     flex: 0 0 25px;
-    border: 1px solid rgb(255 255 255 / 12%);
+    border: 1px solid color-mix(in srgb, var(--aui-text-primary) 12%, transparent);
 }
 .token-card div {
     min-width: 0;
@@ -355,13 +355,13 @@ h2 {
     gap: 5px;
 }
 .token-card code {
-    color: #737373;
+    color: var(--aui-text-secondary);
     overflow: hidden;
     text-overflow: ellipsis;
     font: 10px/1 var(--aui-font-mono);
 }
 .token-card strong {
-    color: #d4d4d8;
+    color: var(--aui-code-text);
     font: 11px/1 var(--aui-font-mono);
 }
 .component-grid {
@@ -373,7 +373,7 @@ h2 {
     min-width: 0;
     overflow: hidden;
     border: 1px solid var(--aui-border);
-    background: #0f0f0f;
+    background: var(--aui-surface);
     transition: border-color var(--aui-transition);
 }
 .component-card:hover {
@@ -390,14 +390,14 @@ h2 {
 }
 .component-card h3 {
     margin: 25px 16px 8px;
-    color: white;
+    color: var(--aui-text-primary);
     font: 500 22px/1 var(--aui-font-mono);
     letter-spacing: -0.04em;
 }
 .component-card > p {
     min-height: 42px;
     margin: 0 16px 23px;
-    color: #737373;
+    color: var(--aui-text-secondary);
     font: 12px/1.5 var(--aui-font-ui);
 }
 .playground {
@@ -407,7 +407,7 @@ h2 {
     padding: 22px 16px;
     border-top: 1px solid var(--aui-border);
     border-bottom: 1px solid var(--aui-border);
-    background: #0a0a0a;
+    background: var(--aui-bg);
 }
 .demo-stack {
     width: 100%;
@@ -434,7 +434,7 @@ h2 {
     display: flex;
     flex-direction: column;
     gap: 7px;
-    color: #737373;
+    color: var(--aui-text-secondary);
     font: 10px/1 var(--aui-font-mono);
     letter-spacing: 0.08em;
 }
@@ -453,7 +453,7 @@ h2 {
     gap: 10px;
 }
 .dialog-placeholder {
-    color: #737373;
+    color: var(--aui-text-secondary);
     font: 11px/1.4 var(--aui-font-mono);
 }
 .component-card-footer {
@@ -466,18 +466,18 @@ h2 {
 .code-toggle {
     border: 0;
     background: none;
-    color: #737373;
+    color: var(--aui-text-secondary);
     text-decoration: none;
     font: 10px/1 var(--aui-font-mono);
     letter-spacing: 0.04em;
 }
 .component-card-footer a:hover,
 .code-toggle:hover {
-    color: white;
+    color: var(--aui-text-primary);
 }
 .code-toggle span {
     margin-left: 8px;
-    color: #52525b;
+    color: var(--aui-text-muted);
 }
 .code-block,
 .framework-code {
@@ -485,8 +485,8 @@ h2 {
     overflow: auto;
     padding: 16px;
     border-top: 1px solid var(--aui-border);
-    color: #a1a1aa;
-    background: #0c0c0c;
+    color: var(--aui-code-text);
+    background: var(--aui-code-bg);
     font: 11px/1.6 var(--aui-font-mono);
     white-space: pre;
 }
@@ -508,21 +508,21 @@ h2 {
     border: 0;
     border-bottom: 2px solid transparent;
     background: none;
-    color: #737373;
+    color: var(--aui-text-secondary);
     font: 11px/1 var(--aui-font-mono);
 }
 .framework-tabs button:hover {
-    color: white;
+    color: var(--aui-text-primary);
 }
 .framework-tabs button[aria-selected="true"] {
-    border-bottom-color: white;
-    color: white;
+    border-bottom-color: var(--aui-text-primary);
+    color: var(--aui-text-primary);
 }
 .framework-code {
     min-height: 150px;
     border: 1px solid var(--aui-border);
     border-top: 0;
-    color: #d4d4d8;
+    color: var(--aui-code-text);
 }
 .install-row {
     display: flex;
@@ -531,17 +531,17 @@ h2 {
     margin-top: 16px;
     padding: 12px 14px;
     border: 1px solid var(--aui-border);
-    background: #0f0f0f;
+    background: var(--aui-surface);
 }
 .install-row > span {
-    color: #52525b;
+    color: var(--aui-text-muted);
     font: 10px/1 var(--aui-font-mono);
 }
 .install-row code {
     min-width: 0;
     flex: 1;
     overflow: hidden;
-    color: #a1a1aa;
+    color: var(--aui-code-text);
     text-overflow: ellipsis;
     white-space: nowrap;
     font: 11px/1 var(--aui-font-mono);
@@ -549,7 +549,7 @@ h2 {
 .copy-install {
     border: 0;
     background: none;
-    color: white;
+    color: var(--aui-text-primary);
     font: 10px/1 var(--aui-font-mono);
 }
 .a11y-list {
@@ -568,20 +568,20 @@ h2 {
 .a11y-list strong {
     display: block;
     margin-bottom: 45px;
-    color: #52525b;
+    color: var(--aui-text-muted);
     font: 11px/1 var(--aui-font-mono);
 }
 .a11y-list span {
-    color: white;
+    color: var(--aui-text-primary);
     font: 13px/1 var(--aui-font-mono);
 }
 .a11y-list p {
     margin: 10px 0 0;
-    color: #737373;
+    color: var(--aui-text-secondary);
     font: 12px/1.5 var(--aui-font-ui);
 }
 .a11y-list code {
-    color: #a1a1aa;
+    color: var(--aui-code-text);
     font: 10px var(--aui-font-mono);
 }
 .docs-footer {
@@ -592,7 +592,7 @@ h2 {
     margin: 0 auto;
     padding: 25px 42px 34px;
     border-top: 1px solid var(--aui-border);
-    color: #52525b;
+    color: var(--aui-text-muted);
     font: 9px/1 var(--aui-font-mono);
     letter-spacing: 0.12em;
 }
@@ -604,7 +604,7 @@ h2 {
     }
     .docs-sidebar.is-open {
         transform: translateX(0);
-        box-shadow: 18px 0 40px rgb(0 0 0 / 35%);
+        box-shadow: var(--aui-shadow-lg);
     }
     .docs-main {
         width: 100%;
@@ -648,7 +648,7 @@ h2 {
         padding-top: 65px;
     }
     .docs-hero h1 {
-        font-size: clamp(42px, 14vw, 72px);
+        font-size: clamp(38px, 11.5vw, 72px);
     }
     .hero-lede {
         font-size: 14px;
@@ -719,7 +719,7 @@ h2 {
     margin-bottom: 14px;
     padding: 0 8px;
     border: 1px solid var(--aui-border);
-    background: #0f0f0f;
+    background: var(--aui-control-bg);
     color: var(--aui-text-muted);
 }
 .docs-search:focus-within {
@@ -816,7 +816,7 @@ h2 {
     display: flex;
     flex-direction: column;
     border: 1px solid var(--aui-border);
-    background: #0f0f0f;
+    background: var(--aui-surface);
     transition:
         border-color var(--aui-transition),
         background var(--aui-transition);
@@ -842,7 +842,7 @@ h2 {
 }
 .component-react-slug {
     font: 10px/1 var(--aui-font-mono);
-    color: #71717a;
+    color: var(--aui-text-muted);
 }
 .card-badges {
     display: flex;
@@ -853,7 +853,7 @@ h2 {
 .component-cat-badge {
     font: 9px/1 var(--aui-font-mono);
     color: var(--aui-info);
-    border: 1px solid rgba(96, 165, 250, 0.25);
+    border: 1px solid var(--aui-info-border);
     padding: 2px 6px;
     letter-spacing: 0.05em;
 }
@@ -887,8 +887,8 @@ h2 {
     padding: 16px;
     border-top: 1px solid var(--aui-border);
     border-bottom: 1px solid var(--aui-border);
-    background: #070707;
-    overflow-x: auto;
+    background: var(--aui-bg);
+    overflow: visible;
 }
 .catalog-api {
     display: flex;
@@ -896,7 +896,7 @@ h2 {
     gap: 4px;
     padding: 10px 14px;
     border-bottom: 1px solid var(--aui-border);
-    background: #0c0c0c;
+    background: var(--aui-control-bg);
 }
 .api-row {
     display: flex;
@@ -912,7 +912,7 @@ h2 {
     flex-shrink: 0;
 }
 .api-row code {
-    color: #a1a1aa;
+    color: var(--aui-code-text);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -926,14 +926,14 @@ h2 {
 .card-usage-panel {
     display: flex;
     flex-direction: column;
-    background: #0a0a0a;
+    background: var(--aui-code-bg);
 }
 .usage-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 6px 12px;
-    background: #111111;
+    background: var(--aui-header);
     border-bottom: 1px solid var(--aui-border);
 }
 .usage-tabs {
@@ -955,7 +955,7 @@ h2 {
 }
 .usage-tab.is-active {
     border-color: var(--aui-border);
-    background: #1a1a1a;
+    background: var(--aui-control-bg-hover);
     color: var(--aui-text-primary);
 }
 .usage-actions {
@@ -967,7 +967,7 @@ h2 {
 .card-toggle-btn {
     padding: 3px 8px;
     border: 1px solid var(--aui-border);
-    background: #18181b;
+    background: var(--aui-control-bg-hover);
     color: var(--aui-text-secondary);
     font: 700 9px/1 var(--aui-font-mono);
     cursor: pointer;
@@ -983,8 +983,8 @@ h2 {
     padding: 12px 14px;
     overflow-x: auto;
     font: 11px/1.55 var(--aui-font-mono);
-    color: #a1a1aa;
-    background: #080808;
+    color: var(--aui-code-text);
+    background: var(--aui-code-bg);
     white-space: pre;
 }
 .card-code-block[hidden] {
@@ -998,7 +998,7 @@ h2 {
     margin: 16px 0;
     padding: 10px 14px;
     border: 1px solid var(--aui-border);
-    background: #0f0f0f;
+    background: var(--aui-surface);
     flex-wrap: wrap;
 }
 .global-fw-label {
@@ -1015,7 +1015,7 @@ h2 {
 .global-fw-btn {
     padding: 4px 10px;
     border: 1px solid var(--aui-border);
-    background: #18181b;
+    background: var(--aui-control-bg-hover);
     color: var(--aui-text-muted);
     font: 700 10px/1 var(--aui-font-mono);
     letter-spacing: 0.04em;
@@ -1028,7 +1028,7 @@ h2 {
 }
 .global-fw-btn.is-active {
     border-color: var(--aui-text-primary);
-    background: #27272a;
+    background: var(--aui-neutral);
     color: var(--aui-text-primary);
 }
 .global-toggle-all-btn {
@@ -1073,7 +1073,7 @@ h2 {
     min-width: 0;
     padding: 15px;
     border: 1px solid var(--aui-border);
-    background: #0f0f0f;
+    background: var(--aui-surface);
 }
 .lab-card h3 {
     margin: 17px 0 14px;
@@ -1088,7 +1088,7 @@ h2 {
     gap: 14px;
     padding: 13px;
     border-top: 1px solid var(--aui-border);
-    background: #0a0a0a;
+    background: var(--aui-bg);
 }
 .lab-preview aui-grid {
     width: 100%;
@@ -1125,7 +1125,7 @@ h2 {
 
 /* ---- Interactive affordances ---- */
 .docs-app :where(button, a, input, select, textarea, summary):focus-visible {
-    outline: 1px solid var(--aui-focus, #a1a1aa);
+    outline: 1px solid var(--aui-focus);
     outline-offset: 2px;
 }
 
@@ -1160,4 +1160,330 @@ h2 {
     color: var(--aui-text-muted);
     font: 12px/1.45 var(--aui-font-mono);
     letter-spacing: 0.08em;
+}
+
+/* Theme showcase and the documentation chrome intentionally consume the same
+ * semantic contract as the components. This keeps the theme switcher honest:
+ * the catalog frame changes together with the previews. */
+.docs-app .theme-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--aui-text-muted);
+    font: 9px/1 var(--aui-font-mono);
+    letter-spacing: 0.08em;
+}
+.docs-app .theme-control select,
+.docs-app .mode-toggle {
+    min-height: 28px;
+    border: 1px solid var(--aui-border);
+    border-radius: var(--aui-radius-sm);
+    background: var(--aui-control-bg);
+    color: var(--aui-text);
+    font: 9px/1 var(--aui-font-mono);
+}
+.docs-app .theme-control select {
+    max-width: 150px;
+    padding: 0 8px;
+}
+.docs-app .mode-toggle {
+    padding: 0 9px;
+    cursor: pointer;
+}
+.docs-app .theme-control select:hover,
+.docs-app .mode-toggle:hover {
+    border-color: var(--aui-border-hover);
+    background: var(--aui-control-bg-hover);
+    color: var(--aui-text-primary);
+}
+.docs-app .theme-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+.docs-app .theme-card {
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--aui-border);
+    border-radius: var(--aui-radius-lg);
+    background: var(--aui-surface);
+    color: var(--aui-text);
+    box-shadow: var(--aui-shadow-sm);
+}
+.docs-app .theme-card-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.docs-app .theme-card h3 {
+    margin: 5px 0 0;
+    color: var(--aui-text-primary);
+    font: 600 14px/1.2 var(--aui-font-mono);
+}
+.docs-app .theme-card-kicker,
+.docs-app .theme-card-name {
+    color: var(--aui-text-muted);
+    font: 9px/1 var(--aui-font-mono);
+    letter-spacing: 0.08em;
+}
+.docs-app .theme-card-name {
+    color: var(--aui-accent);
+}
+.docs-app .theme-samples {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+.docs-app .theme-sample {
+    min-width: 0;
+    padding: 10px;
+    border: 1px solid var(--aui-border);
+    border-radius: var(--aui-radius);
+    background: var(--aui-surface);
+    color: var(--aui-text);
+}
+.docs-app .theme-sample-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    color: var(--aui-text-muted);
+    font: 8px/1 var(--aui-font-mono);
+}
+.docs-app .theme-sample-top i {
+    width: 8px;
+    height: 8px;
+    display: block;
+    border-radius: var(--aui-radius-full);
+    background: var(--aui-primary);
+}
+.docs-app .theme-sample strong {
+    display: block;
+    overflow: hidden;
+    color: var(--aui-text-primary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font: 10px/1.2 var(--aui-font-mono);
+}
+.docs-app .theme-sample small {
+    display: block;
+    margin-top: 5px;
+    overflow: hidden;
+    color: var(--aui-text-secondary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font: 9px/1.2 var(--aui-font-ui);
+}
+.docs-app .theme-sample-actions {
+    display: flex;
+    gap: 4px;
+    margin-top: 16px;
+}
+.docs-app .theme-sample-actions span {
+    height: 4px;
+    flex: 1;
+    border-radius: var(--aui-radius-full);
+    background: var(--aui-border);
+}
+.docs-app .theme-sample-actions span:first-child {
+    background: var(--aui-primary);
+}
+.docs-app .theme-contract {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 16px;
+    padding: 12px 14px;
+    border: 1px solid var(--aui-border);
+    border-radius: var(--aui-radius);
+    background: var(--aui-surface-subtle);
+}
+.docs-app .theme-contract div {
+    display: grid;
+    gap: 4px;
+}
+.docs-app .theme-contract strong {
+    color: var(--aui-text-primary);
+    font: 700 10px/1 var(--aui-font-mono);
+}
+.docs-app .theme-contract span,
+.docs-app .theme-contract code {
+    color: var(--aui-text-secondary);
+    font: 10px/1.4 var(--aui-font-mono);
+}
+.docs-app .theme-contract code {
+    padding: 7px 9px;
+    border: 1px solid var(--aui-border);
+    background: var(--aui-code-bg);
+}
+
+/* Remaining documentation-only surfaces. */
+.docs-app .docs-sidebar,
+.docs-app .catalog-card,
+.docs-app .component-card,
+.docs-app .lab-card,
+.docs-app .global-fw-bar,
+.docs-app .install-row {
+    background: var(--aui-surface);
+}
+.docs-app .docs-search,
+.docs-app .catalog-api {
+    background: var(--aui-control-bg);
+}
+.docs-app .catalog-card .playground,
+.docs-app .component-card .playground,
+.docs-app .lab-preview {
+    background: var(--aui-bg);
+}
+.docs-app .card-usage-panel,
+.docs-app .code-block,
+.docs-app .framework-code,
+.docs-app .card-code-block {
+    background: var(--aui-code-bg);
+    color: var(--aui-code-text);
+}
+.docs-app .usage-bar {
+    background: var(--aui-header);
+}
+.docs-app .usage-tab.is-active,
+.docs-app .global-fw-btn,
+.docs-app .card-copy-btn,
+.docs-app .card-toggle-btn {
+    background: var(--aui-control-bg-hover);
+}
+.docs-app :where(.docs-hero h1, h2, .component-card h3, .catalog-card h3, .a11y-list span) {
+    color: var(--aui-text-primary);
+}
+.docs-app :where(.hero-lede, .text-link, .token-copy p, .section-intro, .component-card > p, .catalog-card p, .dialog-placeholder) {
+    color: var(--aui-text-secondary);
+}
+.docs-app :where(.header-tools a:hover, .header-menu:hover, .text-link:hover, .framework-tabs button:hover, .component-card-footer a:hover, .code-toggle:hover) {
+    color: var(--aui-text-primary);
+}
+.docs-app .docs-hero h1 em {
+    -webkit-text-stroke-color: var(--aui-text-secondary);
+}
+.docs-app .component-cat-badge {
+    border-color: var(--aui-info-border);
+}
+.docs-app .swatch {
+    border-color: var(--aui-border-hover);
+}
+
+/* Keep the documentation chrome on the same semantic contract as the live
+ * previews. The original showcase intentionally used dark-only literals;
+ * those become unreadable as soon as a light preset is selected. */
+.docs-app .hero-kicker,
+.docs-app .hero-grid small,
+.docs-app .token-card small,
+.docs-app .component-slug,
+.docs-app .component-status,
+.docs-app .a11y-list strong,
+.docs-app .docs-footer {
+    color: var(--aui-text-muted);
+}
+.docs-app .docs-hero h1,
+.docs-app h2,
+.docs-app .hero-grid strong,
+.docs-app .token-card strong,
+.docs-app .component-card h3,
+.docs-app .a11y-list span {
+    color: var(--aui-text-primary);
+}
+.docs-app .docs-hero h1 em {
+    -webkit-text-stroke-color: var(--aui-text-secondary);
+}
+.docs-app .hero-lede,
+.docs-app .text-link,
+.docs-app .token-copy p,
+.docs-app .section-intro,
+.docs-app .token-card code,
+.docs-app .component-card > p,
+.docs-app .component-card-footer a,
+.docs-app .code-toggle,
+.docs-app .dialog-placeholder,
+.docs-app .a11y-list p {
+    color: var(--aui-text-secondary);
+}
+.docs-app .text-link:hover,
+.docs-app .text-link span,
+.docs-app .component-card-footer a:hover,
+.docs-app .code-toggle:hover,
+.docs-app .framework-tabs button:hover,
+.docs-app .framework-tabs button[aria-selected="true"],
+.docs-app .copy-install {
+    color: var(--aui-text-primary);
+}
+.docs-app .docs-search,
+.docs-app .component-card,
+.docs-app .catalog-card,
+.docs-app .install-row,
+.docs-app .lab-card,
+.docs-app .global-fw-bar {
+    background: var(--aui-surface);
+}
+.docs-app .docs-search,
+.docs-app .docs-search input,
+.docs-app .component-card .playground,
+.docs-app .catalog-card .playground,
+.docs-app .lab-preview {
+    color: var(--aui-text);
+}
+.docs-app .component-card .playground,
+.docs-app .catalog-card .playground,
+.docs-app .lab-preview {
+    background: var(--aui-bg);
+}
+.docs-app .code-block,
+.docs-app .framework-code,
+.docs-app .card-code-block,
+.docs-app .card-usage-panel,
+.docs-app .catalog-api,
+.docs-app .usage-bar {
+    background: var(--aui-code-bg);
+    color: var(--aui-code-text);
+}
+.docs-app .usage-bar {
+    background: var(--aui-header);
+}
+.docs-app .usage-tab.is-active,
+.docs-app .global-fw-btn,
+.docs-app .card-copy-btn,
+.docs-app .card-toggle-btn {
+    background: var(--aui-control-bg-hover);
+    color: var(--aui-text-secondary);
+}
+.docs-app .global-fw-btn.is-active,
+.docs-app .category-filter:hover,
+.docs-app .category-filter.is-active {
+    color: var(--aui-text-primary);
+}
+.docs-app .api-row code,
+.docs-app .card-code-block,
+.docs-app .code-block,
+.docs-app .framework-code,
+.docs-app .token-copy code,
+.docs-app .a11y-list code {
+    color: var(--aui-code-text);
+}
+.docs-app .framework-tabs button[aria-selected="true"] {
+    border-bottom-color: var(--aui-primary);
+}
+
+@media (max-width: 980px) {
+    .docs-app .theme-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+@media (max-width: 680px) {
+    .docs-app .theme-grid {
+        grid-template-columns: 1fr;
+    }
+    .docs-app .theme-contract {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 }

@@ -348,7 +348,7 @@ export class AdminDrawerElement extends AdminElement {
             position: fixed;
             z-index: 60;
             inset: 0;
-            background: rgb(0 0 0 / 72%);
+            background: var(--aui-overlay);
         }
         .panel {
             position: fixed;
@@ -509,7 +509,7 @@ export class AdminToastElement extends AdminElement {
             padding: 14px 16px;
             border: 1px solid var(--aui-border-hover);
             background: var(--aui-surface);
-            box-shadow: 8px 8px 0 rgb(0 0 0 / 25%);
+            box-shadow: var(--aui-shadow-pop);
         }
         :host([variant="success"]) .toast {
             border-color: var(--aui-success);

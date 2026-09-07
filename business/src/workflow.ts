@@ -45,11 +45,12 @@ export class AdminFormBuilderElement extends AdminElement {
     input,
     textarea,
     select {
+      box-sizing: border-box;
       width: 100%;
       min-height: 36px;
       padding: 8px 10px;
       border: 1px solid var(--aui-border);
-      border-radius: 0;
+      border-radius: var(--aui-radius);
       background: var(--aui-bg);
       color: var(--aui-text);
       outline: 0;
@@ -71,8 +72,10 @@ export class AdminFormBuilderElement extends AdminElement {
       gap: 8px;
     }
     .checkbox input {
+      flex: 0 0 16px;
       width: 16px;
       min-height: 16px;
+      padding: 0;
     }
     .footer {
       display: flex;

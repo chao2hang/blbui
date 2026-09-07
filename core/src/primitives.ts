@@ -25,7 +25,7 @@ export class AdminBadgeElement extends AdminElement {
             min-height: 20px;
             padding: 3px 7px;
             border: 1px solid var(--aui-border);
-            border-radius: 0;
+            border-radius: var(--aui-radius);
             color: var(--aui-text-secondary);
             background: transparent;
             font: 10px/1.2 var(--aui-font-mono);
@@ -37,11 +37,11 @@ export class AdminBadgeElement extends AdminElement {
             color: var(--aui-text-primary);
         }
         :host([variant="success"]) .badge {
-            border-color: rgb(16 185 129 / 45%);
+            border-color: var(--aui-success-border);
             color: var(--aui-success);
         }
         :host([variant="warning"]) .badge {
-            border-color: rgb(245 158 11 / 45%);
+            border-color: var(--aui-warning-border);
             color: var(--aui-warning);
         }
         :host([variant="danger"]) .badge {
@@ -49,7 +49,7 @@ export class AdminBadgeElement extends AdminElement {
             color: var(--aui-danger);
         }
         :host([variant="info"]) .badge {
-            border-color: rgb(96 165 250 / 45%);
+            border-color: var(--aui-info-border);
             color: var(--aui-info);
         }
         .dot {

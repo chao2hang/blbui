@@ -6,6 +6,8 @@ it under the terms of the GNU Affero General Public License.
 
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Grotesk:wght@300;400;500;700&display=swap");
 @import "./tokens.css";
+@import "./themes.css";
+@import "./utilities.css";
 
 .aui-root {
     scrollbar-color: var(--aui-border) var(--aui-bg);
@@ -66,7 +68,7 @@ aui-table > table thead {
 .aui-root > table td,
 aui-table > table th,
 aui-table > table td {
-    border-bottom: 1px solid #18181b;
+    border-bottom: 1px solid var(--aui-border);
 }
 
 .aui-root > table th,
@@ -83,5 +85,5 @@ aui-table > table td {
 
 .aui-root > table tbody tr:hover,
 aui-table > table tbody tr:hover {
-    background: rgb(39 39 42 / 50%);
+    background: var(--aui-table-row-hover);
 }

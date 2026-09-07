@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-当前版本为 `0.0.3`，已经提供 78 个已注册的无框架 Web Components，以及 React/Vue/Svelte 适配入口：
+当前版本为 `0.0.4`，已经提供 92 个已注册的无框架 Web Components，以及 React/Vue/Svelte 适配入口；连同 9 个 Business 组件，文档站共覆盖 101 个组件：
 
 | 包                         | 用途                                              |
 | -------------------------- | ------------------------------------------------- |
@@ -15,21 +15,35 @@
 
 ## 组件清单
 
-Core（78 个 Web Components，`@chaos_team/blbui-core`）：
+Core（92 个 Web Components，`@chaos_team/blbui-core`）：
 
 - **基础原语**（9）：`Button`、`IconButton`、`Badge`、`StatusTag`、`Avatar`、`Progress`、`Rating`、`Kbd`、`ColorTag`
-- **表单控件**（17）：`Input`、`Textarea`、`Select`、`Combobox`、`MultiSelect`、`NumberInput`、`PasswordInput`、`Checkbox`、`Switch`、`RadioGroup`、`Slider`、`TagInput`、`InputGroup`、`Field`、`FileUpload`、`Search`、`ColorPicker`
-- **导航**（13）：`Tabs`、`Breadcrumb`、`Nav`、`Pagination`、`Accordion`、`Collapsible`、`Stepper`、`List`、`Tree`、`Timeline`、`Toggle`、`ToggleGroup`、`Segmented`
-- **反馈与状态**（9）：`Alert`、`Result`、`EmptyState`、`ErrorState`、`Spinner`、`Skeleton`、`Toast`、`CopyableText`、`Separator`
-- **叠加层与弹窗**（7）：`Tooltip`、`Popover`、`Dropdown`、`Command`、`Dialog`、`ConfirmDialog`、`Drawer`
-- **数据展示**（11）：`Table`、`DataList`、`DataGrid`、`Calendar`、`CalendarGrid`、`DateRange`、`ChartContainer`、`JSONViewer`、`LogViewer`、`Kanban`、`CodeBlock`
-- **布局与表面**（12）：`Card`、`Container`、`Stack`、`Grid`、`Splitter`、`Shell`、`Page`、`PageHeader`、`FilterBar`、`Stat`、`AspectRatio`、`ScrollArea`
+- **表单控件**（23）：`Input`、`Textarea`、`Select`、`Combobox`、`MultiSelect`、`NumberInput`、`PasswordInput`、`Checkbox`、`Switch`、`RadioGroup`、`Slider`、`TagInput`、`InputGroup`、`Field`、`FileUpload`、`Search`、`ColorPicker`、`DatePicker`、`TimePicker`、`PinInput`、`Cascader`、`Transfer`、`UploadList`
+- **导航**（14）：`Tabs`、`Breadcrumb`、`Nav`、`Pagination`、`Accordion`、`Collapsible`、`Stepper`、`List`、`Tree`、`Timeline`、`Toggle`、`ToggleGroup`、`Segmented`、`Menu`
+- **反馈与状态**（10）：`Alert`、`Result`、`EmptyState`、`ErrorState`、`Spinner`、`Skeleton`、`Toast`、`NotificationCenter`、`CopyableText`、`Separator`
+- **叠加层与弹窗**（9）：`Tooltip`、`Popover`、`Dropdown`、`Command`、`ContextMenu`、`HoverCard`、`Dialog`、`ConfirmDialog`、`Drawer`
+- **数据展示**（13）：`Table`、`DataList`、`DataGrid`、`Calendar`、`CalendarGrid`、`DateRange`、`ChartContainer`、`JSONViewer`、`LogViewer`、`Kanban`、`CodeBlock`、`Descriptions`、`FilePreview`
+- **布局与表面**（14）：`Card`、`Container`、`Stack`、`Grid`、`Splitter`、`Shell`、`Page`、`PageHeader`、`FilterBar`、`Stat`、`AspectRatio`、`ScrollArea`、`Sidebar`、`Navbar`
 
 Business（9 个，`@chaos_team/blbui-business`）：
 
 - **业务套件**（9）：`CrudPage`、`CrudToolbar`、`AdvancedTable`、`FormBuilder`、`ApprovalTimeline`、`MetricCard`、`MetricGrid`、`BarChart`、`Sparkline`
 
-React / Vue 提供全部 78 个 Core 组件的 1:1 绑定（`Admin*` 命名）；Svelte 提供核心注册入口与 7 个常用组件封装。
+React / Vue 提供全部 92 个 Core 组件的 1:1 绑定（`Admin*` 命名）；Svelte 提供核心注册入口与 14 个常用组件封装。
+
+## 主题与 CSS 工具层
+
+Core 提供语义化 `--aui-*` token、daisyUI 风格但不绑定第三方命名空间的 CSS utilities，以及 9 套可运行时切换的主题：`obsidian`、`rounded`、`enterprise`、`modern`、`minimal`、`premium`、`chinese`、`atmospheric`、`glass`。每套主题均支持 `light` / `dark`，组件内部样式只依赖语义 token。
+
+```ts
+import { setAdminTheme, toggleAdminThemeMode } from "@chaos_team/blbui-core";
+import "@chaos_team/blbui-core/styles.css";
+
+setAdminTheme(document, "enterprise", "light");
+toggleAdminThemeMode(document);
+```
+
+也可以单独引入 `@chaos_team/blbui-core/themes.css` 与 `utilities.css`，使用 `.aui-btn`、`.aui-card`、`.aui-table`、`.aui-stack`、`.aui-grid` 等组合式样式类。
 
 ## 设计原则
 
@@ -155,11 +169,22 @@ Core 事件使用 `aui-*` 前缀并通过 `CustomEvent.detail` 传递结构化�
 | `aui-tags-change`           | `{ values: string[] }`          |
 | `aui-files-change`          | `{ files: File[] }`             |
 | `aui-color-change`          | `{ value: string }`             |
+| `aui-cascader-change`       | `{ value: string[]; options: object[] }` |
+| `aui-transfer-change`       | `{ values: string[]; added: string[]; removed: string[] }` |
+| `aui-upload-change`         | `{ files: object[] }`          |
+| `aui-upload-remove`         | `{ id: string; file: object }` |
+| `aui-upload-retry`          | `{ id: string; file: object }` |
+| `aui-upload-preview`        | `{ id: string; file: object }` |
+| `aui-file-preview-close`    | `{ file: object | null }`      |
+| `aui-file-download`         | `{ file: object }`             |
 | `aui-copy`                  | `{ text: string }`              |
 | `aui-page-change`           | `{ page: number }`              |
 | `aui-tab-change`            | `{ id: string }`                |
 | `aui-nav-change`            | `{ id: string }`                |
 | `aui-menu-select`           | `{ id: string }`                |
+| `aui-notification-close`    | `{ id: string }`                |
+| `aui-notification-action`   | `{ id: string; item: object }`  |
+| `aui-notifications-change`   | `{ notifications: object[] }`  |
 | `aui-command`               | `{ id: string; item }`          |
 | `aui-list-change`           | `{ id: string }`                |
 | `aui-tree-change`           | `{ id: string }`                |
@@ -183,6 +208,7 @@ Core 事件使用 `aui-*` 前缀并通过 `CustomEvent.detail` 传递结构化�
 
 - `docs/roadmap.md`
 - `docs/architecture.md`
+- `docs/long-term-plan.md`
 
 ## 迁移策略
 

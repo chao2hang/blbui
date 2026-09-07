@@ -31,7 +31,14 @@
 
 - 依赖顺序固定为 core → business → react → vue → business-react；`bun run build:packages` 先对 TS 源做 `useDefineForClassFields: false` 预编译（Lit 响应式属性依赖原型访问器，ES2022 class fields 的 `[[Define]]` 语义会在 dist 里覆盖它们），再用 Bun 打包。
 - Svelte 包以源码 `.svelte` 发布，`dist/index.js` 与 `dist/components.js` 由构建从 `src/components.ts` barrel 再生成，`check:svelte` 校验 dist/src 导出同步。
-- `catalog:check` 校验目录完整性（87 个组件）与文档示例中每个 `Admin*` 导入、每个 `aui-*` 标签在对应包里真实存在。
+- `catalog:check` 校验目录完整性（92 个 Core + 9 个 Business，共 101 个组件）与文档示例中每个 `Admin*` 导入、每个 `aui-*` 标签在对应包里真实存在。
+
+## 主题合同
+
+- `tokens.css` 定义默认语义 token；`themes.css` 只覆盖同一份 token 合同，不改变组件 DOM 或事件。
+- 主题通过宿主元素上的 `data-aui-theme` 与 `data-aui-mode` 生效；`setAdminTheme(document, name, mode)` 适合应用级切换。
+- 每套主题必须同时验证 light/dark、surface、text、border、focus、status、overlay、radius、shadow 与 native form color-scheme。
+- `utilities.css` 使用 `.aui-*` 命名空间，参考 daisyUI 的组合式写法，但不复用其实现或 token 名称。
 
 ## 下一阶段
 

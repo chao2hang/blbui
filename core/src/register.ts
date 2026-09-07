@@ -101,6 +101,23 @@ import {
     AdminCalendarGridElement,
     AdminChartContainerElement,
 } from "./data-advanced";
+import {
+    AdminDatePickerElement,
+    AdminDescriptionsElement,
+    AdminMenuElement,
+    AdminNavbarElement,
+    AdminPinInputElement,
+    AdminSidebarElement,
+    AdminTimePickerElement,
+} from "./essentials";
+import {
+    AdminCascaderElement,
+    AdminContextMenuElement,
+    AdminHoverCardElement,
+    AdminNotificationCenterElement,
+    AdminTransferElement,
+} from "./interaction";
+import { AdminFilePreviewElement, AdminUploadListElement } from "./file-components";
 
 export function registerAdminElements(): void {
     if (typeof customElements === "undefined") return;
@@ -182,4 +199,18 @@ export function registerAdminElements(): void {
     defineOnce("aui-number-input", AdminNumberInputElement);
     defineOnce("aui-code-block", AdminCodeBlockElement);
     defineOnce("aui-color-tag", AdminColorTagElement);
+    defineOnce("aui-menu", AdminMenuElement);
+    defineOnce("aui-sidebar", AdminSidebarElement);
+    defineOnce("aui-navbar", AdminNavbarElement);
+    defineOnce("aui-date-picker", AdminDatePickerElement);
+    defineOnce("aui-time-picker", AdminTimePickerElement);
+    defineOnce("aui-pin-input", AdminPinInputElement);
+    defineOnce("aui-descriptions", AdminDescriptionsElement);
+    defineOnce("aui-cascader", AdminCascaderElement);
+    defineOnce("aui-transfer", AdminTransferElement);
+    defineOnce("aui-context-menu", AdminContextMenuElement);
+    defineOnce("aui-hover-card", AdminHoverCardElement);
+    defineOnce("aui-notification-center", AdminNotificationCenterElement);
+    defineOnce("aui-upload-list", AdminUploadListElement);
+    defineOnce("aui-file-preview", AdminFilePreviewElement);
 }

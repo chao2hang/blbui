@@ -31,13 +31,13 @@ export class AdminAlertElement extends AdminElement {
             color: var(--aui-text);
         }
         :host([variant="info"]) .alert {
-            border-color: rgb(96 165 250 / 45%);
+            border-color: var(--aui-info-border);
         }
         :host([variant="success"]) .alert {
-            border-color: rgb(16 185 129 / 45%);
+            border-color: var(--aui-success-border);
         }
         :host([variant="warning"]) .alert {
-            border-color: rgb(245 158 11 / 45%);
+            border-color: var(--aui-warning-border);
         }
         :host([variant="danger"]) .alert {
             border-color: var(--aui-danger-strong);
@@ -145,7 +145,7 @@ export class AdminIconButtonElement extends AdminElement {
             place-items: center;
             padding: 0;
             border: 1px solid transparent;
-            border-radius: 0;
+            border-radius: var(--aui-radius);
             background: transparent;
             color: var(--aui-text-secondary);
             cursor: pointer;
@@ -881,7 +881,7 @@ export class AdminColorPickerElement extends AdminElement {
             height: 36px;
             padding: 2px;
             border: 1px solid var(--aui-border);
-            border-radius: 0;
+            border-radius: var(--aui-radius);
             background: var(--aui-bg);
         }
         label {
@@ -941,13 +941,14 @@ export class AdminDateRangeElement extends AdminElement {
             text-transform: uppercase;
         }
         input {
+            box-sizing: border-box;
             min-height: 36px;
             padding: 8px;
             border: 1px solid var(--aui-border);
-            border-radius: 0;
+            border-radius: var(--aui-radius);
             background: var(--aui-bg);
             color: var(--aui-text);
-            color-scheme: dark;
+            color-scheme: var(--aui-color-scheme, dark);
             font: var(--aui-input-font-size, 12px)/1 var(--aui-font-mono);
         }
         input:focus {

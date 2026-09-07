@@ -24,13 +24,13 @@ export class AdminDialogElement extends AdminElement {
             max-height: 85vh;
             padding: 0;
             border: 1px solid var(--aui-border);
-            border-radius: 0;
+            border-radius: var(--aui-radius-lg);
             background: var(--aui-surface);
             color: var(--aui-text);
-            box-shadow: none;
+            box-shadow: var(--aui-shadow-lg);
         }
         dialog::backdrop {
-            background: rgb(0 0 0 / 78%);
+            background: var(--aui-overlay);
         }
         .panel {
             display: flex;
@@ -61,7 +61,7 @@ export class AdminDialogElement extends AdminElement {
             height: 28px;
             flex: 0 0 28px;
             border: 1px solid var(--aui-border);
-            border-radius: 0;
+            border-radius: var(--aui-radius-lg);
             background: transparent;
             color: var(--aui-text-secondary);
             cursor: pointer;
@@ -181,13 +181,13 @@ export class AdminConfirmDialogElement extends AdminElement {
             width: min(480px, calc(100vw - 32px));
             padding: 0;
             border: 1px solid var(--aui-border);
-            border-radius: 0;
+            border-radius: var(--aui-radius);
             background: var(--aui-surface);
             color: var(--aui-text);
-            box-shadow: none;
+            box-shadow: var(--aui-shadow-lg);
         }
         dialog::backdrop {
-            background: rgb(0 0 0 / 78%);
+            background: var(--aui-overlay);
         }
         .panel {
             display: flex;
@@ -226,7 +226,7 @@ export class AdminConfirmDialogElement extends AdminElement {
             min-height: 32px;
             padding: 4px 10px;
             border: 1px solid var(--aui-border);
-            border-radius: 0;
+            border-radius: var(--aui-radius);
             background: transparent;
             color: var(--aui-text);
             cursor: pointer;

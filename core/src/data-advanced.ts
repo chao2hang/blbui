@@ -97,14 +97,15 @@ export class AdminCalendarElement extends AdminElement {
             text-transform: uppercase;
         }
         input {
+            box-sizing: border-box;
             min-height: 36px;
             padding: 8px;
             border: 1px solid var(--aui-border);
-            border-radius: 0;
+            border-radius: var(--aui-radius);
             background: var(--aui-bg);
             color: var(--aui-text);
             font: var(--aui-input-font-size, 12px)/1 var(--aui-font-mono);
-            color-scheme: dark;
+            color-scheme: var(--aui-color-scheme, dark);
         }
         input:focus {
             outline: 1px solid var(--aui-focus);

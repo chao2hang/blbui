@@ -1,6 +1,6 @@
 {
   "name": "@chaos_team/blbui-core",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Framework-agnostic industrial admin components based on Web Components.",
   "homepage": "https://github.com/chao2hang/blbui#readme",
   "license": "AGPL-3.0-or-later",
@@ -17,7 +17,9 @@
   "sideEffects": [
     "./dist/register.js",
     "./dist/styles.css",
-    "./dist/tokens.css"
+    "./dist/tokens.css",
+    "./dist/themes.css",
+    "./dist/utilities.css"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -38,6 +40,14 @@
     "./tokens.css": {
       "types": "./dist/tokens.css.d.ts",
       "default": "./dist/tokens.css"
+    },
+    "./themes.css": {
+      "types": "./dist/themes.css.d.ts",
+      "default": "./dist/themes.css"
+    },
+    "./utilities.css": {
+      "types": "./dist/utilities.css.d.ts",
+      "default": "./dist/utilities.css"
     }
   },
   "publishConfig": {

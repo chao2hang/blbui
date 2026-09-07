@@ -19,7 +19,7 @@ const packages = [
     directory: "core",
     entries: ["src/index.ts", "src/register.ts"],
     external: ["lit"],
-    copy: ["src/styles.css", "src/tokens.css"],
+    copy: ["src/styles.css", "src/tokens.css", "src/themes.css", "src/utilities.css"],
     deps: [],
   },
   {

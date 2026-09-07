@@ -27,7 +27,7 @@ export class AdminButtonElement extends AdminElement {
             min-height: var(--aui-control-height);
             padding: 4px 12px;
             border: 1px solid var(--aui-border);
-            border-radius: 0;
+            border-radius: var(--aui-radius);
             background: transparent;
             color: var(--aui-text);
             cursor: pointer;
@@ -64,8 +64,8 @@ export class AdminButtonElement extends AdminElement {
             color: var(--aui-text-inverse);
         }
         :host([variant="primary"]) button:hover:not(:disabled) {
-            border-color: #e4e4e7;
-            background: #e4e4e7;
+            border-color: var(--aui-primary-hover, var(--aui-primary));
+            background: var(--aui-primary-hover, var(--aui-primary));
             color: var(--aui-text-inverse);
         }
         :host([variant="danger"]) button {

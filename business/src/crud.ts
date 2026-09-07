@@ -247,13 +247,13 @@ export class AdminAdvancedTableElement extends AdminElement {
     }
     td {
       padding: 13px 14px;
-      border-bottom: 1px solid #18181b;
+      border-bottom: 1px solid var(--aui-border);
     }
     tr:hover td {
-      background: rgb(39 39 42 / 50%);
+      background: var(--aui-table-row-hover);
     }
     tr[data-selected="true"] td {
-      background: rgb(255 255 255 / 5%);
+      background: var(--aui-white-5);
       color: var(--aui-text-primary);
     }
     .sort {

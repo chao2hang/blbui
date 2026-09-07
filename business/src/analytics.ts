@@ -140,7 +140,7 @@ export class AdminBarChartElement extends AdminElement {
         0deg,
         transparent,
         transparent 38px,
-        rgb(38 38 38 / 42%) 39px
+         var(--aui-grid-line-strong) 39px
       );
     }
     .bar-wrap {
@@ -156,7 +156,7 @@ export class AdminBarChartElement extends AdminElement {
       width: 100%;
       max-width: 38px;
       min-height: 3px;
-      background: #3f3f46;
+      background: var(--aui-chart-bar, var(--aui-border-hover));
     }
     .bar[data-peak="true"] {
       background: var(--aui-text-primary);

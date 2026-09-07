@@ -67,7 +67,7 @@
 
 ## 当前状态
 
-当前已注册 78 个 Core Custom Elements。React 与 Vue 均提供 78:1 的完整同构绑定（`Admin*` 命名），Svelte 提供核心注册入口（`registerAdminElements` / `adminUi`）、core 类型再导出和 7 个常用组件封装。文档站 `docs-site/` 覆盖全部 87 个组件（含 9 个 Business）的实时预览与四框架用法。下一步：DataGrid 增强、三框架最小示例应用、Playwright 行为矩阵。
+当前已注册 92 个 Core Custom Elements。React 与 Vue 均提供 92:1 的完整同构绑定（`Admin*` 命名），Svelte 提供核心注册入口（`registerAdminElements` / `adminUi`）、core 类型再导出和 14 个常用组件封装。文档站 `docs-site/` 覆盖全部 101 个组件（含 9 个 Business）的实时预览与四框架用法。主题基础设施已包含 9 套主题和 light/dark 模式。下一步：DataGrid 增强、三框架最小示例应用、Playwright 行为矩阵。
 
 ## 依赖边界
 

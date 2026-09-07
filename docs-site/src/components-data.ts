@@ -408,7 +408,7 @@ export const components: ComponentItem[] = [
         status: "stable",
         props: [],
         events: [],
-        previewHtml: `<div style="width:100%;max-width:280px;"><aui-input-group><span style="padding:0 8px;background:#18181b;border:1px solid #262626;border-right:none;font-size:11px;color:#737373;display:inline-flex;align-items:center;">https://</span><aui-input placeholder="api.service.io" style="flex:1;"></aui-input></aui-input-group></div>`,
+        previewHtml: `<div style="width:100%;max-width:280px;"><aui-input-group><span style="padding:0 8px;background:var(--aui-header);border:1px solid var(--aui-border);border-right:none;font-size:11px;color:var(--aui-text-secondary);display:inline-flex;align-items:center;">https://</span><aui-input placeholder="api.service.io" style="flex:1;"></aui-input></aui-input-group></div>`,
         usage: {
             wc: `<aui-input-group>\n  <span slot="prefix">https://</span>\n  <aui-input placeholder="gateway.internal"></aui-input>\n</aui-input-group>`,
             react: `import { AdminInputGroup, AdminInput } from '@chaos_team/blbui-react'\n\n<AdminInputGroup>\n  <span>https://</span>\n  <AdminInput placeholder="gateway.internal" />\n</AdminInputGroup>`,
@@ -802,7 +802,7 @@ export const components: ComponentItem[] = [
         status: "stable",
         props: [],
         events: [],
-        previewHtml: `<div style="display:flex;align-items:center;gap:12px;"><aui-spinner></aui-spinner><span style="font-size:11px;color:#737373;">SYNCING STATE...</span></div>`,
+        previewHtml: `<div style="display:flex;align-items:center;gap:12px;"><aui-spinner></aui-spinner><span style="font-size:11px;color:var(--aui-text-secondary);">SYNCING STATE...</span></div>`,
         usage: {
             wc: `<aui-spinner></aui-spinner>`,
             react: `import { AdminSpinner } from '@chaos_team/blbui-react'\n\n<AdminSpinner />`,
@@ -908,7 +908,7 @@ export const components: ComponentItem[] = [
         status: "stable",
         props: ["open", "title"],
         events: ["aui-toggle"],
-        previewHtml: `<aui-popover title="Quick Actions"><span slot="trigger"><aui-button size="compact" variant="secondary">QUICK ACTIONS ▾</aui-button></span><div style="padding:10px;font-size:11px;color:#737373;">Flush DNS cache or toggle canary route</div></aui-popover>`,
+        previewHtml: `<aui-popover title="Quick Actions"><span slot="trigger"><aui-button size="compact" variant="secondary">QUICK ACTIONS ▾</aui-button></span><div style="padding:10px;font-size:11px;color:var(--aui-text-secondary);">Flush DNS cache or toggle canary route</div></aui-popover>`,
         usage: {
             wc: `<aui-popover title="Actions">\n  <span slot="trigger"><aui-button size="compact">OPTIONS ▾</aui-button></span>\n  <div>Popover content</div>\n</aui-popover>`,
             react: `import { AdminPopover, AdminButton } from '@chaos_team/blbui-react'\n\n<AdminPopover title="Actions">\n  <span slot="trigger"><AdminButton size="compact">OPTIONS ▾</AdminButton></span>\n  <div>Popover content</div>\n</AdminPopover>`,
@@ -961,7 +961,7 @@ export const components: ComponentItem[] = [
         status: "stable",
         props: ["open", "title", "description", "close-label"],
         events: ["aui-close", "aui-confirm"],
-        previewHtml: `<aui-button size="compact" variant="secondary" id="btn-demo-dialog">OPEN DIALOG</aui-button><aui-dialog id="preview-dialog" title="Configure Upstream" description="Configure route failover policies."><p style="font-size:11px;color:#737373;margin:8px 0;">Dialog modal contents with focus trap and keyboard escape.</p><span slot="footer"><aui-button size="compact" id="btn-close-demo-dialog">CLOSE</aui-button></span></aui-dialog>`,
+        previewHtml: `<aui-button size="compact" variant="secondary" id="btn-demo-dialog">OPEN DIALOG</aui-button><aui-dialog id="preview-dialog" title="Configure Upstream" description="Configure route failover policies."><p style="font-size:11px;color:var(--aui-text-secondary);margin:8px 0;">Dialog modal contents with focus trap and keyboard escape.</p><span slot="footer"><aui-button size="compact" id="btn-close-demo-dialog">CLOSE</aui-button></span></aui-dialog>`,
         usage: {
             wc: `<aui-button id="open-dlg">OPEN</aui-button>\n<aui-dialog id="dlg" title="Deploy Route">\n  <p>Route contents</p>\n  <span slot="footer"><aui-button>CONFIRM</aui-button></span>\n</aui-dialog>`,
             react: `import { AdminDialog, AdminButton } from '@chaos_team/blbui-react'\n\n<AdminDialog title="Deploy Route" open={open} onOpenChange={setOpen}>\n  <p>Route contents</p>\n</AdminDialog>`,
@@ -995,7 +995,7 @@ export const components: ComponentItem[] = [
         status: "stable",
         props: ["open", "title", "side", "width"],
         events: ["aui-close"],
-        previewHtml: `<aui-button size="compact" variant="secondary" id="btn-demo-drawer">OPEN DRAWER</aui-button><aui-drawer id="preview-drawer" title="Inspection Drawer" width="300px"><div style="padding:16px;font-size:11px;color:#737373;">Live system trace and inspector parameters.</div></aui-drawer>`,
+        previewHtml: `<aui-button size="compact" variant="secondary" id="btn-demo-drawer">OPEN DRAWER</aui-button><aui-drawer id="preview-drawer" title="Inspection Drawer" width="300px"><div style="padding:16px;font-size:11px;color:var(--aui-text-secondary);">Live system trace and inspector parameters.</div></aui-drawer>`,
         usage: {
             wc: `<aui-drawer title="Trace Inspector" side="right" width="360px"></aui-drawer>`,
             react: `import { AdminDrawer } from '@chaos_team/blbui-react'\n\n<AdminDrawer title="Trace Inspector" side="right" width="360px" open={open} onClose={() => setOpen(false)}>\n  <p>Inspector contents</p>\n</AdminDrawer>`,
@@ -1121,7 +1121,7 @@ export const components: ComponentItem[] = [
         status: "stable",
         props: ["title", "description", "height"],
         events: [],
-        previewHtml: `<div style="width:100%;max-width:340px;"><aui-chart-container title="INGRESS RATE" description="Packets per second over 5m" height="90px"><div style="height:50px;display:flex;align-items:flex-end;gap:4px;padding:8px 0;"><div style="flex:1;background:#262626;height:40%;"></div><div style="flex:1;background:#262626;height:65%;"></div><div style="flex:1;background:#60a5fa;height:90%;"></div><div style="flex:1;background:#10b981;height:100%;"></div><div style="flex:1;background:#10b981;height:85%;"></div></div></aui-chart-container></div>`,
+        previewHtml: `<div style="width:100%;max-width:340px;"><aui-chart-container title="INGRESS RATE" description="Packets per second over 5m" height="90px"><div style="height:50px;display:flex;align-items:flex-end;gap:4px;padding:8px 0;"><div style="flex:1;background:var(--aui-border);height:40%;"></div><div style="flex:1;background:var(--aui-border);height:65%;"></div><div style="flex:1;background:var(--aui-info);height:90%;"></div><div style="flex:1;background:var(--aui-success);height:100%;"></div><div style="flex:1;background:var(--aui-success);height:85%;"></div></div></aui-chart-container></div>`,
         usage: {
             wc: `<aui-chart-container title="Throughput" description="Requests/sec" height="180px">\n  <!-- Canvas or SVG -->\n</aui-chart-container>`,
             react: `import { AdminChartContainer } from '@chaos_team/blbui-react'\n\n<AdminChartContainer title="Throughput" description="Requests/sec" height="180px">\n  <canvas />\n</AdminChartContainer>`,
@@ -1213,7 +1213,7 @@ export const components: ComponentItem[] = [
         status: "stable",
         props: ["header", "footer"],
         events: [],
-        previewHtml: `<div style="width:100%;max-width:320px;"><aui-card><div slot="header" style="font-size:11px;font-weight:700;">SECURITY PARAMETERS</div><p style="margin:0;font-size:11px;color:#737373;">Zero-radius sharp border surface container</p><div slot="footer"><aui-button size="compact">SAVE</aui-button></div></aui-card></div>`,
+        previewHtml: `<div style="width:100%;max-width:320px;"><aui-card><div slot="header" style="font-size:11px;font-weight:700;">SECURITY PARAMETERS</div><p style="margin:0;font-size:11px;color:var(--aui-text-secondary);">Zero-radius sharp border surface container</p><div slot="footer"><aui-button size="compact">SAVE</aui-button></div></aui-card></div>`,
         usage: {
             wc: `<aui-card>\n  <span slot="header">Card Title</span>\n  <p>Content</p>\n  <span slot="footer">Action</span>\n</aui-card>`,
             react: `import { AdminCard } from '@chaos_team/blbui-react'\n\n<AdminCard>\n  <span slot="header">Card Title</span>\n  <p>Content</p>\n</AdminCard>`,
@@ -1230,7 +1230,7 @@ export const components: ComponentItem[] = [
         status: "stable",
         props: ["max-width", "centered"],
         events: [],
-        previewHtml: `<div style="width:100%;"><aui-container max-width="320px"><div style="padding:12px;background:#141414;border:1px dashed #333;text-align:center;font-size:11px;">CONTAINER BOUNDARY (MAX 320PX)</div></aui-container></div>`,
+        previewHtml: `<div style="width:100%;"><aui-container max-width="320px"><div style="padding:12px;background:var(--aui-surface-subtle);border:1px dashed var(--aui-border-hover);text-align:center;font-size:11px;">CONTAINER BOUNDARY (MAX 320PX)</div></aui-container></div>`,
         usage: {
             wc: `<aui-container max-width="1200px" centered>\n  <div>Content</div>\n</aui-container>`,
             react: `import { AdminContainer } from '@chaos_team/blbui-react'\n\n<AdminContainer maxWidth="1200px" centered>\n  <div>Content</div>\n</AdminContainer>`,
@@ -1264,7 +1264,7 @@ export const components: ComponentItem[] = [
         status: "stable",
         props: ["columns", "gap", "min-width"],
         events: [],
-        previewHtml: `<div style="width:100%;"><aui-grid columns="3" gap="8px"><div style="padding:8px;background:#141414;text-align:center;font-size:10px;">COL 1</div><div style="padding:8px;background:#141414;text-align:center;font-size:10px;">COL 2</div><div style="padding:8px;background:#141414;text-align:center;font-size:10px;">COL 3</div></aui-grid></div>`,
+        previewHtml: `<div style="width:100%;"><aui-grid columns="3" gap="8px"><div style="padding:8px;background:var(--aui-surface-subtle);text-align:center;font-size:10px;">COL 1</div><div style="padding:8px;background:var(--aui-surface-subtle);text-align:center;font-size:10px;">COL 2</div><div style="padding:8px;background:var(--aui-surface-subtle);text-align:center;font-size:10px;">COL 3</div></aui-grid></div>`,
         usage: {
             wc: `<aui-grid columns="3" gap="16px">\n  <div>Item 1</div><div>Item 2</div><div>Item 3</div>\n</aui-grid>`,
             react: `import { AdminGrid } from '@chaos_team/blbui-react'\n\n<AdminGrid columns={3} gap="16px">\n  <div>1</div><div>2</div><div>3</div>\n</AdminGrid>`,
@@ -1281,7 +1281,7 @@ export const components: ComponentItem[] = [
         status: "stable",
         props: ["direction", "initial", "min"],
         events: [],
-        previewHtml: `<div style="width:100%;max-width:340px;height:70px;border:1px solid #262626;"><aui-splitter direction="horizontal" initial="50%"><div slot="first" style="padding:8px;font-size:10px;">LEFT VIEW</div><div slot="second" style="padding:8px;font-size:10px;">RIGHT VIEW</div></aui-splitter></div>`,
+        previewHtml: `<div style="width:100%;max-width:340px;height:70px;border:1px solid var(--aui-border);"><aui-splitter direction="horizontal" initial="50%"><div slot="first" style="padding:8px;font-size:10px;">LEFT VIEW</div><div slot="second" style="padding:8px;font-size:10px;">RIGHT VIEW</div></aui-splitter></div>`,
         usage: {
             wc: `<aui-splitter direction="horizontal" initial={50}>\n  <div slot="before">Panel A</div>\n  <div slot="after">Panel B</div>\n</aui-splitter>`,
             react: `import { AdminSplitter } from '@chaos_team/blbui-react'\n\n<AdminSplitter direction="horizontal" initial={50}>\n  <div slot="before">Panel A</div>\n  <div slot="after">Panel B</div>\n</AdminSplitter>`,
@@ -1298,7 +1298,7 @@ export const components: ComponentItem[] = [
         status: "stable",
         props: ["sidebar-width", "header-height"],
         events: [],
-        previewHtml: `<div style="width:100%;max-width:340px;height:120px;border:1px solid #262626;overflow:hidden;"><aui-shell sidebar-width="90px"><div slot="header" style="padding:4px 8px;font-size:10px;font-weight:700;background:#18181b;">SHELL HEADER</div><div style="padding:8px;font-size:10px;">MAIN CONTENT</div></aui-shell></div>`,
+        previewHtml: `<div style="width:100%;max-width:340px;height:120px;border:1px solid var(--aui-border);overflow:hidden;"><aui-shell sidebar-width="90px"><div slot="header" style="padding:4px 8px;font-size:10px;font-weight:700;background:var(--aui-header);">SHELL HEADER</div><div style="padding:8px;font-size:10px;">MAIN CONTENT</div></aui-shell></div>`,
         usage: {
             wc: `<aui-shell sidebar-width="240px" header-height="56px">\n  <div slot="header">Header</div>\n  <aside slot="sidebar">Sidebar</aside>\n  <main>Main Content</main>\n</aui-shell>`,
             react: `import { AdminShell } from '@chaos_team/blbui-react'\n\n<AdminShell sidebarWidth="240px">\n  <main>Content</main>\n</AdminShell>`,
@@ -1315,7 +1315,7 @@ export const components: ComponentItem[] = [
         status: "stable",
         props: ["title", "description"],
         events: [],
-        previewHtml: `<div style="width:100%;max-width:340px;"><aui-page title="Upstream Channels" description="Configure intelligent routing policies"><div style="padding:8px 0;font-size:11px;color:#737373;">Child page content slot</div></aui-page></div>`,
+        previewHtml: `<div style="width:100%;max-width:340px;"><aui-page title="Upstream Channels" description="Configure intelligent routing policies"><div style="padding:8px 0;font-size:11px;color:var(--aui-text-secondary);">Child page content slot</div></aui-page></div>`,
         usage: {
             wc: `<aui-page title="Channels" description="Manage routes">\n  <span slot="actions"><aui-button variant="primary">Add</aui-button></span>\n  <div>Page Content</div>\n</aui-page>`,
             react: `import { AdminPage, AdminButton } from '@chaos_team/blbui-react'\n\n<AdminPage\n  title="Channels"\n  description="Manage routes"\n  actions={<AdminButton variant="primary">Add</AdminButton>}\n>\n  <div>Page Content</div>\n</AdminPage>`,
@@ -1383,7 +1383,7 @@ export const components: ComponentItem[] = [
         status: "stable",
         props: ["ratio"],
         events: [],
-        previewHtml: `<div style="width:180px;"><aui-aspect-ratio ratio="16/9"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:#18181b;font-size:10px;color:#737373;">16:9 RATIO</div></aui-aspect-ratio></div>`,
+        previewHtml: `<div style="width:180px;"><aui-aspect-ratio ratio="16/9"><div style="display:flex;align-items:center;justify-content:center;height:100%;background:var(--aui-header);font-size:10px;color:var(--aui-text-secondary);">16:9 RATIO</div></aui-aspect-ratio></div>`,
         usage: {
             wc: `<aui-aspect-ratio ratio="16/9">\n  <img src="chart.png" alt="Preview" />\n</aui-aspect-ratio>`,
             react: `import { AdminAspectRatio } from '@chaos_team/blbui-react'\n\n<AdminAspectRatio ratio="16/9">\n  <img src="chart.png" alt="Preview" />\n</AdminAspectRatio>`,
@@ -1400,12 +1400,259 @@ export const components: ComponentItem[] = [
         status: "stable",
         props: ["orientation", "max-height"],
         events: [],
-        previewHtml: `<div style="width:100%;max-width:300px;"><aui-scroll-area max-height="70px"><div style="padding:8px;font-size:11px;color:#737373;">Trace event line 001<br>Trace event line 002<br>Trace event line 003<br>Trace event line 004<br>Trace event line 005</div></aui-scroll-area></div>`,
+        previewHtml: `<div style="width:100%;max-width:300px;"><aui-scroll-area max-height="70px"><div style="padding:8px;font-size:11px;color:var(--aui-text-secondary);">Trace event line 001<br>Trace event line 002<br>Trace event line 003<br>Trace event line 004<br>Trace event line 005</div></aui-scroll-area></div>`,
         usage: {
             wc: `<aui-scroll-area max-height="200px">\n  <div>Long scrolling list</div>\n</aui-scroll-area>`,
             react: `import { AdminScrollArea } from '@chaos_team/blbui-react'\n\n<AdminScrollArea maxHeight="200px">\n  <div>Long scrolling list</div>\n</AdminScrollArea>`,
             vue: `<AdminScrollArea max-height="200px">\n  <div>Long scrolling list</div>\n</AdminScrollArea>`,
             svelte: `<aui-scroll-area max-height="200px"></aui-scroll-area>`,
+        },
+    },
+
+    {
+        id: "menu",
+        tag: "aui-menu",
+        name: "Menu",
+        category: "navigation",
+        description: "Tokenized action and navigation menu with active, danger and shortcut states.",
+        status: "stable",
+        props: ["items", "value", "orientation", "compact"],
+        events: ["aui-menu-select"],
+        initKey: "menu",
+        previewHtml: `<div style="width:100%;max-width:300px;"><aui-menu id="preview-menu"></aui-menu></div>`,
+        usage: {
+            wc: `<aui-menu id="main-menu"></aui-menu>\n<script>\nmainMenu.items = [{ id: 'overview', label: 'Overview', icon: '⌂' }]\n</script>`,
+            react: `import { AdminMenu } from '@chaos_team/blbui-react'\n\n<AdminMenu items={items} value="overview" onSelect={setSection} />`,
+            vue: `<AdminMenu :items="items" v-model:value="section" @select="handleSelect" />`,
+            svelte: `<aui-menu id="main-menu"></aui-menu>`,
+        },
+    },
+    {
+        id: "sidebar",
+        tag: "aui-sidebar",
+        name: "Sidebar",
+        category: "layout",
+        description: "Collapsible application rail with navigation, footer and responsive visibility state.",
+        status: "stable",
+        props: ["open", "title", "width", "close-label"],
+        events: ["aui-open-change"],
+        previewHtml: `<div style="height:190px;display:flex;overflow:hidden;"><aui-sidebar id="preview-sidebar" title="WORKSPACE" width="220px"><aui-menu id="preview-sidebar-menu"></aui-menu></aui-sidebar></div>`,
+        usage: {
+            wc: `<aui-sidebar title="Workspace" open>\n  <aui-menu></aui-menu>\n</aui-sidebar>`,
+            react: `import { AdminSidebar, AdminMenu } from '@chaos_team/blbui-react'\n\n<AdminSidebar title="Workspace" open><AdminMenu items={items} /></AdminSidebar>`,
+            vue: `<AdminSidebar title="Workspace" v-model:open="open"><AdminMenu :items="items" /></AdminSidebar>`,
+            svelte: `<aui-sidebar title="Workspace" open><aui-menu></aui-menu></aui-sidebar>`,
+        },
+    },
+    {
+        id: "navbar",
+        tag: "aui-navbar",
+        name: "Navbar",
+        category: "layout",
+        description: "Sticky top navigation surface with brand, content and action slots.",
+        status: "stable",
+        props: ["title", "sticky", "bordered"],
+        events: [],
+        previewHtml: `<div style="width:100%;"><aui-navbar title="CONTROL PLANE" bordered><span slot="brand">BLBUI / OPS</span><span slot="actions"><aui-badge variant="success" dot>ONLINE</aui-badge></span></aui-navbar></div>`,
+        usage: {
+            wc: `<aui-navbar title="Control Plane" sticky bordered>\n  <span slot="actions">Actions</span>\n</aui-navbar>`,
+            react: `import { AdminNavbar } from '@chaos_team/blbui-react'\n\n<AdminNavbar title="Control Plane" sticky actions={<AdminButton>Deploy</AdminButton>} />`,
+            vue: `<AdminNavbar title="Control Plane" sticky><template #actions><AdminButton>Deploy</AdminButton></template></AdminNavbar>`,
+            svelte: `<aui-navbar title="Control Plane" sticky bordered></aui-navbar>`,
+        },
+    },
+    {
+        id: "date-picker",
+        tag: "aui-date-picker",
+        name: "Date Picker",
+        category: "forms",
+        description: "Theme-aware native date field for filters, schedules and operational forms.",
+        status: "stable",
+        props: ["value", "min", "max", "label", "disabled"],
+        events: ["aui-date-change", "aui-change"],
+        previewHtml: `<div style="width:100%;max-width:260px;"><aui-date-picker id="preview-date-picker" label="DEPLOY DATE" value="2026-09-07"></aui-date-picker></div>`,
+        usage: {
+            wc: `<aui-date-picker label="Deploy date" value="2026-09-07"></aui-date-picker>`,
+            react: `import { AdminDatePicker } from '@chaos_team/blbui-react'\n\n<AdminDatePicker label="Deploy date" value="2026-09-07" onChange={setDate} />`,
+            vue: `<AdminDatePicker label="Deploy date" v-model:value="date" />`,
+            svelte: `<aui-date-picker label="Deploy date" value="2026-09-07"></aui-date-picker>`,
+        },
+    },
+    {
+        id: "time-picker",
+        tag: "aui-time-picker",
+        name: "Time Picker",
+        category: "forms",
+        description: "Theme-aware native time field with configurable step and bounds.",
+        status: "stable",
+        props: ["value", "min", "max", "step", "label", "disabled"],
+        events: ["aui-time-change", "aui-change"],
+        previewHtml: `<div style="width:100%;max-width:260px;"><aui-time-picker id="preview-time-picker" label="MAINTENANCE WINDOW" value="22:30" step="900"></aui-time-picker></div>`,
+        usage: {
+            wc: `<aui-time-picker label="Maintenance window" value="22:30" step="900"></aui-time-picker>`,
+            react: `import { AdminTimePicker } from '@chaos_team/blbui-react'\n\n<AdminTimePicker label="Maintenance window" value="22:30" step={900} onChange={setTime} />`,
+            vue: `<AdminTimePicker label="Maintenance window" v-model:value="time" :step="900" />`,
+            svelte: `<aui-time-picker label="Maintenance window" value="22:30" step={900}></aui-time-picker>`,
+        },
+    },
+    {
+        id: "pin-input",
+        tag: "aui-pin-input",
+        name: "PIN Input",
+        category: "forms",
+        description: "Accessible one-time code input with focus movement and completion state.",
+        status: "stable",
+        props: ["length", "value", "masked", "label", "disabled"],
+        events: ["aui-pin-change"],
+        previewHtml: `<aui-pin-input length="6" value="42" label="VERIFICATION CODE"></aui-pin-input>`,
+        usage: {
+            wc: `<aui-pin-input length="6" label="Verification code"></aui-pin-input>`,
+            react: `import { AdminPinInput } from '@chaos_team/blbui-react'\n\n<AdminPinInput length={6} label="Verification code" onChange={setCode} />`,
+            vue: `<AdminPinInput :length="6" label="Verification code" v-model:value="code" />`,
+            svelte: `<aui-pin-input length={6} label="Verification code"></aui-pin-input>`,
+        },
+    },
+    {
+        id: "descriptions",
+        tag: "aui-descriptions",
+        name: "Descriptions",
+        category: "data",
+        description: "Responsive label/value matrix for metadata, settings and resource details.",
+        status: "stable",
+        props: ["items", "columns", "bordered", "compact"],
+        events: [],
+        initKey: "descriptions",
+        previewHtml: `<div style="width:100%;"><aui-descriptions id="preview-descriptions" columns="2"></aui-descriptions></div>`,
+        usage: {
+            wc: `<aui-descriptions id="resource-details" bordered></aui-descriptions>\n<script>\nresourceDetails.items = [{ label: 'REGION', value: 'us-east-1' }]\n</script>`,
+            react: `import { AdminDescriptions } from '@chaos_team/blbui-react'\n\n<AdminDescriptions items={details} columns={2} />`,
+            vue: `<AdminDescriptions :items="details" :columns="2" bordered />`,
+            svelte: `<aui-descriptions id="resource-details" columns={2}></aui-descriptions>`,
+        },
+    },
+    {
+        id: "cascader",
+        tag: "aui-cascader",
+        name: "Cascader",
+        category: "forms",
+        description: "Hierarchical option picker for regions, resources and nested configuration paths.",
+        status: "stable",
+        props: ["options", "value", "placeholder", "disabled", "open", "searchable"],
+        events: ["aui-cascader-change", "aui-open-change"],
+        initKey: "cascader",
+        previewHtml: `<div style="width:100%;max-width:340px;"><aui-cascader id="preview-cascader" searchable></aui-cascader></div>`,
+        usage: {
+            wc: `<aui-cascader id="region-picker" searchable></aui-cascader>\n<script>\nregionPicker.options = [{ value: 'cn', label: 'China', children: [{ value: 'cn-east', label: 'East' }] }]\n</script>`,
+            react: `import { AdminCascader } from '@chaos_team/blbui-react'\n\n<AdminCascader options={regions} searchable onChange={(value) => setRegion(value)} />`,
+            vue: `<AdminCascader :options="regions" searchable v-model:value="region" @change="handleRegion" />`,
+            svelte: `import { AdminCascader } from '@chaos_team/blbui-svelte'\n\n<AdminCascader {options} searchable />`,
+        },
+    },
+    {
+        id: "transfer",
+        tag: "aui-transfer",
+        name: "Transfer",
+        category: "forms",
+        description: "Dual-list assignment control for moving users, permissions and resources between sets.",
+        status: "stable",
+        props: ["options", "values", "source-title", "target-title", "searchable", "disabled"],
+        events: ["aui-transfer-change"],
+        initKey: "transfer",
+        previewHtml: `<div style="width:100%;"><aui-transfer id="preview-transfer" source-title="AVAILABLE" target-title="ASSIGNED"></aui-transfer></div>`,
+        usage: {
+            wc: `<aui-transfer id="permission-transfer" source-title="Available" target-title="Assigned"></aui-transfer>\n<script>\npermissionTransfer.options = permissions\n</script>`,
+            react: `import { AdminTransfer } from '@chaos_team/blbui-react'\n\n<AdminTransfer options={permissions} values={assigned} onChange={setAssigned} />`,
+            vue: `<AdminTransfer :options="permissions" v-model:values="assigned" source-title="Available" target-title="Assigned" />`,
+            svelte: `import { AdminTransfer } from '@chaos_team/blbui-svelte'\n\n<AdminTransfer {options} bind:values />`,
+        },
+    },
+    {
+        id: "context-menu",
+        tag: "aui-context-menu",
+        name: "Context Menu",
+        category: "overlay",
+        description: "Keyboard-friendly right-click action menu with separators, shortcuts and safe dismissal.",
+        status: "stable",
+        props: ["items", "open", "x", "y", "label"],
+        events: ["aui-menu-select", "aui-open-change"],
+        initKey: "context-menu",
+        previewHtml: `<div style="width:100%;"><aui-context-menu id="preview-context-menu"><button type="button" style="width:100%;padding:16px;border:1px dashed var(--aui-border);background:transparent;color:var(--aui-text-secondary);">RIGHT-CLICK THIS WORKSPACE</button></aui-context-menu></div>`,
+        usage: {
+            wc: `<aui-context-menu id="resource-menu">\n  <button>Right-click resource</button>\n</aui-context-menu>`,
+            react: `import { AdminContextMenu } from '@chaos_team/blbui-react'\n\n<AdminContextMenu items={items} onSelect={handleAction}>\n  <button>Right-click resource</button>\n</AdminContextMenu>`,
+            vue: `<AdminContextMenu :items="items" @select="handleAction"><button>Right-click resource</button></AdminContextMenu>`,
+            svelte: `import { AdminContextMenu } from '@chaos_team/blbui-svelte'\n\n<AdminContextMenu {items}><button>Right-click resource</button></AdminContextMenu>`,
+        },
+    },
+    {
+        id: "hover-card",
+        tag: "aui-hover-card",
+        name: "Hover Card",
+        category: "overlay",
+        description: "Delayed pointer and focus preview for resource metadata without interrupting the workflow.",
+        status: "stable",
+        props: ["open", "title", "side", "delay", "close-delay"],
+        events: ["aui-open-change"],
+        previewHtml: `<aui-hover-card title="RESOURCE DETAILS"><span slot="trigger" class="demo-link">HOVER OR FOCUS RESOURCE</span><span slot="content">Region us-east-1 · 12 healthy nodes · 184ms p99</span></aui-hover-card>`,
+        usage: {
+            wc: `<aui-hover-card title="Resource details">\n  <button slot="trigger">Inspect</button>\n  <span slot="content">Healthy · 12 nodes</span>\n</aui-hover-card>`,
+            react: `import { AdminHoverCard } from '@chaos_team/blbui-react'\n\n<AdminHoverCard title="Resource details" content={<span>Healthy · 12 nodes</span>}>\n  <button>Inspect</button>\n</AdminHoverCard>`,
+            vue: `<AdminHoverCard title="Resource details"><template #trigger><button>Inspect</button></template><template #content>Healthy · 12 nodes</template></AdminHoverCard>`,
+            svelte: `import { AdminHoverCard } from '@chaos_team/blbui-svelte'\n\n<AdminHoverCard title="Resource details"><button slot="trigger">Inspect</button><span slot="content">Healthy · 12 nodes</span></AdminHoverCard>`,
+        },
+    },
+    {
+        id: "notification-center",
+        tag: "aui-notification-center",
+        name: "Notification Center",
+        category: "feedback",
+        description: "Tokenized toast stack with placement, duration, dismiss and action events for global feedback.",
+        status: "stable",
+        props: ["notifications", "position", "max"],
+        events: ["aui-notification-close", "aui-notification-action", "aui-notifications-change"],
+        initKey: "notification-center",
+        previewHtml: `<aui-notification-center id="preview-notification-center" position="bottom-right" style="position:relative;inset:auto;width:100%;pointer-events:auto;"></aui-notification-center>`,
+        usage: {
+            wc: `<aui-notification-center id="notifications"></aui-notification-center>\n<script>\nconst center = document.querySelector('#notifications')\nconst id = center.push({ title: 'Deploy complete', message: 'Production is healthy', variant: 'success' })\ncenter.dismiss(id)\n</script>`,
+            react: `import { AdminNotificationCenter } from '@chaos_team/blbui-react'\n\n<AdminNotificationCenter notifications={notifications} onClose={dismiss} />`,
+            vue: `<AdminNotificationCenter :notifications="notifications" position="top-right" @close="dismiss" />`,
+            svelte: `import { AdminNotificationCenter } from '@chaos_team/blbui-svelte'\n\n<AdminNotificationCenter {notifications} />`,
+        },
+    },
+    {
+        id: "upload-list",
+        tag: "aui-upload-list",
+        name: "Upload List",
+        category: "forms",
+        description: "Manage selected files with status, progress, retry, preview and remove actions.",
+        status: "stable",
+        props: ["files", "removable", "retryable", "previewable", "compact", "disabled", "empty-label"],
+        events: ["aui-upload-change", "aui-upload-remove", "aui-upload-retry", "aui-upload-preview"],
+        initKey: "upload-list",
+        previewHtml: `<div style="width:100%;max-width:420px;"><aui-upload-list id="preview-upload-list"></aui-upload-list></div>`,
+        usage: {
+            wc: `<aui-upload-list id="uploads"></aui-upload-list>\n<script>\nuploads.files = [{ id: 'cert-1', name: 'gateway.pem', size: 18420, status: 'success' }]\n</script>`,
+            react: `import { AdminUploadList } from '@chaos_team/blbui-react'\n\n<AdminUploadList files={files} onRemove={removeFile} onPreview={previewFile} />`,
+            vue: `<AdminUploadList v-model:files="files" @remove="removeFile" @preview="previewFile" />`,
+            svelte: `import { AdminUploadList } from '@chaos_team/blbui-svelte'\n\n<AdminUploadList bind:files onRemove={removeFile} />`,
+        },
+    },
+    {
+        id: "file-preview",
+        tag: "aui-file-preview",
+        name: "File Preview",
+        category: "data",
+        description: "Modal preview surface for images, PDFs and file metadata with download hooks.",
+        status: "stable",
+        props: ["file", "open", "title", "close-label", "download-label", "downloadable"],
+        events: ["aui-file-preview-close", "aui-file-download"],
+        initKey: "file-preview",
+        previewHtml: `<div style="width:100%;height:110px;"><aui-file-preview id="preview-file-preview"></aui-file-preview><button id="preview-file-open" type="button" style="padding:8px 12px;border:1px solid var(--aui-border);background:var(--aui-control-bg);color:var(--aui-text-secondary);font:10px var(--aui-font-mono);">OPEN FILE PREVIEW</button></div>`,
+        usage: {
+            wc: `<aui-file-preview id="preview"></aui-file-preview>\n<script>\npreview.file = { id: 'report', name: 'report.pdf', type: 'application/pdf', url: reportUrl }\npreview.open = true\n</script>`,
+            react: `import { AdminFilePreview } from '@chaos_team/blbui-react'\n\n<AdminFilePreview file={file} open={open} onClose={() => setOpen(false)} />`,
+            vue: `<AdminFilePreview :file="file" v-model:open="open" @download="downloadFile" />`,
+            svelte: `import { AdminFilePreview } from '@chaos_team/blbui-svelte'\n\n<AdminFilePreview {file} bind:open onClose={() => open = false} />`,
         },
     },
 
@@ -1603,6 +1850,92 @@ export function initComponentDemo(root: HTMLElement): void {
         { value: "active-standby", label: "Active / Standby" },
     ]);
     setProp("#preview-tag-input", "values", ["production", "us-east-1", "canary-10"]);
+    setProp("#preview-date-picker", "value", "2026-09-07");
+    setProp("#preview-time-picker", "value", "22:30");
+    setProp("#preview-cascader", "options", [
+        {
+            value: "china",
+            label: "China",
+            children: [
+                { value: "east", label: "East China", children: [{ value: "sh", label: "Shanghai" }] },
+                { value: "north", label: "North China", children: [{ value: "bj", label: "Beijing" }] },
+            ],
+        },
+        {
+            value: "us",
+            label: "United States",
+            children: [{ value: "east", label: "US East", children: [{ value: "va", label: "Virginia" }] }],
+        },
+    ]);
+    setProp("#preview-transfer", "options", [
+        { value: "read", label: "Read access", description: "View resource state" },
+        { value: "write", label: "Write access", description: "Modify configuration" },
+        { value: "deploy", label: "Deploy access", description: "Release to production" },
+        { value: "audit", label: "Audit access", description: "View immutable logs" },
+    ]);
+    setProp("#preview-transfer", "values", ["read", "audit"]);
+    setProp("#preview-context-menu", "items", [
+        { id: "inspect", label: "Inspect resource", shortcut: "⌘ I" },
+        { id: "copy", label: "Copy resource ID", shortcut: "⌘ C" },
+        { separator: true, id: "separator" },
+        { id: "delete", label: "Delete resource", danger: true },
+    ]);
+    setProp("#preview-notification-center", "notifications", [
+        {
+            id: "deploy-complete",
+            title: "Deploy complete",
+            message: "Production route is healthy.",
+            variant: "success",
+            closable: true,
+        },
+    ]);
+    setProp("#preview-upload-list", "files", [
+        {
+            id: "gateway-cert",
+            name: "gateway.pem",
+            size: 18420,
+            type: "application/x-pem-file",
+            status: "success",
+        },
+        {
+            id: "route-schema",
+            name: "route-schema.json",
+            size: 8240,
+            type: "application/json",
+            status: "uploading",
+            progress: 68,
+        },
+        {
+            id: "failed-bundle",
+            name: "edge-bundle.zip",
+            size: 2840000,
+            type: "application/zip",
+            status: "error",
+            error: "Upload timed out",
+        },
+    ]);
+    root.querySelector("#preview-upload-list")?.addEventListener("aui-upload-preview", (event) => {
+        const file = (event as CustomEvent<{ file?: unknown }>).detail?.file;
+        const preview = root.querySelector<HTMLElement & Record<string, unknown>>(
+            "#preview-file-preview",
+        );
+        if (preview && file) {
+            preview.file = file;
+            preview.open = true;
+        }
+    });
+    setProp("#preview-file-preview", "file", {
+        id: "route-schema",
+        name: "route-schema.json",
+        size: 8240,
+        type: "application/json",
+    });
+    root.querySelector<HTMLButtonElement>("#preview-file-open")?.addEventListener("click", () => {
+        const preview = root.querySelector<HTMLElement & Record<string, unknown>>(
+            "#preview-file-preview",
+        );
+        if (preview) preview.open = true;
+    });
 
     // Navigation
     setProp("#preview-toggle-group", "items", [
@@ -1631,6 +1964,25 @@ export function initComponentDemo(root: HTMLElement): void {
         { id: "nodes", label: "Clusters & Nodes" },
         { id: "logs", label: "Event Stream" },
         { id: "settings", label: "System Settings" },
+    ]);
+    setProp("#preview-menu", "items", [
+        { id: "overview", label: "Overview", icon: "⌂", shortcut: "⌘ 1" },
+        { id: "activity", label: "Activity", icon: "↗", description: "Live operations" },
+        { separator: true, id: "separator" },
+        { id: "settings", label: "Settings", icon: "⚙" },
+    ]);
+    setProp("#preview-menu", "value", "overview");
+    setProp("#preview-sidebar-menu", "items", [
+        { id: "dash", label: "Dashboard", icon: "⌂" },
+        { id: "nodes", label: "Clusters", icon: "◈" },
+        { id: "logs", label: "Event Stream", icon: "≋" },
+    ]);
+    setProp("#preview-sidebar-menu", "value", "dash");
+    setProp("#preview-descriptions", "items", [
+        { label: "REGION", value: "us-east-1", description: "Primary" },
+        { label: "STATUS", value: "ONLINE" },
+        { label: "VERSION", value: "v0.0.4" },
+        { label: "OWNER", value: "Platform Ops" },
     ]);
     setProp("#preview-accordion", "items", [
         {
