@@ -48,17 +48,19 @@ jobs:
         working-directory: .
         run: bun run typecheck
 
+      - name: Build publish artifacts
+        working-directory: .
+        run: bun run build:packages
+
       - name: Check Svelte components
+        # Runs after the build: the dist/src export-sync verification in
+        # check-svelte.mjs needs the generated svelte dist.
         working-directory: .
         run: bun run check:svelte
 
       - name: Build documentation site
         working-directory: .
         run: bun run docs:check
-
-      - name: Build publish artifacts
-        working-directory: .
-        run: bun run build:packages
 
       - name: Run test suite
         working-directory: .
