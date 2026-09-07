@@ -1,6 +1,6 @@
 # BLBUI 组件库实施计划
 
-> **状态（0.0.2 更新）**：本计划 Phase 0–4 已全部落地——Core 现有 **78 个组件**、Business 9 个、React/Vue 为 78:1 完整绑定、Svelte 提供注册入口与 7 个封装；Phase 2 的测试基线（Vitest 行为测试 + a11y 契约测试）已就位；Phase 6 的文档站（`docs-site/`）已可构建。
+> **状态（0.0.3 更新）**：本计划 Phase 0–4 已全部落地——Core 现有 **78 个组件**、Business 9 个、React/Vue 为 78:1 完整绑定、Svelte 提供注册入口与 7 个封装；Phase 2 的测试基线（Vitest 行为测试 + a11y 契约测试）已就位；Phase 6 的文档站（`docs-site/`）已可构建。
 > 下文历史路径说明：`docs/admin-style-guide.md` 位于 `chaos-ui` 风格规范仓库（本仓库不复制全文，tokens 已提取进 `core/src/tokens.css`）；`packages/blbui` 与 `web/` 是规划阶段的占位命名，实际落地为仓库顶层的 `core/ react/ vue/ svelte/ business/ business-react/ docs-site/` workspace。
 
 ## 目标
