@@ -86,7 +86,7 @@
 
 - 对 commit `2d5477d` 的固定 runner 产物进行了人工逐图检查；Ubuntu 与 Windows 的 `mobile / obsidian-light / schema-form` 均确认组件内容、主题 token、边框、字段间距、控件尺寸、按钮和底部裁切正常。
 - 本轮差异只来自移动端输入文字与原生控件的跨 runner 基线变化：Ubuntu 产物为 `324 × 263`，Windows 产物为 `324 × 262`；未发现功能、布局或主题回归。
-- 仅更新 `tests/e2e/golden/ubuntu-chromium/` 与 `tests/e2e/golden/windows-chromium/` 中对应的两个 profile-specific PNG，未重录其余 862 张 golden；后续 runner/浏览器升级仍需按同样流程重新人工复核。
+- 仅更新 `tests/e2e/golden/ubuntu-chromium/` 与 `tests/e2e/golden/windows-chromium/` 中 mobile SchemaForm 的 light/dark 四个 profile-specific PNG，未重录其余 860 张 golden；后续 runner/浏览器升级仍需按同样流程重新人工复核。
 
 ## 0.0.11 图表 tooltip/focus 复核
 
