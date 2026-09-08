@@ -49,6 +49,7 @@ const lines = [
   "- `fromPieData` / `normalizePieData` drop non-positive slices and calculate a stable total; `normalizeGaugeValue` clamps a meter value to its host domain.",
   "- Recharts, VChart and other chart engines remain optional integrations; chart adapters do not add a runtime dependency.",
   "- `readEditorState`, `writeEditorState` and `connectEditorAdapter` provide a small editor bridge for CodeMirror, TipTap, Monaco and compatible runtimes without bundling an editor dependency.",
+  "- `AdminDataResource` provides a transport-neutral loading/empty/error/permission-denied state machine with abort, stale-response protection, retry and subscriptions; `createAdminFetchDataSource` adds an optional fetch mapper without adding a runtime dependency.",
   "",
 ];
 const output = lines.join("\n");

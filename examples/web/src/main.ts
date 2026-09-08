@@ -19,6 +19,17 @@ app.innerHTML = `
       <aui-status-tag slot="actions" status="success">CONNECTED</aui-status-tag>
     </aui-filter-bar>
     <aui-data-grid id="services" mobile-cards></aui-data-grid>
+    <section aria-label="Async data contract" id="async-contract">
+      <div class="async-actions">
+        <aui-button id="simulate-error">SIMULATE DATA ERROR</aui-button>
+        <aui-button id="simulate-permission">SIMULATE PERMISSION DENIAL</aui-button>
+        <aui-button id="recover-data">RECOVER DATA</aui-button>
+      </div>
+      <aui-data-grid id="async-grid" error-label="FAILED TO LOAD ASYNC DATA" permission-denied-label="REQUEST ACCESS TO VIEW ASYNC DATA">
+        <span slot="permission">Request access to continue.</span>
+      </aui-data-grid>
+      <output id="async-state" data-parity-async-state="ready" data-parity-retry-count="0">Async state: ready · retries: 0</output>
+    </section>
     <aui-advanced-table id="business-table" selectable></aui-advanced-table>
     <output data-parity-business-selection="0">Business selection: 0</output>
   </aui-page>
@@ -44,6 +55,27 @@ businessTable.rows = [
 businessTable.selectable = true;
 businessTable.addEventListener("aui-selection-change", (event) => {
     document.querySelector("[data-parity-business-selection]")?.setAttribute("data-parity-business-selection", String((event as CustomEvent<{ keys: unknown[] }>).detail.keys.length));
+});
+const asyncGrid = document.querySelector<HTMLElement & Record<string, unknown>>("#async-grid");
+const asyncState = document.querySelector<HTMLOutputElement>("#async-state");
+if (!asyncGrid || !asyncState) throw new Error("Async contract host is missing");
+asyncGrid.columns = [{ key: "label", label: "STATE" }];
+asyncGrid.rows = [{ id: "async-ready", label: "Async contract row" }];
+asyncGrid.retryable = true;
+let retryCount = 0;
+const setAsyncState = (state: "ready" | "error" | "permission-denied") => {
+    asyncGrid.error = state === "error";
+    asyncGrid.permissionDenied = state === "permission-denied";
+    asyncState.dataset.parityAsyncState = state;
+    asyncState.textContent = `Async state: ${state} · retries: ${retryCount}`;
+};
+document.querySelector("#simulate-error")?.addEventListener("click", () => setAsyncState("error"));
+document.querySelector("#simulate-permission")?.addEventListener("click", () => setAsyncState("permission-denied"));
+document.querySelector("#recover-data")?.addEventListener("click", () => setAsyncState("ready"));
+asyncGrid.addEventListener("aui-retry", () => {
+    retryCount += 1;
+    asyncState.dataset.parityRetryCount = String(retryCount);
+    setAsyncState("ready");
 });
 grid.columns = [
     { key: "name", label: "Service", sortable: true },

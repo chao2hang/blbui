@@ -421,6 +421,42 @@ h2 {
     flex-wrap: wrap;
     gap: 10px;
 }
+.async-preview {
+    width: 100%;
+}
+.async-preview-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+    color: var(--aui-text-muted);
+    font: 9px/1 var(--aui-font-mono);
+    letter-spacing: 0.08em;
+}
+.async-preview-controls button {
+    min-height: 24px;
+    padding: 4px 6px;
+    border: 1px solid var(--aui-border);
+    background: transparent;
+    color: var(--aui-text-muted);
+    cursor: pointer;
+    font: 9px/1 var(--aui-font-mono);
+}
+.async-preview-controls button:hover,
+.async-preview-controls button.is-active {
+    border-color: var(--aui-focus);
+    color: var(--aui-text-primary);
+}
+.async-preview [data-async-request-access] {
+    min-height: 26px;
+    padding: 5px 8px;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font: 700 9px/1 var(--aui-font-mono);
+}
 .demo-statuses {
     gap: 8px;
 }

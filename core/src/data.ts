@@ -58,7 +58,8 @@ export class AdminTableElement extends AdminElement {
         }
         :host([loading]) .loading-state,
         :host([empty]) .empty-state,
-        :host([error]) .error-state {
+        :host([error]) .error-state,
+        :host([permission-denied]) .permission-state {
             display: flex;
         }
         :host([loading]) .empty-state,
@@ -168,7 +169,7 @@ export class AdminTableElement extends AdminElement {
     render() {
         return html`<div class="frame">
             <div class="scroll"><slot></slot></div>
-            <div class="state loading-state">
+            <div class="state loading-state" role="status" aria-live="polite">
                 <span class="spinner" aria-hidden="true"><i></i><i></i><i></i></span
                 ><span>${this.loadingLabel}</span>
             </div>

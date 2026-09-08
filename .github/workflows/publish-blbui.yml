@@ -165,3 +165,10 @@ jobs:
             echo "--- npm publish $package ---"
             (cd "$package" && npm publish --access public --provenance --ignore-scripts)
           done
+
+      - name: Verify npm publication visibility
+        working-directory: .
+        env:
+          BLBUI_NPM_VERIFY_TIMEOUT_MS: "180000"
+          BLBUI_NPM_VERIFY_INTERVAL_MS: "10000"
+        run: bun run npm:verify

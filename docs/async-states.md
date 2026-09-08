@@ -25,6 +25,9 @@ BLBUI 的数据与业务组件使用同一组异步状态语义：`loading`、`e
 
 适用组件包括 Core 的 `Table`、`DataGrid`、`ListView`，以及 Business 的 `AdvancedTable`、`AuditLog`。已有的 `loading`、`empty`、`error` 属性保持兼容。
 
+对于请求本身的竞态、取消、分页和错误归一化，可使用 Business 的
+[`AdminDataResource`](./data-sources.md)，组件仍只消费它输出的状态和 rows。
+
 ## 框架绑定
 
 React 使用 `permissionDenied`、`retryable`、`retryLabel` 和 `onRetry`；Vue 使用同名 props 与 `@retry`；Svelte wrapper 使用同名 props 和 `onRetry`，直接注册的 Custom Element 使用 `aui-retry`。

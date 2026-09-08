@@ -24,6 +24,8 @@ function App() {
     const [query, setQuery] = useState(contract.initialQuery);
     const [open, setOpen] = useState(contract.initialDialog);
     const [page, setPage] = useState(contract.initialPage);
+    const [asyncState, setAsyncState] = useState<"ready" | "error" | "permission-denied">("ready");
+    const [retryCount, setRetryCount] = useState(0);
     const [toasts, setToasts] = useState([{ id: "parity", title: "PARITY READY", message: "React fixture is synchronized.", variant: "success" as const, duration: 0 }]);
     const normalizedQuery = query.trim().toLowerCase();
     const visibleRows = fixture.rows.filter((row) => {
@@ -32,7 +34,7 @@ function App() {
         return matchesTab && matchesQuery;
     });
     return (
-        <div className="aui-root" style={{ minHeight: "100vh", padding: 32 }} data-parity-query={query} data-parity-page={page} data-parity-dialog={String(open)} data-parity-active-tab={activeTab}>
+        <div className="aui-root" style={{ minHeight: "100vh", padding: 32 }} data-parity-query={query} data-parity-page={page} data-parity-dialog={String(open)} data-parity-active-tab={activeTab} data-parity-async-state={asyncState} data-parity-retry-count={retryCount}>
             <AdminPage title="Channels" description="Cross-framework operator playground.">
                 <AdminTabs
                     items={fixture.tabs}
@@ -51,6 +53,25 @@ function App() {
                         <tbody>{visibleRows.map((row) => <tr key={row.id}><td>{row.id}</td><td>{row.status}</td><td>{row.region}</td><td>{query || "—"}</td></tr>)}</tbody>
                     </table>
                 </AdminTable>
+                <section aria-label="Async data contract" style={{ marginTop: 20 }}>
+                    <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+                        <AdminButton onClick={() => setAsyncState("error")}>Simulate data error</AdminButton>
+                        <AdminButton onClick={() => setAsyncState("permission-denied")}>Simulate permission denial</AdminButton>
+                        <AdminButton onClick={() => setAsyncState("ready")}>Recover data</AdminButton>
+                    </div>
+                    <AdminTable
+                        id="async-table"
+                        error={asyncState === "error"}
+                        permissionDenied={asyncState === "permission-denied"}
+                        onRetry={() => {
+                            setRetryCount((count) => count + 1);
+                            setAsyncState("ready");
+                        }}
+                    >
+                        <table><tbody><tr><td>Async contract row</td><td>{retryCount}</td></tr></tbody></table>
+                        <span slot="permission">Request access to continue.</span>
+                    </AdminTable>
+                </section>
                 <AdminAdvancedTable
                     id="business-table"
                     columns={fixture.business.columns}

@@ -1,6 +1,6 @@
 # BLBUI 组件库实施计划
 
-> **状态（0.0.17 更新）**：Core 现有 **104 个组件**、Business 19 个、React/Vue 为 104:1 完整 Core 绑定、Svelte 提供注册入口、29 个常用封装（共 31 个公开导出）；9 套主题均支持 light/dark，并提供语义 CSS utilities。当前已接入 token lint、governance audit、Vitest、Playwright/a11y/E2E、文档 smoke、SSR 检查、四套 playground 构建与真实浏览器 parity、公共 API 文档检查、数据 adapter contract、chart adapter contract、Line/AreaChart 多系列、编辑器 adapter、外部宿主迁移示例、versioned parity fixture、Business parity fixture、docs 性能预算、visual matrix/golden 和人工视觉验收；文档站覆盖 123 个组件。异步数据/业务组件已统一 permission denied、retry 事件与具名插槽，发布预检已接入 release gate。
+> **状态（0.0.18 更新）**：Core 现有 **104 个组件**、Business 19 个、React/Vue 为 104:1 完整 Core 绑定、Svelte 提供注册入口、29 个常用封装（共 31 个公开导出）；9 套主题均支持 light/dark，并提供语义 CSS utilities。当前已接入 token lint、governance audit、Vitest、Playwright/a11y/E2E、文档 smoke、SSR 检查、四套 playground 构建与真实浏览器 parity、公共 API 文档检查、数据 adapter contract、chart adapter contract、Line/AreaChart 多系列、编辑器 adapter、外部宿主迁移示例、versioned parity fixture、Business parity fixture、docs 性能预算、visual matrix/golden 和人工视觉验收；文档站覆盖 123 个组件。异步数据/业务组件已统一 permission denied、retry 事件与具名插槽，发布预检已接入 release gate；docs-site 已提供异步状态实验台和恢复交互回归。
 > 下文历史路径说明：`docs/admin-style-guide.md` 位于 `chaos-ui` 风格规范仓库（本仓库不复制全文，tokens 已提取进 `core/src/tokens.css`）；`packages/blbui` 与 `web/` 是规划阶段的占位命名，实际落地为仓库顶层的 `core/ react/ vue/ svelte/ business/ business-react/ docs-site/` workspace。
 
 ## 目标
@@ -79,6 +79,7 @@
 - [x] 将 docs playground 的 DOM 节点数、目录卡片数和 DOMContentLoaded 性能预算纳入 Playwright 发布门禁。
 - [x] 生成 API 文档和 Storybook/Ladle 等价的 docs-site 文档站。
 - [x] 为 Core/Business 异步数据组件统一 loading、empty、error、permission denied、retry 事件和具名插槽，并同步 React/Vue/Svelte API 与行为测试。
+- [x] 新增 Business `AdminDataResource`/fetch source contract，覆盖取消、竞态保护、分页查询、HTTP 权限/重试语义和跨框架订阅方式。
 - [x] 为 Web Components、React、Vue、Svelte 增加 Business AdvancedTable parity 场景和真实浏览器选择事件测试。
 - [x] 将版本、CHANGELOG、tag、npm 占用检查、token/OIDC 发布分支固化为可执行 release preflight。
 - [x] 发布 0.0.6 小版本，三框架 playground 与绑定测试作为真实使用反馈入口。
@@ -92,6 +93,7 @@
 - [x] 发布 0.0.15 小版本，治理审计与四框架真实浏览器 parity 纳入稳定发布流程，并修复 React/Vue/Svelte 受控属性和事件同步问题。
 - [x] 发布 0.0.16 小版本，收口移动端 SchemaForm 尺寸与 fixed-runner visual golden，并保持全量主题、跨框架和治理门禁。
 - [x] 将组件注册/catalog、主题 token、utility 命名空间、版本与文档状态纳入季度治理 workflow。
+- [x] 发布 workflow 在 npm publish 后轮询六个包的公开 metadata，确认版本可见后才结束发布 job。
 - [x] 以 docs-site 作为 API 文档与交互式组件目录的 Storybook/Ladle 等价入口，并由 API/catalog 门禁保持同步。
 
 ## 验收标准

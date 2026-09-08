@@ -2,9 +2,16 @@
 
 ## Unreleased
 
+## 0.0.18 — 2026-09-09
+
+- 新增 Business `AdminDataResource` 与 `createAdminFetchDataSource`：统一分页请求、Abort、stale response 防护、empty/error/permission-denied、retry 和 HTTP 状态归一化，不引入传输层依赖。
+- 四套 playground parity fixture 升级到 v3，真实验证异步错误重试、权限拒绝插槽与恢复；修复 Svelte wrapper 在无自定义 slot 时错误渲染默认 slot 的问题。
+- 发布 workflow 增加 npm metadata 发布后可见性轮询，避免 registry 传播延迟导致部分包未发布仍被误报成功。
 - 刷新 Windows/Ubuntu fixed-runner 窄屏图表、Workflow 与 PermissionMatrix 基准，覆盖 Lit 子组件完成渲染后的稳定截图边界；继续保持严格 pixelmatch，不放宽全局视觉阈值。
 - 记录 Obsidian 深色窄屏场景在 fixed runner 上的实际高度与 SVG 绘制基线，golden 按 profile 分离维护。
 - 视觉矩阵继续作为 2 个平台 × 432 张 PNG 的发布前证据，新增基准须经过人工复核后再提交。
+- docs-site 新增 Table、DataGrid、AdvancedTable、AuditLog 的异步状态实验台，并覆盖错误重试与权限恢复交互。
+- 修复 Table permission-denied 状态未显示的问题；补充文档站异步状态 E2E 回归与人工视觉检查。
 
 ## 0.0.17 — 2026-09-09
 

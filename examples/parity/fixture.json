@@ -1,5 +1,5 @@
 {
-  "contractVersion": 2,
+  "contractVersion": 3,
   "tabs": [
     { "id": "all", "label": "All" },
     { "id": "healthy", "label": "Healthy" }
@@ -18,6 +18,13 @@
       { "id": "svc-gateway", "name": "Gateway", "owner": "Platform" },
       { "id": "svc-worker", "name": "Worker", "owner": "Runtime" }
     ]
+  },
+  "asyncStates": {
+    "ready": "ready",
+    "error": "error",
+    "permissionDenied": "permission-denied",
+    "retryEvent": "aui-retry",
+    "permissionSlot": "permission"
   },
   "steps": [
     { "id": "details", "label": "Details" },
@@ -41,7 +48,9 @@
       "totalPages": 3,
       "initialDialog": false,
       "initialQuery": "",
-      "emptyQueryLabel": "—"
+      "emptyQueryLabel": "—",
+      "initialAsyncState": "ready",
+      "retryCountAfterError": 1
     }
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@chaos_team/blbui",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "private": true,
   "description": "Obsidian Industrial Console component library for React, Vue and Svelte.",
   "workspaces": [
@@ -48,6 +48,7 @@
     "api:check": "node scripts/check-public-api.mjs && node scripts/generate-api-docs.mjs --check",
     "release:check": "bun run release:preflight && bun run catalog:check && bun run api:check && bun run theme:check && bun run token:check && bun run governance:check && bun run visual:check && bun run visual:golden:check && bun run examples:check && bun run migration:check && bun run editor:check && bun run typecheck && bun run ssr:check && bun run build:packages && bun run check:svelte && bun run docs:check && bun run test && bun run test:frameworks && bun run e2e:check && bun run pack:check",
     "release:preflight": "node scripts/check-release.mjs",
+    "npm:verify": "node scripts/check-npm-published.mjs",
     "pack:check": "node scripts/check-package-packs.mjs"
   },
   "devDependencies": {

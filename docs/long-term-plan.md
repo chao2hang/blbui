@@ -14,7 +14,7 @@
 
 ### P0：语义 Token 与主题合同
 
-0.0.17 已在 0.0.16 基础上继续收紧：
+0.0.18 已在 0.0.17 基础上继续收紧：
 
 - 固化 surface、text、border、focus、status、overlay、shadow、radius、motion、form color-scheme 等 token。
 - 9 套主题均维护 light/dark 两套值；新增主题必须提供同一份 token 清单。
@@ -56,6 +56,7 @@
 - CRUD、导入导出、批量操作、权限矩阵、审计日志继续放在 Business 包。
 - 图表、富文本、代码编辑器、文件管理以 peer dependency 或 adapter 方式接入。
 - [x] 为异步业务组件统一 loading、empty、error、permission denied、`aui-retry` 事件和 retry/permission 插槽；覆盖 Core Table/DataGrid/ListView 与 Business AdvancedTable/AuditLog，并同步 React/Vue/Svelte 绑定。
+- [x] 增加 framework-neutral `AdminDataResource`：统一分页请求、Abort、stale response 防护、HTTP 401/403 与 retryable 状态归一化；保留 fetch mapper 为可选能力。
 
 ### P4：SSR、无障碍与性能
 
@@ -87,7 +88,7 @@
 | 框架 | Web Components、React、Vue、Svelte 的属性与事件行为一致                     |
 | 文档 | catalog 条目、预览、props/events、四框架 usage、截图和已知限制              |
 
-## 当前组件缺口（0.0.17 后）
+## 当前组件缺口（0.0.18 后）
 
 短期缺口集中在可复用的复杂交互，而不是继续堆叠展示型组件：
 
@@ -99,8 +100,9 @@
 - LineChart 已完成 SVG 命名空间人工验收；AreaChart、PieChart、Gauge 已按同一 adapter contract 落地，并覆盖 null/empty、donut/legend 与 meter 可访问语义。
 - 0.0.10 的图表视觉矩阵新增 AreaChart、PieChart、Gauge 场景；0.0.11 增加图表 tooltip 与键盘点位事件，`fromPieData` / `normalizeGaugeValue` 保持外部图表运行时可选。
 - 0.0.12 增加 LineChart 与 AreaChart 多系列共享坐标域、图例和 series-aware 点位事件；AreaChart 多系列已补充文档站预览、React 类型、行为测试和主题/窄屏人工复核。编辑器 adapter 已补充 CodeMirror/TipTap/Monaco 和四种宿主生命周期示例。
-- 0.0.17 在 0.0.16 的基础上统一异步状态契约、补齐 Business AdvancedTable 四框架 parity 与发布 preflight；0.0.16 的移动端 SchemaForm 控件尺寸和 Windows/Ubuntu profile-specific visual golden 继续作为稳定基线；原生 picker 仍保留为默认兼容模式。
+- 0.0.18 在 0.0.17 的基础上补齐 docs-site 异步状态实验台、错误重试与权限恢复回归，并修复 Table permission-denied 可见性；0.0.16 的移动端 SchemaForm 控件尺寸和 Windows/Ubuntu profile-specific visual golden 继续作为稳定基线；原生 picker 仍保留为默认兼容模式。
 - 真实外部业务仓库的逐页迁移仍需宿主仓库配合，下一轮应优先落地 AdminButton、AdminPage/AdminPageHeader、AdminStatusTag 和 AdminLayout/AdminConsoleShell 的唯一挂载职责，再迁移 Users、Channels、Usage Logs 页面并清理旧兼容层。
+- 下一轮内部质量重点：补齐 Business Vue/Svelte wrapper 的直接导出示例，并将 npm 可见性检查结果保存为发布 job summary；外部 `web/` 页面迁移仍以宿主源码进入工作区为前提。
 
 ## 每次迭代的完成定义
 

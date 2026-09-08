@@ -9,3 +9,5 @@ Run `bun run build` from this directory or use `bun run dev` for a local
 preview. The same setup can be copied into an existing Vite, Astro, or plain
 Web Components application; see `docs/migration.md` for SSR and teardown
 guidance.
+The host also exercises the shared async data contract: error/retry,
+permission-denied and a named permission slot.

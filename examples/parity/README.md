@@ -2,7 +2,8 @@
 
 The three Vite playgrounds consume the same `fixture.json` data and exercise
 the same interaction contract: controlled input, tabs, table rows, pagination,
-dialog state, and the application toast queue. The framework-specific syntax
+dialog state, the application toast queue, and the shared async data state
+contract (error/retry and permission-denied slot). The framework-specific syntax
 is intentionally different, but the state transitions and displayed values
 are the same.
 

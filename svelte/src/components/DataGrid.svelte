@@ -74,4 +74,4 @@ it under the terms of the GNU Affero General Public License.
   }
 </script>
 
-<aui-data-grid bind:this={element}><span slot="retry"><slot name="retry" /></span><span slot="permission"><slot name="permission" /></span></aui-data-grid>
+<aui-data-grid {...$$restProps} bind:this={element}>{#if $$slots.retry}<span slot="retry"><slot name="retry" /></span>{/if}{#if $$slots.permission}<span slot="permission"><slot name="permission" /></span>{/if}</aui-data-grid>

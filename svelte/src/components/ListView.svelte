@@ -50,4 +50,4 @@ it under the terms of the GNU Affero General Public License.
   }
 </script>
 
-<aui-list-view bind:this={element}><span slot="retry"><slot name="retry" /></span><span slot="permission"><slot name="permission" /></span></aui-list-view>
+<aui-list-view {...$$restProps} bind:this={element}>{#if $$slots.retry}<span slot="retry"><slot name="retry" /></span>{/if}{#if $$slots.permission}<span slot="permission"><slot name="permission" /></span>{/if}</aui-list-view>

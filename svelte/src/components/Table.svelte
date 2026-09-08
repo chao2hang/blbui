@@ -39,4 +39,4 @@ it under the terms of the GNU Affero General Public License.
   })
 </script>
 
-<aui-table bind:this={element}><slot /><span slot="retry"><slot name="retry" /></span><span slot="permission"><slot name="permission" /></span></aui-table>
+<aui-table {...$$restProps} bind:this={element}><slot />{#if $$slots.retry}<span slot="retry"><slot name="retry" /></span>{/if}{#if $$slots.permission}<span slot="permission"><slot name="permission" /></span>{/if}</aui-table>

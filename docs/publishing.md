@@ -24,8 +24,8 @@
 触发方式：
 
 ```bash
-git tag blbui-v0.0.17
-git push origin blbui-v0.0.17
+git tag blbui-v0.0.18
+git push origin blbui-v0.0.18
 ```
 
 或者在 GitHub Actions 中手动执行 `Publish BLBUI packages`。
@@ -88,10 +88,15 @@ npm pack --dry-run --prefix business-react
 
 正式发布前的 npm 占用检查由 workflow 在发布 job 中执行：
 
+发布 workflow 在六个包全部 `npm publish` 成功后，还会运行
+`bun run npm:verify`，轮询 npm registry 直到每个包的当前版本出现在公开
+metadata 中（默认最多等待 180 秒）。这覆盖 npm metadata 的短暂传播延迟；
+若任一包最终不可见，workflow 会失败而不是报告假成功。
+
 ```bash
 BLBUI_CHECK_NPM=1 bun run release:preflight
 ```
 
 ## 当前版本
 
-当前 package version 是 `0.0.17`。已经发布后不能重复发布同一个版本，需要先统一修改 workspace package 的 version，再创建新的 tag；每次版本同时更新 CHANGELOG、文档站版本标识和 peer dependency 范围。
+当前 package version 是 `0.0.18`。已经发布后不能重复发布同一个版本，需要先统一修改 workspace package 的 version，再创建新的 tag；每次版本同时更新 CHANGELOG、文档站版本标识和 peer dependency 范围。

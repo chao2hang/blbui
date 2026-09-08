@@ -9,6 +9,8 @@
   let query = contract.initialQuery
   let open = contract.initialDialog
   let page = contract.initialPage
+  let asyncState: 'ready' | 'error' | 'permission-denied' = 'ready'
+  let retryCount = 0
   let activeTab = fixture.tabs[0].id
   $: normalizedQuery = query.trim().toLowerCase()
   $: visibleRows = fixture.rows.filter((row) => {
@@ -33,7 +35,7 @@
 
 <svelte:head><title>BLBUI Svelte Playground</title></svelte:head>
 
-<div class="aui-root" style="min-height: 100vh" data-parity-query={query} data-parity-page={page} data-parity-dialog={String(open)} data-parity-active-tab={activeTab}>
+<div class="aui-root" style="min-height: 100vh" data-parity-query={query} data-parity-page={page} data-parity-dialog={String(open)} data-parity-active-tab={activeTab} data-parity-async-state={asyncState} data-parity-retry-count={retryCount}>
   <AdminShell sidebarWidth="168px" headerHeight="48px">
     <div slot="sidebar" style="padding: 16px; font: 700 12px var(--aui-font-mono)">BLBUI</div>
     <div slot="header" style="display: flex; justify-content: flex-end; padding: 0 16px"><AdminStatusTag status="success">CONNECTED</AdminStatusTag></div>
@@ -51,6 +53,22 @@
         <tbody>{#each visibleRows as row}<tr><td>{row.id}</td><td>{row.status}</td><td>{row.region}</td><td>{query || '—'}</td></tr>{/each}</tbody>
       </table>
     </AdminTable>
+    <section aria-label="Async data contract" style="margin-top: 20px">
+      <div style="display: flex; gap: 8px; margin-bottom: 8px">
+        <AdminButton on:click={() => (asyncState = 'error')}>Simulate data error</AdminButton>
+        <AdminButton on:click={() => (asyncState = 'permission-denied')}>Simulate permission denial</AdminButton>
+        <AdminButton on:click={() => (asyncState = 'ready')}>Recover data</AdminButton>
+      </div>
+      <AdminTable
+        id="async-table"
+        error={asyncState === 'error'}
+        permissionDenied={asyncState === 'permission-denied'}
+        onRetry={() => { retryCount += 1; asyncState = 'ready' }}
+      >
+        <table><tbody><tr><td>Async contract row</td><td>{retryCount}</td></tr></tbody></table>
+        <span slot="permission">Request access to continue.</span>
+      </AdminTable>
+    </section>
     <aui-advanced-table id="business-table" bind:this={businessTable}></aui-advanced-table>
     <output data-parity-business-selection={businessSelection}>Business selection: {businessSelection}</output>
     <AdminPagination {page} totalPages={contract.totalPages} onPageChange={(next) => (page = next)} />

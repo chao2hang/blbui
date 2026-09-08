@@ -135,6 +135,30 @@ test.describe("BLBUI documentation quality matrix", () => {
         await expect(dialog.locator("dialog")).not.toBeVisible();
     });
 
+    test("previews the shared async states and recovery actions", async ({ page }) => {
+        await page.goto("/");
+        const previews = ["table", "data-grid", "advanced-table", "audit-log"];
+        for (const preview of previews) {
+            const wrapper = page.locator(`[data-async-preview="${preview}"]`);
+            const control = (state: string) => wrapper.locator(`[data-async-state="${state}"]`);
+            await control("loading").click();
+            await expect(wrapper.locator('[role="status"]').filter({ hasText: /LOADING/i })).toBeVisible();
+
+            await control("empty").click();
+            await expect(wrapper.locator('[role="status"]').filter({ hasText: /NO DATA|NO AUDIT|NO ITEMS|NO DATA AVAILABLE/i })).toBeVisible();
+
+            await control("error").click();
+            await expect(wrapper.locator('[role="alert"]').first()).toBeVisible();
+            await wrapper.locator("button").filter({ hasText: "RETRY" }).click();
+            await expect(control("ready")).toHaveClass(/is-active/);
+
+            await control("permission-denied").click();
+            await expect(wrapper.locator('[role="status"]').filter({ hasText: /PERMISSION/i })).toBeVisible();
+            await wrapper.locator("[data-async-request-access]").click();
+            await expect(control("ready")).toHaveClass(/is-active/);
+        }
+    });
+
     test("captures representative desktop and mobile visual baselines", async ({
         page,
     }, testInfo) => {

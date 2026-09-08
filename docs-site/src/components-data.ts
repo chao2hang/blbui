@@ -1035,7 +1035,7 @@ export const components: ComponentItem[] = [
         status: "stable",
         props: ["loading", "empty", "error", "permission-denied", "loading-label", "empty-label", "error-label", "permission-denied-label", "retryable", "retry-label"],
         events: ["aui-retry"],
-        previewHtml: `<div style="width:100%;"><aui-table><table><thead><tr><th>GATEWAY</th><th>STATUS</th><th>LATENCY</th></tr></thead><tbody><tr><td>US-EAST</td><td><aui-status-tag status="success">ONLINE</aui-status-tag></td><td>18ms</td></tr><tr><td>EU-CENTRAL</td><td><aui-status-tag status="success">ONLINE</aui-status-tag></td><td>32ms</td></tr></tbody></table></aui-table></div>`,
+        previewHtml: `<div class="async-preview" data-async-preview="table" style="width:100%;"><div class="async-preview-controls" aria-label="Table async state preview"><span>STATE</span><button type="button" data-async-state="ready" class="is-active">READY</button><button type="button" data-async-state="loading">LOADING</button><button type="button" data-async-state="empty">EMPTY</button><button type="button" data-async-state="error">ERROR</button><button type="button" data-async-state="permission-denied">PERMISSION</button></div><aui-table id="preview-table"><table><thead><tr><th>GATEWAY</th><th>STATUS</th><th>LATENCY</th></tr></thead><tbody><tr><td>US-EAST</td><td><aui-status-tag status="success">ONLINE</aui-status-tag></td><td>18ms</td></tr><tr><td>EU-CENTRAL</td><td><aui-status-tag status="success">ONLINE</aui-status-tag></td><td>32ms</td></tr></tbody></table><button slot="permission" type="button" data-async-request-access>REQUEST ACCESS</button></aui-table></div>`,
         usage: {
             wc: `<aui-table>\n  <table>\n    <thead><tr><th>NAME</th><th>STATUS</th></tr></thead>\n    <tbody><tr><td>Route A</td><td>OK</td></tr></tbody>\n  </table>\n</aui-table>`,
             react: `import { AdminTable } from '@chaos_team/blbui-react'\n\n<AdminTable>\n  <table>...</table>\n</AdminTable>`,
@@ -1053,7 +1053,7 @@ export const components: ComponentItem[] = [
         props: ["columns", "rows", "loading", "error", "permission-denied", "empty-label", "error-label", "permission-denied-label", "retryable", "retry-label"],
         events: ["aui-sort-change", "aui-selection-change", "aui-retry"],
         initKey: "data-grid",
-        previewHtml: `<div style="width:100%;"><aui-data-grid id="preview-data-grid"></aui-data-grid></div>`,
+        previewHtml: `<div class="async-preview" data-async-preview="data-grid" style="width:100%;"><div class="async-preview-controls" aria-label="Data grid async state preview"><span>STATE</span><button type="button" data-async-state="ready" class="is-active">READY</button><button type="button" data-async-state="loading">LOADING</button><button type="button" data-async-state="empty">EMPTY</button><button type="button" data-async-state="error">ERROR</button><button type="button" data-async-state="permission-denied">PERMISSION</button></div><aui-data-grid id="preview-data-grid"><button slot="permission" type="button" data-async-request-access>REQUEST ACCESS</button></aui-data-grid></div>`,
         usage: {
             wc: `<aui-data-grid id="my-grid"></aui-data-grid>`,
             react: `import { AdminDataGrid } from '@chaos_team/blbui-react'\n\n<AdminDataGrid columns={cols} rows={data} />`,
@@ -1886,7 +1886,7 @@ export const components: ComponentItem[] = [
         props: ["columns", "rows", "selectable", "loading", "error", "permission-denied", "empty-label", "error-label", "permission-denied-label", "retryable", "retry-label"],
         events: ["aui-selection-change", "aui-sort-change", "aui-retry"],
         initKey: "advanced-table",
-        previewHtml: `<div style="width:100%;"><aui-advanced-table id="preview-advanced-table" selectable></aui-advanced-table></div>`,
+        previewHtml: `<div class="async-preview" data-async-preview="advanced-table" style="width:100%;"><div class="async-preview-controls" aria-label="Advanced table async state preview"><span>STATE</span><button type="button" data-async-state="ready" class="is-active">READY</button><button type="button" data-async-state="loading">LOADING</button><button type="button" data-async-state="empty">EMPTY</button><button type="button" data-async-state="error">ERROR</button><button type="button" data-async-state="permission-denied">PERMISSION</button></div><aui-advanced-table id="preview-advanced-table" selectable><button slot="permission" type="button" data-async-request-access>REQUEST ACCESS</button></aui-advanced-table></div>`,
         usage: {
             wc: `<aui-advanced-table id="enterprise-table" selectable></aui-advanced-table>`,
             react: `import { AdminAdvancedTable } from '@chaos_team/blbui-business-react'\n\n<AdminAdvancedTable columns={columns} rows={rows} selectable onSelectionChange={(keys) => console.log(keys)} />`,
@@ -2214,7 +2214,7 @@ export const components: ComponentItem[] = [
         props: ["entries", "loading", "error", "permission-denied", "query", "status", "has-more", "permission-denied-label", "retryable", "retry-label"],
         events: ["aui-audit-filter-change", "aui-audit-load-more", "aui-retry"],
         initKey: "audit-log",
-        previewHtml: `<div style="width:100%;"><aui-audit-log id="preview-audit-log"></aui-audit-log></div>`,
+        previewHtml: `<div class="async-preview" data-async-preview="audit-log" style="width:100%;"><div class="async-preview-controls" aria-label="Audit log async state preview"><span>STATE</span><button type="button" data-async-state="ready" class="is-active">READY</button><button type="button" data-async-state="loading">LOADING</button><button type="button" data-async-state="empty">EMPTY</button><button type="button" data-async-state="error">ERROR</button><button type="button" data-async-state="permission-denied">PERMISSION</button></div><aui-audit-log id="preview-audit-log"><button slot="permission" type="button" data-async-request-access>REQUEST ACCESS</button></aui-audit-log></div>`,
         usage: {
             wc: `<aui-audit-log id="audit" has-more></aui-audit-log>`,
             react: `import { AdminAuditLog } from '@chaos_team/blbui-business-react'\n\n<AdminAuditLog entries={entries} hasMore onLoadMore={loadMore} />`,
@@ -2285,6 +2285,79 @@ export function initComponentDemo(root: HTMLElement): void {
         const el = root.querySelector(selector) as (HTMLElement & Record<string, unknown>) | null;
         if (el) el[prop] = val;
     }
+
+    function setAsyncState(preview: HTMLElement, state: string): void {
+        const element = preview.querySelector<HTMLElement & Record<string, unknown>>(
+            "aui-table, aui-data-grid, aui-advanced-table, aui-audit-log",
+        );
+        if (!element) return;
+        const setFlag = (name: string, value: boolean) => {
+            element[name] = value;
+        };
+        const rows = preview.dataset.asyncPreview;
+        const stateRows: Record<string, unknown[]> = {
+            "data-grid": [
+                { id: "openai-gw", status: "ONLINE", p99: "184ms" },
+                { id: "anthropic-gw", status: "ONLINE", p99: "210ms" },
+                { id: "edge-gw", status: "DEGRADED", p99: "480ms" },
+            ],
+            "advanced-table": [
+                { id: "rt-1", name: "chat-completions", qps: "14,200" },
+                { id: "rt-2", name: "embeddings", qps: "8,450" },
+            ],
+            "audit-log": [
+                {
+                    id: "evt-1",
+                    time: "10:42:03",
+                    actor: "sec-bot",
+                    action: "Permission changed",
+                    target: "OPS / ROUTES",
+                    status: "success",
+                    details: "write → admin",
+                },
+                {
+                    id: "evt-2",
+                    time: "10:38:17",
+                    actor: "operator",
+                    action: "Policy updated",
+                    target: "gateway-prod",
+                    status: "warning",
+                    details: "Approval required",
+                },
+            ],
+        };
+        if (rows === "table") {
+            setFlag("loading", state === "loading");
+            setFlag("empty", state === "empty");
+            setFlag("error", state === "error");
+            setFlag("permissionDenied", state === "permission-denied");
+        } else {
+            setFlag("loading", state === "loading");
+            setFlag("error", state === "error");
+            setFlag("permissionDenied", state === "permission-denied");
+            if (state === "empty") element[rows === "audit-log" ? "entries" : "rows"] = [];
+            else if (state === "ready") element[rows === "audit-log" ? "entries" : "rows"] = stateRows[rows ?? ""] ?? [];
+        }
+        preview.querySelectorAll<HTMLButtonElement>("[data-async-state]").forEach((button) => {
+            button.classList.toggle("is-active", button.dataset.asyncState === state);
+        });
+        preview.querySelectorAll<HTMLElement>("[data-async-request-access]").forEach((button) => {
+            button.hidden = state !== "permission-denied";
+        });
+    }
+
+    root.querySelectorAll<HTMLElement>("[data-async-preview]").forEach((preview) => {
+        preview.querySelectorAll<HTMLButtonElement>("[data-async-state]").forEach((button) => {
+            button.addEventListener("click", () => setAsyncState(preview, button.dataset.asyncState ?? "ready"));
+        });
+        preview.querySelector("[data-async-request-access]")?.addEventListener("click", () => {
+            setAsyncState(preview, "ready");
+        });
+        preview.querySelector("aui-table, aui-data-grid, aui-advanced-table, aui-audit-log")?.addEventListener("aui-retry", () => {
+            setAsyncState(preview, "ready");
+        });
+        setAsyncState(preview, "ready");
+    });
 
     // Forms
     setProp("#preview-select", "options", [
@@ -2451,7 +2524,7 @@ export function initComponentDemo(root: HTMLElement): void {
     setProp("#preview-descriptions", "items", [
         { label: "REGION", value: "us-east-1", description: "Primary" },
         { label: "STATUS", value: "ONLINE" },
-        { label: "VERSION", value: "v0.0.17" },
+        { label: "VERSION", value: "v0.0.18" },
         { label: "OWNER", value: "Platform Ops" },
     ]);
     setProp("#preview-accordion", "items", [
