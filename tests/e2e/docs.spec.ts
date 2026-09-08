@@ -4,7 +4,7 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License.
 */
 
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 import { AxeBuilder } from "@axe-core/playwright";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
@@ -28,6 +28,58 @@ const viewport = (id: string) => {
     const value = visualMatrix.viewports.find((item) => item.id === id);
     if (!value) throw new Error(`Visual matrix is missing viewport ${id}`);
     return value;
+};
+
+const settleVisualTarget = async (target: Locator) => {
+    await target.evaluate(async (element) => {
+        const elements = [element, ...element.querySelectorAll<HTMLElement>("*")];
+        await Promise.all(
+            elements
+                .map((item) =>
+                    (item as HTMLElement & { updateComplete?: Promise<unknown> }).updateComplete,
+                )
+                .filter((updateComplete): updateComplete is Promise<unknown> =>
+                    Boolean(updateComplete),
+                ),
+        );
+
+        const frame = () =>
+            new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+        let previous = "";
+        let stableFrames = 0;
+        for (let attempt = 0; attempt < 8 && stableFrames < 2; attempt += 1) {
+            await frame();
+            const rect = element.getBoundingClientRect();
+            const current = [rect.x, rect.y, rect.width, rect.height].join("/");
+            stableFrames = current === previous ? stableFrames + 1 : 0;
+            previous = current;
+        }
+    });
+};
+
+const captureVisualTarget = async (target: Locator, path: string) => {
+    const box = await target.boundingBox();
+    if (!box) throw new Error("Visual target has no bounding box");
+    const translate = {
+        x: Math.round(box.x) - box.x,
+        y: Math.round(box.y) - box.y,
+    };
+    const previous = await target.evaluate((element) => element.style.getPropertyValue("translate"));
+    await target.evaluate(
+        (element, value) => element.style.setProperty("translate", `${value.x}px ${value.y}px`),
+        translate,
+    );
+    try {
+        await target.screenshot({ path, animations: "disabled" });
+    } finally {
+        await target.evaluate(
+            (element, value) => {
+                if (value) element.style.setProperty("translate", value);
+                else element.style.removeProperty("translate");
+            },
+            previous,
+        );
+    }
 };
 
 test.describe("BLBUI documentation quality matrix", () => {
@@ -148,27 +200,14 @@ test.describe("BLBUI documentation quality matrix", () => {
                         const target = page.locator(scene.selector).first();
                         await target.scrollIntoViewIfNeeded();
                         await expect(target).toBeVisible();
-                        await target.evaluate(async (element) => {
-                            const elements = [element, ...element.querySelectorAll<HTMLElement>("*")];
-                            await Promise.all(
-                                elements
-                                    .map((item) =>
-                                        (item as HTMLElement & { updateComplete?: Promise<unknown> })
-                                            .updateComplete,
-                                    )
-                                    .filter((updateComplete): updateComplete is Promise<unknown> =>
-                                        Boolean(updateComplete),
-                                    ),
-                            );
-                            await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-                        });
+                        await settleVisualTarget(target);
                         const filename = [platform, viewportValue.id, theme, mode, scene.id].join(
                             "-",
                         );
-                        await target.screenshot({
-                            path: testInfo.outputPath("visual-matrix", `${filename}.png`),
-                            animations: "disabled",
-                        });
+                        await captureVisualTarget(
+                            target,
+                            testInfo.outputPath("visual-matrix", `${filename}.png`),
+                        );
                         if (goldenRoot) {
                             const goldenPath = resolve(goldenRoot, `${filename}.png`);
                             if (!existsSync(goldenPath)) {
