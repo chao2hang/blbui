@@ -1,6 +1,6 @@
 {
   "name": "@chaos_team/blbui",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "private": true,
   "description": "Obsidian Industrial Console component library for React, Vue and Svelte.",
   "workspaces": [
@@ -23,6 +23,7 @@
     "typecheck:vue": "node_modules/.bin/tsc -p vue/tsconfig.json",
     "check:svelte": "node scripts/check-svelte.mjs",
     "theme:check": "node scripts/check-themes.mjs",
+    "visual:check": "node scripts/check-visual-matrix.mjs",
     "token:check": "node scripts/check-tokens.mjs",
     "typecheck": "bun run typecheck:core && bun run typecheck:react && bun run typecheck:vue && bun run typecheck:business && bun run typecheck:business-react && bun run typecheck:docs",
     "docs:dev": "cd docs-site && bun run dev",
@@ -39,7 +40,7 @@
     "catalog:check": "node scripts/check-catalog.mjs && node scripts/check-examples.mjs",
     "api:docs": "node scripts/generate-api-docs.mjs",
     "api:check": "node scripts/check-public-api.mjs && node scripts/generate-api-docs.mjs --check",
-    "release:check": "bun run catalog:check && bun run api:check && bun run theme:check && bun run token:check && bun run examples:check && bun run typecheck && bun run ssr:check && bun run build:packages && bun run check:svelte && bun run docs:check && bun run test && bun run test:frameworks && bun run e2e:check && bun run pack:check",
+    "release:check": "bun run catalog:check && bun run api:check && bun run theme:check && bun run token:check && bun run visual:check && bun run examples:check && bun run typecheck && bun run ssr:check && bun run build:packages && bun run check:svelte && bun run docs:check && bun run test && bun run test:frameworks && bun run e2e:check && bun run pack:check",
     "pack:check": "npm pack --dry-run --workspaces --if-present"
   },
   "devDependencies": {

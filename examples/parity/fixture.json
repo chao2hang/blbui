@@ -1,4 +1,5 @@
 {
+  "contractVersion": 2,
   "tabs": [
     { "id": "all", "label": "All" },
     { "id": "healthy", "label": "Healthy" }
@@ -16,6 +17,20 @@
     "inputEvent": "value-change",
     "paginationEvent": "page-change",
     "dialogModel": "open",
-    "toastEvent": "toast-manager-change"
+    "toastEvent": "toast-manager-change",
+    "controlledState": {
+      "tab": "activeTab",
+      "query": "query",
+      "page": "page",
+      "dialog": "open",
+      "toastQueue": "toasts"
+    },
+    "assertions": {
+      "initialPage": 1,
+      "totalPages": 3,
+      "initialDialog": false,
+      "initialQuery": "",
+      "emptyQueryLabel": "—"
+    }
   }
 }

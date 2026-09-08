@@ -19,7 +19,10 @@ it under the terms of the GNU Affero General Public License.
   let element: HTMLElement | undefined
   onMount(() => {
     registerAdminElements()
-    const handler = (event: Event) => onPageChange?.((event as CustomEvent<{ page: number }>).detail.page)
+    const handler = (event: Event) => {
+      page = (event as CustomEvent<{ page: number }>).detail.page
+      onPageChange?.(page)
+    }
     element.addEventListener('aui-page-change', handler)
     return () => element.removeEventListener('aui-page-change', handler)
   })

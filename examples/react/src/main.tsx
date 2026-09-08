@@ -14,16 +14,20 @@ import {
 import "@chaos_team/blbui-core/styles.css";
 
 function App() {
-    const [query, setQuery] = useState("");
-    const [open, setOpen] = useState(false);
-    const [page, setPage] = useState(1);
+    const contract = fixture.parityContract.assertions;
+    const [activeTab, setActiveTab] = useState(fixture.tabs[0].id);
+    const [query, setQuery] = useState(contract.initialQuery);
+    const [open, setOpen] = useState(contract.initialDialog);
+    const [page, setPage] = useState(contract.initialPage);
     const [toasts, setToasts] = useState([{ id: "parity", title: "PARITY READY", message: "React fixture is synchronized.", variant: "success" as const, duration: 0 }]);
+    const visibleRows = fixture.rows.filter((row) => activeTab === "all" || row.status === "ONLINE");
     return (
-        <div className="aui-root" style={{ minHeight: "100vh", padding: 32 }}>
+        <div className="aui-root" style={{ minHeight: "100vh", padding: 32 }} data-parity-query={query} data-parity-page={page} data-parity-dialog={String(open)} data-parity-active-tab={activeTab}>
             <AdminPage title="Channels" description="Cross-framework operator playground.">
                 <AdminTabs
                     items={fixture.tabs}
-                    active="all"
+                    active={activeTab}
+                    onTabChange={setActiveTab}
                 />
                 <div style={{ display: "flex", gap: 8, margin: "20px 0" }}>
                     <AdminInput value={query} placeholder="Search channels" onValueChange={setQuery} />
@@ -34,10 +38,10 @@ function App() {
                 <AdminTable>
                     <table>
                         <thead><tr><th>Name</th><th>Status</th><th>Region</th><th>Query</th></tr></thead>
-                        <tbody>{fixture.rows.map((row) => <tr key={row.id}><td>{row.id}</td><td>{row.status}</td><td>{row.region}</td><td>{query || "—"}</td></tr>)}</tbody>
+                        <tbody>{visibleRows.map((row) => <tr key={row.id}><td>{row.id}</td><td>{row.status}</td><td>{row.region}</td><td>{query || "—"}</td></tr>)}</tbody>
                     </table>
                 </AdminTable>
-                <AdminPagination page={page} totalPages={3} onPageChange={setPage} />
+                <AdminPagination page={page} totalPages={contract.totalPages} onPageChange={setPage} />
                 <AdminToastManager items={toasts} onChange={setToasts} />
                 <AdminDialog open={open} title="Create channel" onOpenChange={setOpen}>
                     <p>Page {page}: confirm the new channel configuration.</p>

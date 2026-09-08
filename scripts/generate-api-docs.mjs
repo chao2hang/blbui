@@ -39,6 +39,13 @@ const lines = [
   "- Svelte wrappers cover the most frequently used Core controls; all other components remain directly consumable as registered Custom Elements.",
   "- Every component uses semantic `--aui-*` tokens, so the nine themes and both color modes share one API contract.",
   "",
+  "## Business data adapter contract",
+  "",
+  "- `fromTable(table)` accepts the small `AdminTableLike` surface and maps columns, current-page rows, sorting, one-based pagination, filtered total, and selected keys.",
+  "- `getAdapterSelection(rows, selectedKeys)` returns current-page `keys`, `all`, and `some` state without requiring TanStack Table or any other runtime.",
+  "- `virtualizeRows(rows, scrollTop, viewportHeight, rowHeight, overscan)` returns bounded rows plus `start`, `end`, `top`, and `bottom` spacer values.",
+  "- TanStack Table / Virtual remain optional integrations; no large table dependency is bundled into Core or Business.",
+  "",
 ];
 const output = lines.join("\n");
 const target = `${root}/docs/api.md`;

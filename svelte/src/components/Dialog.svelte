@@ -17,7 +17,10 @@ it under the terms of the GNU Affero General Public License.
   let element: HTMLElement | undefined
   onMount(() => {
     registerAdminElements()
-    const handler = (event: Event) => onOpenChange?.((event as CustomEvent<{ open: boolean }>).detail.open)
+    const handler = (event: Event) => {
+      open = (event as CustomEvent<{ open: boolean }>).detail.open
+      onOpenChange?.(open)
+    }
     element.addEventListener('aui-close', handler)
     return () => element.removeEventListener('aui-close', handler)
   })

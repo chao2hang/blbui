@@ -14,8 +14,19 @@ let errors = [];
 const parity = join(root, "examples", "parity", "fixture.json");
 try {
   const fixture = JSON.parse(await readFile(parity, "utf8"));
-  if (!fixture.tabs?.length || !fixture.rows?.length || !fixture.parityContract?.dialogModel) {
-    errors.push("parity fixture must contain tabs, rows and the dialog model contract");
+  const assertions = fixture.parityContract?.assertions;
+  if (
+    fixture.contractVersion !== 2 ||
+    !fixture.tabs?.length ||
+    !fixture.rows?.length ||
+    !fixture.parityContract?.dialogModel ||
+    !fixture.parityContract?.controlledState ||
+    assertions?.initialPage !== 1 ||
+    assertions?.totalPages !== 3 ||
+    assertions?.initialDialog !== false ||
+    assertions?.initialQuery !== ""
+  ) {
+    errors.push("parity fixture must contain the versioned controlled-state contract and assertions");
   }
 } catch {
   errors.push("parity fixture is missing or invalid JSON");
@@ -41,7 +52,31 @@ for (const [framework, files] of Object.entries(required)) {
   const sourceFiles = files.filter((file) => file.startsWith("src/"));
   const source = (await Promise.all(sourceFiles.map((file) => readFile(join(directory, file), "utf8")))).join("\n");
   for (const marker of checks.flat()) if (!source.includes(marker)) errors.push(`${framework}: missing ${marker}`);
-  if (!source.includes("parity/fixture.json")) errors.push(`${framework}: does not consume the parity fixture`);
+  const parityMarkers = [
+    "parity/fixture.json",
+    "parityContract.assertions",
+    "initialPage",
+    "initialDialog",
+    "totalPages",
+    "activeTab",
+  ];
+  for (const marker of parityMarkers) {
+    if (!source.includes(marker)) errors.push(`${framework}: parity contract is missing ${marker}`);
+  }
+  const frameworkMarkers = {
+    react: ["setQuery", "setOpen", "setActiveTab", "onPageChange"],
+    vue: ["query.value", "open = true", "activeTab = $event", "@page-change"],
+    svelte: ["query =", "open = true", "activeTab =", "onPageChange"],
+  }[framework];
+  for (const marker of frameworkMarkers) {
+    if (!source.includes(marker)) errors.push(`${framework}: parity interaction is missing ${marker}`);
+  }
+  if (!source.includes("setQuery") && !source.includes("query =") && !source.includes("query.value")) {
+    errors.push(`${framework}: parity query state is not controlled`);
+  }
+  if (!source.includes("setOpen") && !source.includes("open =") && !source.includes("open.value")) {
+    errors.push(`${framework}: parity dialog state is not controlled`);
+  }
   const packageJson = JSON.parse(await readFile(join(directory, "package.json"), "utf8"));
   if (!packageJson.scripts?.build) errors.push(`${framework}: package.json has no build script`);
   if (!errors.length) {

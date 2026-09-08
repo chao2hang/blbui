@@ -17,8 +17,9 @@ import type {
     AdminBulkAction,
     AdminImportRow,
 } from "@chaos_team/blbui-business";
-export { fromTable, virtualizeRows } from "@chaos_team/blbui-business";
+export { fromTable, getAdapterSelection, virtualizeRows } from "@chaos_team/blbui-business";
 export type {
+    AdminAdapterSelection,
     AdminDataGridAdapter,
     AdminTableLike,
     AdminVirtualRows,

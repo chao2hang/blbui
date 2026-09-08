@@ -49,7 +49,7 @@ jobs:
 
       - name: Check catalog, public API, themes and tokens
         working-directory: .
-        run: bun run catalog:check && bun run api:check && bun run theme:check && bun run token:check && bun run examples:check
+        run: bun run catalog:check && bun run api:check && bun run theme:check && bun run token:check && bun run visual:check && bun run examples:check
 
       - name: Typecheck package workspace
         working-directory: .

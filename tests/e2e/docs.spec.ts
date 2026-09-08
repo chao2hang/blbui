@@ -8,18 +8,20 @@ import { expect, test } from "@playwright/test";
 import { AxeBuilder } from "@axe-core/playwright";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
+import { readFileSync } from "node:fs";
 
-const themes = [
-    "obsidian",
-    "rounded",
-    "enterprise",
-    "modern",
-    "minimal",
-    "premium",
-    "chinese",
-    "atmospheric",
-    "glass",
-] as const;
+const visualMatrix = JSON.parse(readFileSync(new URL("./visual-matrix.json", import.meta.url), "utf8")) as {
+    themes: string[];
+    modes: Array<"light" | "dark">;
+    viewports: Array<{ id: string; width: number; height: number }>;
+    scenes: Array<{ id: string; selector: string }>;
+};
+const themes = visualMatrix.themes;
+const viewport = (id: string) => {
+    const value = visualMatrix.viewports.find((item) => item.id === id);
+    if (!value) throw new Error(`Visual matrix is missing viewport ${id}`);
+    return value;
+};
 
 test.describe("BLBUI documentation quality matrix", () => {
     test("renders every catalog card without page-level overflow", async ({ page }) => {
@@ -44,7 +46,7 @@ test.describe("BLBUI documentation quality matrix", () => {
         await page.goto("/");
         for (const theme of themes) {
             await page.locator("#theme-select").selectOption(theme);
-            for (const mode of ["light", "dark"] as const) {
+            for (const mode of visualMatrix.modes) {
                 const currentMode = await page.evaluate(
                     () => document.documentElement.dataset.auiMode,
                 );
@@ -89,7 +91,8 @@ test.describe("BLBUI documentation quality matrix", () => {
     }, testInfo) => {
         await page.goto("/");
         await page.screenshot({ path: testInfo.outputPath("docs-desktop.png"), fullPage: true });
-        await page.setViewportSize({ width: 390, height: 844 });
+        const mobile = viewport("mobile");
+        await page.setViewportSize({ width: mobile.width, height: mobile.height });
         await expect
             .poll(() =>
                 page.evaluate(
@@ -135,7 +138,8 @@ test.describe("BLBUI documentation quality matrix", () => {
 
     test("holds at 320px with reduced motion and forced-colors", async ({ page }) => {
         await page.emulateMedia({ reducedMotion: "reduce", forcedColors: "active" });
-        await page.setViewportSize({ width: 320, height: 720 });
+        const narrow = viewport("narrow");
+        await page.setViewportSize({ width: narrow.width, height: narrow.height });
         await page.goto("/");
         await expect
             .poll(() =>
@@ -145,8 +149,9 @@ test.describe("BLBUI documentation quality matrix", () => {
             )
             .toBe(true);
         expect(await page.locator("[data-catalog-id]").count()).toBe(119);
-        await expect(page.locator("#preview-data-grid")).toBeVisible();
-        await expect(page.locator("#preview-permission-matrix")).toBeVisible();
+        for (const scene of visualMatrix.scenes.filter((item) => item.id !== "catalog")) {
+            await expect(page.locator(scene.selector).first()).toBeVisible();
+        }
     });
 
     test("stays within the docs render budget", async ({ page }) => {

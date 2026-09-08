@@ -15,6 +15,10 @@ export interface AdminDataGridAdapter<
     selectedKeys?: Array<string | number>;
     sortKey?: string;
     sortDirection?: "asc" | "desc" | "none";
+    /** One-based page number, when the source table exposes pagination state. */
+    page?: number;
+    /** Page size, when the source table exposes pagination state. */
+    pageSize?: number;
     total?: number;
 }
 
@@ -40,8 +44,45 @@ export interface AdminTableLike<Row extends Record<string, unknown>> {
         };
     }>;
     getRowModel(): { rows: Array<{ id: string | number; original: Row }> };
+    /** The pre-pagination model lets a server/client table report its filtered total. */
+    getPrePaginationRowModel?: () => { rows: Array<unknown> };
+    /** Used by headless table implementations that do not expose a pre-pagination model. */
+    getFilteredRowModel?: () => { rows: Array<unknown> };
     getSelectedRowModel?: () => { rows: Array<{ id: string | number }> };
-    getState?: () => { sorting?: Array<{ id: string; desc?: boolean }> };
+    getState?: () => {
+        sorting?: Array<{ id: string; desc?: boolean }>;
+        pagination?: { pageIndex?: number; pageSize?: number };
+        /** TanStack's row-selection map also retains selections outside the current page. */
+        rowSelection?: Record<string, boolean>;
+    };
+}
+
+export interface AdminAdapterSelection {
+    keys: Array<string | number>;
+    /** True when every row in the current adapter page is selected. */
+    all: boolean;
+    /** True when at least one, but not every, current-page row is selected. */
+    some: boolean;
+}
+
+/**
+ * Map a row collection to the selection state expected by business tables.
+ * The helper is intentionally pure so React/Vue/Svelte hosts can share the
+ * same selection semantics without importing a table runtime.
+ */
+export function getAdapterSelection<Row extends Record<string, unknown>>(
+    rows: Row[],
+    selectedKeys: Array<string | number> = [],
+    getKey: (row: Row, index: number) => string | number = (row, index) =>
+        (row as Row & { id?: string | number }).id ?? index,
+): AdminAdapterSelection {
+    const keys = rows.map(getKey);
+    const selected = keys.filter((key) => selectedKeys.includes(key));
+    return {
+        keys: selected,
+        all: keys.length > 0 && selected.length === keys.length,
+        some: selected.length > 0 && selected.length < keys.length,
+    };
 }
 
 export function fromTable<Row extends Record<string, unknown>>(
@@ -56,15 +97,27 @@ export function fromTable<Row extends Record<string, unknown>>(
         align: column.columnDef?.meta?.align,
     }));
     const rows = table.getRowModel().rows.map((row) => ({ ...row.original, id: row.id }));
-    const selectedKeys = table.getSelectedRowModel?.()?.rows.map((row) => row.id);
-    const sorting = table.getState?.()?.sorting?.[0];
+    const state = table.getState?.();
+    const selectedKeys = state?.rowSelection
+        ? Object.entries(state.rowSelection)
+              .filter(([, selected]) => selected)
+              .map(([key]) => key)
+        : table.getSelectedRowModel?.()?.rows.map((row) => row.id);
+    const sorting = state?.sorting?.[0];
+    const pagination = state?.pagination;
+    const total =
+        table.getPrePaginationRowModel?.().rows.length ??
+        table.getFilteredRowModel?.().rows.length ??
+        rows.length;
     return {
         columns,
         rows,
         selectedKeys,
         sortKey: sorting?.id,
         sortDirection: sorting ? (sorting.desc ? "desc" : "asc") : "none",
-        total: rows.length,
+        page: pagination?.pageIndex === undefined ? undefined : Math.max(1, pagination.pageIndex + 1),
+        pageSize: pagination?.pageSize,
+        total,
     };
 }
 

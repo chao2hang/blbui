@@ -18,10 +18,17 @@ Fifteen composable building blocks:
 - `aui-export-button` — dependency-free CSV/JSON download with an export event
 - `aui-bulk-actions-toolbar` — selected-row summary and guarded batch actions
 
-The package also exports optional-dependency adapters: `fromTable(table)` maps a
-TanStack Table-compatible instance to `AdminAdvancedTable` props, while
+The package also exports optional-dependency adapters. `fromTable(table)` maps a
+TanStack Table-compatible instance to `AdminAdvancedTable` props, including the
+current page, filtered total, sorting and cross-page selection. The adapter only
+requires the small `AdminTableLike` surface, so TanStack is never bundled into
+Core or Business. `getAdapterSelection(rows, selectedKeys)` provides the shared
+current-page `all` / `some` selection contract for any framework.
+
 `virtualizeRows(rows, scrollTop, viewportHeight, rowHeight, overscan)` provides
-the same bounded virtual-window contract without forcing a table runtime.
+a bounded virtual-window contract (`start`, `end`, `top`, `bottom`) without
+forcing a virtualizer runtime. See `tests/adapters.test.ts` for the contract
+examples and edge cases.
 
 They depend on `@chaos_team/blbui-core` and register on top of it.
 

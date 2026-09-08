@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.8 — 2026-09-08
+
+- 完善 Business 数据 adapter contract：支持当前页/总数、排序、分页、跨页选择映射，并新增纯函数 selection 与虚拟窗口边界测试；TanStack Table / Virtual 仍为可选依赖。
+- 将 React/Vue/Svelte parity playground 升级为 versioned controlled-state fixture，统一 tab、input、pagination、dialog、toast 状态并由 examples 门禁校验实际事件映射。
+- 新增跨平台 visual matrix manifest，固定 Windows/Ubuntu Chromium、desktop/390px/320px 视口、9 套主题 × light/dark 与代表性业务场景；发布门禁读取并校验该矩阵。
+- 同步公共 API 文档、Business React adapter re-export、长期路线图和视觉验收记录。
+
 ## 0.0.7 — 2026-09-08
 
 - 扩展 Business 套件至 15 个组件，新增 FormWizard、PermissionMatrix、AuditLog、ImportDialog、ExportButton 和 BulkActionsToolbar，并补齐 React 绑定、目录预览与跨框架使用示例。

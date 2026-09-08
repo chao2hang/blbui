@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "platformProfiles": [
+    "windows-chromium",
+    "ubuntu-chromium"
+  ],
+  "viewports": [
+    { "id": "desktop", "width": 1280, "height": 720 },
+    { "id": "mobile", "width": 390, "height": 844 },
+    { "id": "narrow", "width": 320, "height": 720 }
+  ],
+  "themes": [
+    "obsidian",
+    "rounded",
+    "enterprise",
+    "modern",
+    "minimal",
+    "premium",
+    "chinese",
+    "atmospheric",
+    "glass"
+  ],
+  "modes": ["light", "dark"],
+  "scenes": [
+    { "id": "catalog", "selector": "[data-catalog-id]" },
+    { "id": "data-grid", "selector": "#preview-data-grid" },
+    { "id": "schema-form", "selector": "#preview-schema-form" },
+    { "id": "business-workflows", "selector": "#preview-form-wizard" },
+    { "id": "business-permissions", "selector": "#preview-permission-matrix" }
+  ]
+}
