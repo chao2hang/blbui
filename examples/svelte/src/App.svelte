@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import fixture from '../../parity/fixture.json'
   import { registerAdminElements } from '@chaos_team/blbui-svelte'
-  import { AdminButton, AdminDialog, AdminInput, AdminPage, AdminPagination, AdminTable, AdminToastManager } from '@chaos_team/blbui-svelte'
+  import { AdminButton, AdminDialog, AdminInput, AdminPage, AdminPageHeader, AdminPagination, AdminShell, AdminStatusTag, AdminTable, AdminToastManager } from '@chaos_team/blbui-svelte'
 
   const contract = fixture.parityContract.assertions
   let query = contract.initialQuery
@@ -21,8 +21,13 @@
 
 <svelte:head><title>BLBUI Svelte Playground</title></svelte:head>
 
-<div class="aui-root" style="min-height: 100vh; padding: 32px" data-parity-query={query} data-parity-page={page} data-parity-dialog={String(open)} data-parity-active-tab={activeTab}>
-  <AdminPage title="Channels" description="Cross-framework operator playground.">
+<div class="aui-root" style="min-height: 100vh" data-parity-query={query} data-parity-page={page} data-parity-dialog={String(open)} data-parity-active-tab={activeTab}>
+  <AdminShell sidebarWidth="168px" headerHeight="48px">
+    <div slot="sidebar" style="padding: 16px; font: 700 12px var(--aui-font-mono)">BLBUI</div>
+    <div slot="header" style="display: flex; justify-content: flex-end; padding: 0 16px"><AdminStatusTag status="success">CONNECTED</AdminStatusTag></div>
+    <div style="padding: 32px">
+      <AdminPage title="Channels" description="Cross-framework operator playground.">
+        <AdminPageHeader title="Channel inventory" description="Shared PageHeader wrapper for Svelte hosts." />
     <aui-tabs items={fixture.tabs} active={activeTab} on:aui-tab-change={(event) => (activeTab = event.detail.id)}></aui-tabs>
     <div style="display: flex; gap: 8px; margin: 20px 0">
       <AdminInput value={query} onValueChange={(value) => (query = value)} placeholder="Search channels" />
@@ -40,5 +45,7 @@
       <p>Page {page}: confirm the new channel configuration.</p>
       <AdminButton on:click={() => (open = false)}>Close</AdminButton>
     </AdminDialog>
-  </AdminPage>
+      </AdminPage>
+    </div>
+  </AdminShell>
 </div>

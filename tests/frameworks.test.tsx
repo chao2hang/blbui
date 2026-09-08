@@ -14,6 +14,8 @@ import { registerAdminElements } from "../core/src/register";
 import { AdminInput as ReactInput } from "../react/src/index";
 import { AdminInput as VueInput } from "../vue/src/index";
 import SvelteInput from "../svelte/src/components/Input.svelte";
+import SveltePageHeader from "../svelte/src/components/PageHeader.svelte";
+import SvelteShell from "../svelte/src/components/Shell.svelte";
 
 type AuiInput = HTMLElement & { value: string };
 
@@ -105,5 +107,35 @@ describe("framework bindings", () => {
         );
         await waitFor(() => expect(onValueChange).toHaveBeenCalledWith("from-dom"));
         await view.unmount();
+    });
+
+    it("exposes the shared Svelte page header and shell layout wrappers", async () => {
+        registerAdminElements();
+        const header = renderSvelte(SveltePageHeader, {
+            props: { title: "Inventory", description: "Service inventory" },
+        });
+        const headerElement = header.container.querySelector("aui-page-header") as HTMLElement & {
+            title: string;
+            description: string;
+        };
+        await waitFor(() => {
+            expect(headerElement.title).toBe("Inventory");
+            expect(headerElement.description).toBe("Service inventory");
+        });
+
+        const shell = renderSvelte(SvelteShell, {
+            props: { sidebarWidth: "240px", headerHeight: "56px" },
+        });
+        const shellElement = shell.container.querySelector("aui-shell") as HTMLElement & {
+            sidebarWidth: string;
+            headerHeight: string;
+        };
+        await waitFor(() => {
+            expect(shellElement.sidebarWidth).toBe("240px");
+            expect(shellElement.headerHeight).toBe("56px");
+        });
+
+        await header.unmount();
+        await shell.unmount();
     });
 });
