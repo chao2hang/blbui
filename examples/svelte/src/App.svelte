@@ -9,7 +9,12 @@
   let open = contract.initialDialog
   let page = contract.initialPage
   let activeTab = fixture.tabs[0].id
-  $: visibleRows = fixture.rows.filter((row) => activeTab === 'all' || row.status === 'ONLINE')
+  $: normalizedQuery = query.trim().toLowerCase()
+  $: visibleRows = fixture.rows.filter((row) => {
+    const matchesTab = activeTab === 'all' || row.status === 'ONLINE'
+    const matchesQuery = !normalizedQuery || [row.id, row.status, row.region].some((value) => value.toLowerCase().includes(normalizedQuery))
+    return matchesTab && matchesQuery
+  })
   let toasts = [{ id: 'parity', title: 'PARITY READY', message: 'Svelte fixture is synchronized.', variant: 'success', duration: 0 }]
   onMount(() => registerAdminElements())
 </script>

@@ -3,7 +3,7 @@
 ## 本次验收
 
 - 日期：2026-09-08
-- 版本：0.0.12
+- 版本：0.0.15
 - 入口：http://127.0.0.1:4176/
 - 浏览器：Codex In-app Browser
 - 视口：桌面约 1280 × 720（页面有效宽度 1265px）；窄屏 390 × 844（页面有效宽度 375px）
@@ -24,6 +24,19 @@
 | Usage tabs | 通过 | Button 的 Web Components/React/Vue/Svelte 标签切换会更新代码片段 |
 | 代表组件视觉 | 通过 | 表单、导航、反馈、覆盖层、数据、布局、业务组件均有人工目视检查；Area/Pie/Gauge 在 Obsidian light/dark、Rounded、Glass 与 320px 窄屏下已人工复核 |
 | 代码区与卡片窄屏布局 | 通过 | 代码区可横向滚动；窄屏页面无级联横向溢出，卡片内部代码区保留局部滚动；浮层预览不再被 playground 纵向裁切 |
+
+## 0.0.15 跨框架运行时抽查
+
+- React、Vue、Svelte 与原生 Web Components playground 均由 Playwright 实际启动并通过 parity 合同；筛选、Healthy Tab、Dialog 打开/关闭、分页和 DOM property 更新均可观察。
+- 视觉抽查确认本轮只涉及适配器状态同步和示例过滤逻辑，未改变组件 token、布局或主题矩阵；Svelte Table/Dialog/Pagination 改为 DOM property 同步，避免 false 布尔属性被误读为开启状态。
+- Core Button 保留原生内部按钮的键盘 Enter/Space 语义，Svelte wrapper 仅转发 click 且不重复声明 accessible role；真实浏览器运行时四套 playground 通过，页面错误为空。
+
+## 0.0.14 自定义 picker 与主题抽查
+
+- 在文档站实际打开 DatePicker 的 `picker="custom"` 面板，确认日历网格、月份切换、选日后自动关闭和 Escape 关闭；边界禁用由单元测试与 Playwright 视觉/响应式矩阵覆盖。
+- 在文档站实际打开 TimePicker 的 `picker="custom"` 面板，确认小时/分钟选择、`step="900"` 选项粒度和受控值更新。
+- 在 Glass dark/light 与 Rounded light 下检查日期、时间、表单、导航、Descriptions 和 Cascader 的 surface、边框、圆角、焦点环；组件均随主题切换，无需修改 markup。
+- 当前浏览器控制通道固定为桌面视口；320px 窄屏、reduced-motion、forced-colors 由 Playwright E2E 作为权威响应式证据。
 
 ## 人工目视范围
 

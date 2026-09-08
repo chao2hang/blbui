@@ -1961,7 +1961,14 @@ export const AdminToastManager = adminElement({
     name: "AdminToastManager",
     tag: "aui-toast-manager",
     properties: ["items", "position", "max", "persistKey", "syncTabs", "channelName", "label"],
-    events: [{ name: "aui-toast-manager-change", emit: "change", model: "items" }],
+    events: [
+        {
+            name: "aui-toast-manager-change",
+            emit: "change",
+            model: "items",
+            map: (detail) => [(detail as { items: unknown[] }).items],
+        },
+    ],
     emits: ["change", "update:items"],
     props: {
         items: objectArray,

@@ -26,6 +26,14 @@ it under the terms of the GNU Affero General Public License.
     element.addEventListener('aui-page-change', handler)
     return () => element.removeEventListener('aui-page-change', handler)
   })
+  $: if (element) {
+    element.page = page
+    element.totalPages = totalPages
+    element.total = total
+    element.pageSize = pageSize
+    element.previousLabel = previousLabel
+    element.nextLabel = nextLabel
+  }
 </script>
 
-<aui-pagination bind:this={element} {page} {totalPages} {total} {pageSize} {previousLabel} {nextLabel}></aui-pagination>
+<aui-pagination bind:this={element}></aui-pagination>

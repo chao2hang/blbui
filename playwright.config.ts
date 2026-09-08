@@ -27,10 +27,24 @@ export default defineConfig({
         screenshot: "only-on-failure",
         trace: "retain-on-failure",
     },
-    webServer: {
-        command: "bun run docs:dev",
-        url: "http://127.0.0.1:4173",
-        reuseExistingServer: true,
-        timeout: 30_000,
-    },
+    webServer: [
+        {
+            command: "bun run docs:dev",
+            url: "http://127.0.0.1:4173",
+            reuseExistingServer: true,
+            timeout: 30_000,
+        },
+        ...[
+            ["examples/react", 4174],
+            ["examples/vue", 4175],
+            ["examples/svelte", 4176],
+            ["examples/web", 4177],
+        ].map(([cwd, port]) => ({
+            command: `bun run dev -- --host 127.0.0.1 --port ${port} --strictPort`,
+            cwd: cwd as string,
+            url: `http://127.0.0.1:${port}`,
+            reuseExistingServer: true,
+            timeout: 30_000,
+        })),
+    ],
 });

@@ -28,6 +28,8 @@ it under the terms of the GNU Affero General Public License.
   }
 </script>
 
-<aui-button bind:this={element} class={className}>
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<aui-button bind:this={element} class={className} on:click>
   <slot />
 </aui-button>

@@ -1,6 +1,6 @@
 # BLBUI 组件库实施计划
 
-> **状态（0.0.13 更新）**：Core 现有 **104 个组件**、Business 19 个、React/Vue 为 104:1 完整 Core 绑定、Svelte 提供注册入口、27 个常用封装（共 29 个公开导出）；9 套主题均支持 light/dark，并提供语义 CSS utilities。当前已接入 token lint、Vitest、Playwright/a11y/E2E、文档 smoke、SSR 检查、三框架 playground 构建、公共 API 文档检查、数据 adapter contract、chart adapter contract、Line/AreaChart 多系列、编辑器 adapter、外部宿主迁移示例、versioned parity fixture、docs 性能预算、visual matrix/golden 和人工视觉验收；文档站覆盖 123 个组件。
+> **状态（0.0.15 更新）**：Core 现有 **104 个组件**、Business 19 个、React/Vue 为 104:1 完整 Core 绑定、Svelte 提供注册入口、27 个常用封装（共 29 个公开导出）；9 套主题均支持 light/dark，并提供语义 CSS utilities。当前已接入 token lint、governance audit、Vitest、Playwright/a11y/E2E、文档 smoke、SSR 检查、四套 playground 构建与真实浏览器 parity、公共 API 文档检查、数据 adapter contract、chart adapter contract、Line/AreaChart 多系列、编辑器 adapter、外部宿主迁移示例、versioned parity fixture、docs 性能预算、visual matrix/golden 和人工视觉验收；文档站覆盖 123 个组件。
 > 下文历史路径说明：`docs/admin-style-guide.md` 位于 `chaos-ui` 风格规范仓库（本仓库不复制全文，tokens 已提取进 `core/src/tokens.css`）；`packages/blbui` 与 `web/` 是规划阶段的占位命名，实际落地为仓库顶层的 `core/ react/ vue/ svelte/ business/ business-react/ docs-site/` workspace。
 
 ## 目标
@@ -72,6 +72,7 @@
 ## Phase 6：三框架示例与发布
 
 - [x] 创建 React/Vue/Svelte 三套最小 playground。
+- [x] 为 React/Vue/Svelte 与原生 Web playground 增加浏览器运行时 parity 测试，覆盖查询、Tab、分页、Dialog、DOM property 和事件链路。
 - [x] 示例统一展示后台页面、筛选、表格、分页、dialog、tabs。
 - [x] 输出 ESM/CSS/types 构建产物。
 - [x] 通过统一 package version、CHANGELOG、tag 与 GitHub Actions 实现版本管理。
@@ -84,6 +85,10 @@
 - [x] 发布 0.0.10 小版本，AreaChart、PieChart、Gauge、图表视觉验收与 320px 窄屏证据纳入稳定发布流程。
 - [x] 发布 0.0.12 小版本，AreaChart 多系列、外部宿主迁移示例、profile-aware visual golden contract、编辑器 adapter 和浮层焦点收口纳入稳定发布流程。
 - [x] 发布 0.0.13 小版本，编辑器宿主示例和 docs playground 性能预算纳入稳定发布流程。
+- [x] 发布 0.0.14 小版本，主题化 Date/Time picker、原生 Web 宿主、10,000 行虚拟表格性能合同和治理审计纳入稳定发布流程。
+- [x] 发布 0.0.15 小版本，治理审计与四框架真实浏览器 parity 纳入稳定发布流程，并修复 React/Vue/Svelte 受控属性和事件同步问题。
+- [x] 将组件注册/catalog、主题 token、utility 命名空间、版本与文档状态纳入季度治理 workflow。
+- [x] 以 docs-site 作为 API 文档与交互式组件目录的 Storybook/Ladle 等价入口，并由 API/catalog 门禁保持同步。
 
 ## 验收标准
 

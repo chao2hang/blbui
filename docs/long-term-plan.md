@@ -14,7 +14,7 @@
 
 ### P0：语义 Token 与主题合同
 
-0.0.13 已在 0.0.12 基础上继续收紧：
+0.0.15 已在 0.0.14 基础上继续收紧：
 
 - 固化 surface、text、border、focus、status、overlay、shadow、radius、motion、form color-scheme 等 token。
 - 9 套主题均维护 light/dark 两套值；新增主题必须提供同一份 token 清单。
@@ -31,7 +31,7 @@
 1. [x] 外部宿主：新增可运行的 `examples/web` 业务宿主，按迁移指南接入 tokens、Page、FilterBar、DataGrid 和状态标签；真实业务仓库接入后继续逐页迁移。
 2. [x] 表单体验：Date/Time picker 增加 `picker="custom"` 主题化弹出面板，同时保留原生默认路径和既有事件契约。
 3. [x] 性能：新增 10,000 行虚拟 DataGrid 的渲染、滚动、主题切换和 FPS Playwright 预算；真实长列表宿主接入后用业务列渲染器复核。
-4. [ ] 治理：每季度清理重复组件、过期 token、未使用 utility 和文档示例漂移，并把静态检查接入发布门禁。
+4. [x] 治理：通过 `governance:check` 和季度 GitHub Actions 审计重复注册、catalog 漂移、过期 token、utility 作用域、版本与文档状态；清理动作仍需在每季度审计结果基础上提交变更。
 
 每新增一个组件，必须同步：
 
@@ -47,6 +47,7 @@
 - Vue 统一 update:modelValue 或 update:value 的命名策略，避免同类组件各自为政。
 - [x] Svelte 已补充常用输入、overlay、data 组件封装和事件类型；parity playground 现在覆盖受控 tab、input、pagination、dialog、toast 状态。
 - [x] 维护一个跨框架 parity 示例页面，并由 `examples:check` 校验 versioned fixture、状态标记和框架事件映射。
+- [x] 通过 Playwright 实际启动四套 playground，验证受控查询、Tab、分页、Dialog、DOM property 与事件链路，而不只检查构建产物。
 
 ### P3：复杂业务能力
 
@@ -86,7 +87,7 @@
 | 框架 | Web Components、React、Vue、Svelte 的属性与事件行为一致                     |
 | 文档 | catalog 条目、预览、props/events、四框架 usage、截图和已知限制              |
 
-## 当前组件缺口（0.0.13 后）
+## 当前组件缺口（0.0.15 后）
 
 短期缺口集中在可复用的复杂交互，而不是继续堆叠展示型组件：
 
@@ -98,7 +99,8 @@
 - LineChart 已完成 SVG 命名空间人工验收；AreaChart、PieChart、Gauge 已按同一 adapter contract 落地，并覆盖 null/empty、donut/legend 与 meter 可访问语义。
 - 0.0.10 的图表视觉矩阵新增 AreaChart、PieChart、Gauge 场景；0.0.11 增加图表 tooltip 与键盘点位事件，`fromPieData` / `normalizeGaugeValue` 保持外部图表运行时可选。
 - 0.0.12 增加 LineChart 与 AreaChart 多系列共享坐标域、图例和 series-aware 点位事件；AreaChart 多系列已补充文档站预览、React 类型、行为测试和主题/窄屏人工复核。编辑器 adapter 已补充 CodeMirror/TipTap/Monaco 和四种宿主生命周期示例。
-- 0.0.14 继续补齐可运行 Web 宿主、主题化 Date/Time picker 和长列表性能合同；原生 picker 仍保留为默认兼容模式。
+- 0.0.15 已在四套 playground 的真实浏览器 parity、治理审计和跨框架受控属性修复上收口；0.0.14 的 Web 宿主、主题化 Date/Time picker、长列表性能合同继续作为稳定基线；原生 picker 仍保留为默认兼容模式。
+- 真实外部业务仓库的逐页迁移仍需宿主仓库配合，下一轮应优先落地 AdminButton、AdminPage/AdminPageHeader、AdminStatusTag 和 AdminLayout/AdminConsoleShell 的唯一挂载职责，再迁移 Users、Channels、Usage Logs 页面并清理旧兼容层。
 
 ## 每次迭代的完成定义
 

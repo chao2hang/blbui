@@ -1,6 +1,6 @@
 {
   "name": "@chaos_team/blbui",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "private": true,
   "description": "Obsidian Industrial Console component library for React, Vue and Svelte.",
   "workspaces": [
@@ -27,6 +27,7 @@
     "visual:check": "node scripts/check-visual-matrix.mjs",
     "visual:golden:check": "node scripts/check-visual-golden.mjs",
     "token:check": "node scripts/check-tokens.mjs",
+    "governance:check": "node scripts/check-governance.mjs",
     "typecheck": "bun run typecheck:core && bun run typecheck:react && bun run typecheck:vue && bun run typecheck:business && bun run typecheck:business-react && bun run typecheck:docs",
     "docs:dev": "cd docs-site && bun run dev",
     "docs:build": "cd docs-site && bun run build",
@@ -45,7 +46,7 @@
     "catalog:check": "node scripts/check-catalog.mjs && node scripts/check-examples.mjs",
     "api:docs": "node scripts/generate-api-docs.mjs",
     "api:check": "node scripts/check-public-api.mjs && node scripts/generate-api-docs.mjs --check",
-    "release:check": "bun run catalog:check && bun run api:check && bun run theme:check && bun run token:check && bun run visual:check && bun run visual:golden:check && bun run examples:check && bun run migration:check && bun run editor:check && bun run typecheck && bun run ssr:check && bun run build:packages && bun run check:svelte && bun run docs:check && bun run test && bun run test:frameworks && bun run e2e:check && bun run pack:check",
+    "release:check": "bun run catalog:check && bun run api:check && bun run theme:check && bun run token:check && bun run governance:check && bun run visual:check && bun run visual:golden:check && bun run examples:check && bun run migration:check && bun run editor:check && bun run typecheck && bun run ssr:check && bun run build:packages && bun run check:svelte && bun run docs:check && bun run test && bun run test:frameworks && bun run e2e:check && bun run pack:check",
     "pack:check": "node scripts/check-package-packs.mjs"
   },
   "devDependencies": {

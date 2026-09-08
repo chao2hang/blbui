@@ -35,30 +35,30 @@
     },
     "business": {
       "name": "@chaos_team/blbui-business",
-      "version": "0.0.14",
+      "version": "0.0.15",
       "peerDependencies": {
-        "@chaos_team/blbui-core": "^0.0.14",
+        "@chaos_team/blbui-core": "^0.0.15",
         "lit": ">=3.0.0",
       },
     },
     "business-react": {
       "name": "@chaos_team/blbui-business-react",
-      "version": "0.0.14",
+      "version": "0.0.15",
       "peerDependencies": {
-        "@chaos_team/blbui-business": "^0.0.14",
+        "@chaos_team/blbui-business": "^0.0.15",
         "react": ">=18.0.0",
       },
     },
     "core": {
       "name": "@chaos_team/blbui-core",
-      "version": "0.0.14",
+      "version": "0.0.15",
       "peerDependencies": {
         "lit": ">=3.0.0",
       },
     },
     "docs-site": {
       "name": "@chaos_team/blbui-docs",
-      "version": "0.0.14",
+      "version": "0.0.15",
       "dependencies": {
         "@chaos_team/blbui-business": "workspace:*",
         "@chaos_team/blbui-core": "workspace:*",
@@ -81,25 +81,25 @@
     },
     "react": {
       "name": "@chaos_team/blbui-react",
-      "version": "0.0.14",
+      "version": "0.0.15",
       "peerDependencies": {
-        "@chaos_team/blbui-core": "^0.0.14",
+        "@chaos_team/blbui-core": "^0.0.15",
         "react": ">=18.0.0",
       },
     },
     "svelte": {
       "name": "@chaos_team/blbui-svelte",
-      "version": "0.0.14",
+      "version": "0.0.15",
       "peerDependencies": {
-        "@chaos_team/blbui-core": "^0.0.14",
+        "@chaos_team/blbui-core": "^0.0.15",
         "svelte": "^5.0.0",
       },
     },
     "vue": {
       "name": "@chaos_team/blbui-vue",
-      "version": "0.0.14",
+      "version": "0.0.15",
       "peerDependencies": {
-        "@chaos_team/blbui-core": "^0.0.14",
+        "@chaos_team/blbui-core": "^0.0.15",
         "vue": "^3.5.0",
       },
     },

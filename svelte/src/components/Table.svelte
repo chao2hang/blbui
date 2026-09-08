@@ -9,9 +9,20 @@ it under the terms of the GNU Affero General Public License.
 
   export let loading = false
   export let empty = false
+  export let error = false
   export let loadingLabel = 'Loading...'
   export let emptyLabel = 'No data available.'
+  export let errorLabel = 'Failed to load data.'
+  let element: (HTMLElement & Record<string, unknown>) | undefined
   onMount(() => registerAdminElements())
+  $: if (element) {
+    element.loading = loading
+    element.empty = empty
+    element.error = error
+    element.loadingLabel = loadingLabel
+    element.emptyLabel = emptyLabel
+    element.errorLabel = errorLabel
+  }
 </script>
 
-<aui-table {loading} {empty} {loadingLabel} {emptyLabel}><slot /></aui-table>
+<aui-table bind:this={element}><slot /></aui-table>

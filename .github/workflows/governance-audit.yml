@@ -1,0 +1,36 @@
+name: BLBUI governance audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 1 */3 *"
+  push:
+    branches:
+      - main
+    paths:
+      - "core/**"
+      - "business/**"
+      - "docs-site/src/**"
+      - "docs/**"
+      - "scripts/check-governance.mjs"
+      - "package.json"
+      - "*.lock"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Audit component and token governance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.0"
+      - name: Install package workspace
+        run: bun install --frozen-lockfile
+      - name: Run governance audit
+        run: bun run governance:check

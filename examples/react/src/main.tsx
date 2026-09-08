@@ -20,7 +20,12 @@ function App() {
     const [open, setOpen] = useState(contract.initialDialog);
     const [page, setPage] = useState(contract.initialPage);
     const [toasts, setToasts] = useState([{ id: "parity", title: "PARITY READY", message: "React fixture is synchronized.", variant: "success" as const, duration: 0 }]);
-    const visibleRows = fixture.rows.filter((row) => activeTab === "all" || row.status === "ONLINE");
+    const normalizedQuery = query.trim().toLowerCase();
+    const visibleRows = fixture.rows.filter((row) => {
+        const matchesTab = activeTab === "all" || row.status === "ONLINE";
+        const matchesQuery = !normalizedQuery || [row.id, row.status, row.region].some((value) => value.toLowerCase().includes(normalizedQuery));
+        return matchesTab && matchesQuery;
+    });
     return (
         <div className="aui-root" style={{ minHeight: "100vh", padding: 32 }} data-parity-query={query} data-parity-page={page} data-parity-dialog={String(open)} data-parity-active-tab={activeTab}>
             <AdminPage title="Channels" description="Cross-framework operator playground.">

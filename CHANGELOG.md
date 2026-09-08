@@ -4,6 +4,13 @@
 
 后续变更记录从这里开始。
 
+## 0.0.15 — 2026-09-08
+
+- 新增治理审计脚本与季度 workflow，持续校验注册表/catalog、主题 token、utility 作用域、版本和文档状态。
+- 新增 React、Vue、Svelte、Web Components 四套 playground 的真实浏览器 parity 门禁，覆盖筛选、Tab、分页、Dialog、DOM property 和事件链路。
+- 修复 React/Vue/Svelte playground 的受控筛选与表格过滤；修复 Vue ToastManager payload 映射，以及 Svelte 自定义元素的布尔属性、按钮事件、Dialog 和分页同步。
+- 发布门禁纳入 governance audit，并更新跨框架迁移、长期计划与视觉验收记录。
+
 ## 0.0.14 — 2026-09-08
 
 - 新增可选的完全主题化 DatePicker / TimePicker 面板：`picker="custom"` 支持日期边界、时间步进、Escape/外部点击关闭，并保留原生默认模式和既有事件契约。

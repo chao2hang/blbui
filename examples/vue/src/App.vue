@@ -20,7 +20,14 @@ const page = ref(contract.initialPage);
 query.value = contract.initialQuery;
 const tabs = fixture.tabs;
 const toasts = ref([{ id: "parity", title: "PARITY READY", message: "Vue fixture is synchronized.", variant: "success", duration: 0 }]);
-const visibleRows = computed(() => fixture.rows.filter((row) => activeTab.value === "all" || row.status === "ONLINE"));
+const visibleRows = computed(() => {
+  const normalizedQuery = query.value.trim().toLowerCase();
+  return fixture.rows.filter((row) => {
+    const matchesTab = activeTab.value === "all" || row.status === "ONLINE";
+    const matchesQuery = !normalizedQuery || [row.id, row.status, row.region].some((value) => value.toLowerCase().includes(normalizedQuery));
+    return matchesTab && matchesQuery;
+  });
+});
 </script>
 
 <template>
