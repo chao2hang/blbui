@@ -59,7 +59,7 @@
 
 ## 已知限制
 
-- 原生 date/time 控件的弹出日历和时间面板由操作系统/浏览器绘制，主题只能控制字段本身；跨平台弹出面板需后续自定义 picker 方案。
+- Date/Time picker 默认仍可走原生控件；本轮新增 `picker="custom"`，在 Obsidian/Rounded/Glass 的 light/dark 下使用 token 驱动的日历/时间面板，边界项、Escape 和外部点击关闭已纳入后续人工抽查。
 - 关闭状态的 Dialog 内部关闭按钮不会被绘制，这是隐藏组件的预期结果，不作为视觉缺陷。
 - 当前 Playwright 会生成桌面/移动截图冒烟产物，并通过 pixelmatch 检查重复渲染稳定性；`tests/e2e/visual-matrix.json` 已固定 Windows/Ubuntu Chromium、desktop/mobile/narrow、9 × 2 主题与 8 个代表场景。`.github/workflows/visual-regression.yml` 会在两个固定 runner 上生成 9 × 2 × 3 × 8 的 PNG 证据并保留 14 天；`tests/e2e/visual-golden.json` 与 `VISUAL_MATRIX_GOLDEN_DIR` 已固定 profile-aware 文件名和像素比较策略，active golden 仅比较相同 profile，避免字体和系统控件差异造成误报。
 - ContextMenu 的打开位置来自浏览器右键坐标；在极窄视口边缘的智能翻转仍列入下一轮定位增强。

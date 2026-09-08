@@ -242,6 +242,65 @@ describe("industrial admin core", () => {
         expect(time.value).toBe("09:30");
     });
 
+    it("supports themed custom date and time picker panels with bounds", async () => {
+        const date = document.createElement("aui-date-picker") as HTMLElement & {
+            value: string;
+            picker: "native" | "custom";
+            min: string;
+            max: string;
+            open: boolean;
+            updateComplete: Promise<boolean>;
+        };
+        date.picker = "custom";
+        date.value = "2026-09-07";
+        date.min = "2026-09-05";
+        date.max = "2026-09-10";
+        document.body.append(date);
+        await date.updateComplete;
+
+        let selected = "";
+        let opened = false;
+        date.addEventListener("aui-date-change", (event) => {
+            selected = (event as CustomEvent<{ value: string }>).detail.value;
+        });
+        date.addEventListener("aui-open-change", (event) => {
+            opened = (event as CustomEvent<{ open: boolean }>).detail.open;
+        });
+        date.shadowRoot?.querySelector<HTMLButtonElement>(".toggle")?.click();
+        await date.updateComplete;
+        expect(date.open).toBe(true);
+        expect(opened).toBe(true);
+        expect(date.shadowRoot?.querySelector(".popover")).not.toBeNull();
+        const allowed = [...(date.shadowRoot?.querySelectorAll<HTMLButtonElement>(".day") ?? [])]
+            .find((button) => button.getAttribute("aria-label") === "2026-09-08");
+        allowed?.click();
+        await date.updateComplete;
+        expect(selected).toBe("2026-09-08");
+        expect(date.value).toBe("2026-09-08");
+        expect(date.open).toBe(false);
+
+        const time = document.createElement("aui-time-picker") as HTMLElement & {
+            value: string;
+            picker: "native" | "custom";
+            step: number;
+            updateComplete: Promise<boolean>;
+        };
+        time.picker = "custom";
+        time.value = "09:30";
+        time.step = 900;
+        document.body.append(time);
+        await time.updateComplete;
+        time.shadowRoot?.querySelector<HTMLButtonElement>(".toggle")?.click();
+        await time.updateComplete;
+        expect(time.shadowRoot?.querySelector(".time-grid")).not.toBeNull();
+        const hour = time.shadowRoot?.querySelector<HTMLSelectElement>("[data-part='hour']");
+        if (!hour) throw new Error("custom time picker hour select is missing");
+        hour.value = "10";
+        hour.dispatchEvent(new Event("change", { bubbles: true }));
+        await time.updateComplete;
+        expect(time.value).toBe("10:30");
+    });
+
     it("reports PIN input completion and renders descriptions", async () => {
         const pin = document.createElement("aui-pin-input") as HTMLElement & {
             length: number;

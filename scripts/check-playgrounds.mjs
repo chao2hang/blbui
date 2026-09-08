@@ -35,6 +35,7 @@ const required = {
   react: ["package.json", "index.html", "vite.config.ts", "tsconfig.json", "src/main.tsx"],
   vue: ["package.json", "index.html", "vite.config.ts", "tsconfig.json", "src/main.ts", "src/App.vue"],
   svelte: ["package.json", "index.html", "vite.config.ts", "src/main.ts", "src/App.svelte"],
+  web: ["package.json", "index.html", "vite.config.ts", "tsconfig.json", "src/main.ts"],
 };
 const checks = [
   ["@chaos_team/blbui-core", "@chaos_team/blbui-core/styles.css"],
@@ -51,7 +52,18 @@ for (const [framework, files] of Object.entries(required)) {
   }
   const sourceFiles = files.filter((file) => file.startsWith("src/"));
   const source = (await Promise.all(sourceFiles.map((file) => readFile(join(directory, file), "utf8")))).join("\n");
-  for (const marker of checks.flat()) if (!source.includes(marker)) errors.push(`${framework}: missing ${marker}`);
+  const frameworkChecks = framework === "web"
+    ? ["registerAdminElements", "setAdminTheme", "aui-data-grid", "grid.rows", "aui-input"]
+    : checks.flat();
+  for (const marker of frameworkChecks) if (!source.includes(marker)) errors.push(`${framework}: missing ${marker}`);
+  if (framework === "web") {
+    const packageJson = JSON.parse(await readFile(join(directory, "package.json"), "utf8"));
+    if (!packageJson.scripts?.build) errors.push("web: package.json has no build script");
+    const vite = join(root, "node_modules", ".bin", process.platform === "win32" ? "vite.exe" : "vite");
+    const result = spawnSync(vite, ["build"], { cwd: directory, stdio: "inherit" });
+    if (result.status !== 0) errors.push("web: vite build failed");
+    continue;
+  }
   const parityMarkers = [
     "parity/fixture.json",
     "parityContract.assertions",

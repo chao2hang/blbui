@@ -1,6 +1,6 @@
 {
   "name": "@chaos_team/blbui",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "private": true,
   "description": "Obsidian Industrial Console component library for React, Vue and Svelte.",
   "workspaces": [
@@ -10,7 +10,8 @@
     "svelte",
     "docs-site",
     "business",
-    "business-react"
+    "business-react",
+    "examples/web"
   ],
   "type": "module",
   "scripts": {
@@ -34,6 +35,7 @@
     "typecheck:business-react": "node_modules/.bin/tsc -p business-react/tsconfig.json",
     "docs:check": "cd docs-site && bun run test:smoke",
     "e2e:check": "playwright test",
+    "performance:check": "playwright test tests/e2e/performance.spec.ts",
     "examples:check": "node scripts/check-playgrounds.mjs",
     "migration:check": "node scripts/check-migration-examples.mjs",
     "editor:check": "node scripts/check-editor-adapter-examples.mjs",
@@ -44,7 +46,7 @@
     "api:docs": "node scripts/generate-api-docs.mjs",
     "api:check": "node scripts/check-public-api.mjs && node scripts/generate-api-docs.mjs --check",
     "release:check": "bun run catalog:check && bun run api:check && bun run theme:check && bun run token:check && bun run visual:check && bun run visual:golden:check && bun run examples:check && bun run migration:check && bun run editor:check && bun run typecheck && bun run ssr:check && bun run build:packages && bun run check:svelte && bun run docs:check && bun run test && bun run test:frameworks && bun run e2e:check && bun run pack:check",
-    "pack:check": "npm pack --dry-run --workspaces --if-present"
+    "pack:check": "node scripts/check-package-packs.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

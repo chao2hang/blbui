@@ -87,8 +87,8 @@ The catalog currently describes **123 components** across Core and Business pack
 | Menu | `aui-menu` | navigation | `items`, `value`, `orientation`, `compact` | `aui-menu-select` |
 | Sidebar | `aui-sidebar` | layout | `open`, `title`, `width`, `close-label` | `aui-open-change` |
 | Navbar | `aui-navbar` | layout | `title`, `sticky`, `bordered` | — |
-| Date Picker | `aui-date-picker` | forms | `value`, `min`, `max`, `label`, `disabled` | `aui-date-change`, `aui-change` |
-| Time Picker | `aui-time-picker` | forms | `value`, `min`, `max`, `step`, `label`, `disabled` | `aui-time-change`, `aui-change` |
+| Date Picker | `aui-date-picker` | forms | `value`, `min`, `max`, `label`, `disabled`, `picker` | `aui-date-change`, `aui-change`, `aui-open-change` |
+| Time Picker | `aui-time-picker` | forms | `value`, `min`, `max`, `step`, `label`, `disabled`, `picker` | `aui-time-change`, `aui-change`, `aui-open-change` |
 | PIN Input | `aui-pin-input` | forms | `length`, `value`, `masked`, `label`, `disabled` | `aui-pin-change` |
 | Descriptions | `aui-descriptions` | data | `items`, `columns`, `bordered`, `compact` | — |
 | Cascader | `aui-cascader` | forms | `options`, `value`, `placeholder`, `disabled`, `open`, `searchable` | `aui-cascader-change`, `aui-open-change` |

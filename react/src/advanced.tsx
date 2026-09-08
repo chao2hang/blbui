@@ -1884,13 +1884,14 @@ export interface AdminDatePickerProps extends ElementProps {
     max?: string;
     label?: string;
     disabled?: boolean;
+    picker?: "native" | "custom";
     onChange?: (value: string) => void;
 }
 export function AdminDatePicker(props: AdminDatePickerProps) {
-    const { value, min, max, label, disabled, onChange, ...rest } = props;
+    const { value, min, max, label, disabled, picker, onChange, ...rest } = props;
     const { setRef } = useBinding(
         undefined,
-        { value, min, max, label, disabled },
+        { value, min, max, label, disabled, picker },
         {
             "aui-date-change": onChange
                 ? (detail: { value: string }) => onChange(detail.value)
@@ -1898,7 +1899,11 @@ export function AdminDatePicker(props: AdminDatePickerProps) {
         },
     );
     return createElement("aui-date-picker", {
-        ...elementProps(props, ["value", "min", "max", "label", "disabled"], ["onChange"]),
+        ...elementProps(
+            props,
+            ["value", "min", "max", "label", "disabled", "picker"],
+            ["onChange"],
+        ),
         ...rest,
         ref: setRef,
     });
@@ -1911,13 +1916,14 @@ export interface AdminTimePickerProps extends ElementProps {
     step?: number;
     label?: string;
     disabled?: boolean;
+    picker?: "native" | "custom";
     onChange?: (value: string) => void;
 }
 export function AdminTimePicker(props: AdminTimePickerProps) {
-    const { value, min, max, step, label, disabled, onChange, ...rest } = props;
+    const { value, min, max, step, label, disabled, picker, onChange, ...rest } = props;
     const { setRef } = useBinding(
         undefined,
-        { value, min, max, step, label, disabled },
+        { value, min, max, step, label, disabled, picker },
         {
             "aui-time-change": onChange
                 ? (detail: { value: string }) => onChange(detail.value)
@@ -1925,7 +1931,11 @@ export function AdminTimePicker(props: AdminTimePickerProps) {
         },
     );
     return createElement("aui-time-picker", {
-        ...elementProps(props, ["value", "min", "max", "step", "label", "disabled"], ["onChange"]),
+        ...elementProps(
+            props,
+            ["value", "min", "max", "step", "label", "disabled", "picker"],
+            ["onChange"],
+        ),
         ...rest,
         ref: setRef,
     });

@@ -4,6 +4,13 @@
 
 后续变更记录从这里开始。
 
+## 0.0.14 — 2026-09-08
+
+- 新增可选的完全主题化 DatePicker / TimePicker 面板：`picker="custom"` 支持日期边界、时间步进、Escape/外部点击关闭，并保留原生默认模式和既有事件契约。
+- 新增可运行的 `examples/web` 外部宿主迁移示例，覆盖注册、主题、Page、FilterBar、DataGrid、DOM property 和事件监听。
+- 新增 10,000 行 DataGrid 虚拟窗口性能门禁，覆盖渲染、滚动、主题切换和 FPS 预算；虚拟模式不再额外渲染移动卡片列表。
+- 更新迁移文档、公开 API、视觉验收记录与长期路线图。
+
 ## 0.0.13 — 2026-09-08
 
 - 新增 CodeMirror 6、TipTap、Monaco 的 `AdminEditorAdapter` 接入示例，并补充 Web Components、React、Vue、Svelte 的订阅清理生命周期说明。

@@ -333,6 +333,55 @@ export class AdminNavbarElement extends AdminElement {
 
 type DateLike = "date" | "time";
 
+function dateValue(year: number, month: number, day: number): string {
+    return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+function dateParts(value: string): [number, number, number] | null {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    if (!match) return null;
+    const year = Number(match[1]);
+    const month = Number(match[2]) - 1;
+    const day = Number(match[3]);
+    const date = new Date(year, month, day);
+    return date.getFullYear() === year && date.getMonth() === month && date.getDate() === day
+        ? [year, month, day]
+        : null;
+}
+
+function timeSeconds(value: string): number | null {
+    const match = /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(value);
+    if (!match) return null;
+    const hour = Number(match[1]);
+    const minute = Number(match[2]);
+    const second = Number(match[3] ?? 0);
+    if (hour > 23 || minute > 59 || second > 59) return null;
+    return hour * 3600 + minute * 60 + second;
+}
+
+function timeValue(total: number, withSeconds: boolean): string {
+    const safe = Math.max(0, Math.min(86_399, Math.round(total)));
+    const hour = Math.floor(safe / 3600);
+    const minute = Math.floor((safe % 3600) / 60);
+    const second = safe % 60;
+    return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}${withSeconds ? `:${String(second).padStart(2, "0")}` : ""}`;
+}
+
+function withinDate(value: string, min: string, max: string): boolean {
+    return Boolean(dateParts(value)) && (!min || value >= min) && (!max || value <= max);
+}
+
+function withinTime(value: string, min: string, max: string): boolean {
+    const current = timeSeconds(value);
+    const lower = min ? timeSeconds(min) : null;
+    const upper = max ? timeSeconds(max) : null;
+    return (
+        current !== null &&
+        (lower === null || current >= lower) &&
+        (upper === null || current <= upper)
+    );
+}
+
 class AdminDateLikeElement extends AdminElement {
     static properties = {
         value: { type: String },
@@ -341,10 +390,13 @@ class AdminDateLikeElement extends AdminElement {
         step: { type: Number },
         label: { type: String },
         disabled: { type: Boolean, reflect: true },
+        open: { type: Boolean, reflect: true },
+        picker: { type: String, reflect: true },
     };
 
     static styles = css`
         :host {
+            position: relative;
             display: inline-flex;
             width: 100%;
             max-width: 280px;
@@ -376,6 +428,29 @@ class AdminDateLikeElement extends AdminElement {
                 border-color var(--aui-transition),
                 box-shadow var(--aui-transition);
         }
+        .input-wrap {
+            position: relative;
+            display: flex;
+        }
+        .input-wrap input {
+            padding-right: 38px;
+        }
+        .toggle {
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            bottom: 1px;
+            width: 34px;
+            border: 0;
+            background: transparent;
+            color: var(--aui-text-secondary);
+            cursor: pointer;
+            font: 12px/1 var(--aui-font-mono);
+        }
+        .toggle:hover:not(:disabled) {
+            color: var(--aui-text-primary);
+            background: var(--aui-control-bg-hover);
+        }
         input:hover:not(:disabled) {
             border-color: var(--aui-control-border-hover);
         }
@@ -387,6 +462,102 @@ class AdminDateLikeElement extends AdminElement {
             cursor: not-allowed;
             opacity: 0.45;
         }
+        .popover {
+            position: absolute;
+            z-index: 60;
+            top: calc(100% + 6px);
+            left: 0;
+            width: min(296px, calc(100vw - 24px));
+            padding: 12px;
+            border: 1px solid var(--aui-border);
+            border-radius: var(--aui-radius-md);
+            background: var(--aui-surface-elevated);
+            box-shadow: var(--aui-shadow-lg);
+            color: var(--aui-text);
+            backdrop-filter: var(--aui-backdrop-filter);
+        }
+        .calendar-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .calendar-head strong {
+            color: var(--aui-text-primary);
+            font: 700 11px/1.2 var(--aui-font-mono);
+            letter-spacing: 0.06em;
+        }
+        .calendar-head button,
+        .day {
+            border: 1px solid transparent;
+            border-radius: var(--aui-radius-sm);
+            background: transparent;
+            color: var(--aui-text-secondary);
+            cursor: pointer;
+            font: 11px/1 var(--aui-font-mono);
+        }
+        .calendar-head button {
+            width: 28px;
+            height: 28px;
+            border-color: var(--aui-border);
+        }
+        .calendar-head button:hover:not(:disabled),
+        .day:hover:not(:disabled) {
+            border-color: var(--aui-border-hover);
+            background: var(--aui-control-bg-hover);
+            color: var(--aui-text-primary);
+        }
+        .weekdays,
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 3px;
+        }
+        .weekday {
+            padding: 4px 0;
+            color: var(--aui-text-muted);
+            text-align: center;
+            font: 9px/1 var(--aui-font-mono);
+        }
+        .day {
+            min-height: 30px;
+        }
+        .day[data-muted="true"] {
+            color: var(--aui-text-muted);
+            opacity: 0.55;
+        }
+        .day[data-selected="true"] {
+            border-color: var(--aui-primary);
+            background: var(--aui-primary);
+            color: var(--aui-primary-content);
+        }
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+        }
+        .time-grid label {
+            display: grid;
+            gap: 5px;
+            color: var(--aui-text-muted);
+            font-size: 9px;
+        }
+        .time-grid select {
+            min-height: 34px;
+            padding: 6px;
+            border: 1px solid var(--aui-border);
+            border-radius: var(--aui-radius-sm);
+            background: var(--aui-control-bg);
+            color: var(--aui-text);
+            font: 11px/1 var(--aui-font-mono);
+        }
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible {
+            outline: 0;
+            box-shadow: var(--aui-focus-ring);
+        }
     `;
 
     value = "";
@@ -395,10 +566,66 @@ class AdminDateLikeElement extends AdminElement {
     step = 60;
     label = "";
     disabled = false;
+    open = false;
+    picker: "native" | "custom" = "native";
     protected inputType: DateLike = "date";
+    private viewYear = -1;
+    private viewMonth = -1;
+    private readonly onDocumentPointerDown = (event: PointerEvent): void => {
+        if (this.open && !event.composedPath().includes(this)) this.setOpen(false);
+    };
+    private readonly onDocumentKeyDown = (event: KeyboardEvent): void => {
+        if (event.key === "Escape" && this.open) {
+            event.preventDefault();
+            this.setOpen(false);
+        }
+    };
+
+    connectedCallback(): void {
+        super.connectedCallback();
+        document.addEventListener("pointerdown", this.onDocumentPointerDown);
+        document.addEventListener("keydown", this.onDocumentKeyDown);
+        this.syncView();
+    }
+
+    disconnectedCallback(): void {
+        document.removeEventListener("pointerdown", this.onDocumentPointerDown);
+        document.removeEventListener("keydown", this.onDocumentKeyDown);
+        super.disconnectedCallback();
+    }
+
+    protected updated(changed: Map<string, unknown>): void {
+        if (changed.has("value")) this.syncView();
+    }
+
+    private syncView(): void {
+        if (this.inputType !== "date") return;
+        const parts = dateParts(this.value);
+        const date = parts ? new Date(parts[0], parts[1], 1) : new Date();
+        this.viewYear = date.getFullYear();
+        this.viewMonth = date.getMonth();
+    }
+
+    private setOpen(open: boolean): void {
+        if (this.disabled || this.open === open) return;
+        this.open = open;
+        this.dispatchDetail("aui-open-change", { open });
+        this.requestUpdate();
+    }
+
+    private toggleOpen(): void {
+        if (!this.open) this.syncView();
+        this.setOpen(!this.open);
+    }
 
     protected change(event: Event): void {
-        this.value = (event.target as HTMLInputElement).value;
+        const next = (event.target as HTMLInputElement).value;
+        const valid =
+            this.inputType === "date"
+                ? !next || withinDate(next, this.min, this.max)
+                : !next || withinTime(next, this.min, this.max);
+        if (!valid) return;
+        this.value = next;
         const detail = { value: this.value };
         this.dispatchDetail(
             this.inputType === "date" ? "aui-date-change" : "aui-time-change",
@@ -407,19 +634,186 @@ class AdminDateLikeElement extends AdminElement {
         this.dispatchDetail("aui-change", detail);
     }
 
+    private chooseDate(value: string): void {
+        if (!withinDate(value, this.min, this.max)) return;
+        this.value = value;
+        this.dispatchDetail("aui-date-change", { value });
+        this.dispatchDetail("aui-change", { value });
+        this.setOpen(false);
+    }
+
+    private changeTime(event: Event): void {
+        const form = this.renderRoot.querySelector<HTMLFormElement>(".time-grid");
+        if (!form) return;
+        const current = timeSeconds(this.value) ?? 0;
+        const currentHour = Math.floor(current / 3600);
+        const currentMinute = Math.floor((current % 3600) / 60);
+        const currentSecond = current % 60;
+        const readPart = (selector: string, fallback: number): number => {
+            const value = form.querySelector<HTMLSelectElement>(selector)?.value;
+            return value === undefined || value === "" ? fallback : Number(value);
+        };
+        const target = event.target as HTMLSelectElement;
+        const hour = target.matches("[data-part='hour']") ? Number(target.value) : currentHour;
+        const minute = target.matches("[data-part='minute']")
+            ? Number(target.value)
+            : readPart("[data-part='minute']", currentMinute);
+        const second = target.matches("[data-part='second']")
+            ? Number(target.value)
+            : currentSecond;
+        const next = timeValue(hour * 3600 + minute * 60 + second, this.hasSeconds());
+        const step = Math.max(1, this.step || 60);
+        const total = timeSeconds(next) ?? 0;
+        const base = timeSeconds(this.min) ?? 0;
+        const valid = total % step === base % step && withinTime(next, this.min, this.max);
+        if (!valid) return;
+        this.value = next;
+        this.dispatchDetail("aui-time-change", { value: next });
+        this.dispatchDetail("aui-change", { value: next });
+        void event;
+    }
+
+    private hasSeconds(): boolean {
+        return (this.step > 0 && this.step < 60) || this.value.split(":").length > 2;
+    }
+
+    private moveMonth(delta: number): void {
+        const next = new Date(this.viewYear, this.viewMonth + delta, 1);
+        this.viewYear = next.getFullYear();
+        this.viewMonth = next.getMonth();
+        this.requestUpdate();
+    }
+
+    private renderDatePicker(): unknown {
+        const first = new Date(this.viewYear, this.viewMonth, 1).getDay();
+        const total = new Date(this.viewYear, this.viewMonth + 1, 0).getDate();
+        const days = Array.from({ length: Math.ceil((first + total) / 7) * 7 }, (_, index) => {
+            const day = index - first + 1;
+            return { day, muted: day < 1 || day > total };
+        });
+        return html`<div class="popover" role="dialog" aria-label=${this.label || "Choose date"}>
+            <div class="calendar-head">
+                <button
+                    type="button"
+                    aria-label="Previous month"
+                    @click=${() => this.moveMonth(-1)}
+                >
+                    ‹
+                </button>
+                <strong>${this.viewYear} / ${String(this.viewMonth + 1).padStart(2, "0")}</strong>
+                <button type="button" aria-label="Next month" @click=${() => this.moveMonth(1)}>
+                    ›
+                </button>
+            </div>
+            <div class="weekdays" aria-hidden="true">
+                ${["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => html`<span class="weekday">${day}</span>`)}
+            </div>
+            <div class="days" role="grid">
+                ${days.map((item) => {
+                    const value = item.muted
+                        ? ""
+                        : dateValue(this.viewYear, this.viewMonth, item.day);
+                    const selected = value === this.value;
+                    const allowed = !item.muted && withinDate(value, this.min, this.max);
+                    return html`<button
+                        class="day"
+                        type="button"
+                        role="gridcell"
+                        data-muted=${item.muted ? "true" : "false"}
+                        data-selected=${selected ? "true" : "false"}
+                        ?disabled=${!allowed}
+                        aria-label=${value || "Outside month"}
+                        @click=${() => this.chooseDate(value)}
+                    >
+                        ${item.muted ? "" : item.day}
+                    </button>`;
+                })}
+            </div>
+        </div>`;
+    }
+
+    private renderTimePicker(): unknown {
+        const current = timeSeconds(this.value) ?? timeSeconds(this.min) ?? 0;
+        const withSeconds = this.hasSeconds();
+        const hour = Math.floor(current / 3600);
+        const minute = Math.floor((current % 3600) / 60);
+        const second = current % 60;
+        const minuteStep = this.step >= 60 ? Math.max(1, Math.floor(this.step / 60)) : 1;
+        const values = (count: number, step: number) =>
+            Array.from({ length: Math.ceil(count / step) }, (_, index) => index * step).filter(
+                (item) => item < count,
+            );
+        return html`<div class="popover" role="dialog" aria-label=${this.label || "Choose time"}>
+            <div class="time-grid" @change=${this.changeTime}>
+                <label
+                    >HOUR<select data-part="hour" .value=${String(hour)} aria-label="Hour">
+                        ${values(24, 1).map((item) => html`<option value=${item} ?selected=${item === hour}>${String(item).padStart(2, "0")}</option>`)}
+                    </select></label
+                >
+                <label
+                    >MINUTE<select data-part="minute" .value=${String(minute)} aria-label="Minute">
+                        ${values(60, minuteStep).map((item) => html`<option value=${item} ?selected=${item === minute}>${String(item).padStart(2, "0")}</option>`)}
+                    </select></label
+                >
+                ${
+                    withSeconds
+                        ? html`<label
+                              >SECOND<select
+                                  data-part="second"
+                                  .value=${String(second)}
+                                  aria-label="Second"
+                              >
+                                  ${values(60, Math.max(1, this.step)).map((item) => html`<option value=${item} ?selected=${item === second}>${String(item).padStart(2, "0")}</option>`)}
+                              </select></label
+                          >`
+                        : null
+                }
+            </div>
+        </div>`;
+    }
+
     render() {
+        if (this.picker !== "custom") {
+            return html`<div class="field">
+                ${this.label ? html`<label>${this.label}</label>` : null}
+                <input
+                    type=${this.inputType}
+                    .value=${this.value}
+                    min=${this.min || undefined}
+                    max=${this.max || undefined}
+                    step=${this.step || undefined}
+                    ?disabled=${this.disabled}
+                    aria-label=${this.label || this.inputType}
+                    @change=${this.change}
+                />
+            </div>`;
+        }
         return html`<div class="field">
             ${this.label ? html`<label>${this.label}</label>` : null}
-            <input
-                type=${this.inputType}
-                .value=${this.value}
-                min=${this.min || undefined}
-                max=${this.max || undefined}
-                step=${this.step || undefined}
-                ?disabled=${this.disabled}
-                aria-label=${this.label || this.inputType}
-                @change=${this.change}
-            />
+            <div class="input-wrap">
+                <input
+                    type="text"
+                    inputmode=${this.inputType === "date" ? "numeric" : "decimal"}
+                    .value=${this.value}
+                    ?disabled=${this.disabled}
+                    readonly=${this.inputType === "date" || this.open}
+                    aria-haspopup="dialog"
+                    aria-expanded=${this.open ? "true" : "false"}
+                    aria-label=${this.label || this.inputType}
+                    @change=${this.change}
+                    @click=${this.toggleOpen}
+                />
+                <button
+                    class="toggle"
+                    type="button"
+                    ?disabled=${this.disabled}
+                    aria-label=${this.open ? "Close picker" : `Open ${this.inputType} picker`}
+                    @click=${this.toggleOpen}
+                >
+                    ${this.inputType === "date" ? "▦" : "◷"}
+                </button>
+            </div>
+            ${this.open ? (this.inputType === "date" ? this.renderDatePicker() : this.renderTimePicker()) : null}
         </div>`;
     }
 }

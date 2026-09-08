@@ -1063,7 +1063,7 @@ export class AdminDataGridElement extends AdminElement {
                       >
                           ${this.renderTable(rows, columns)}
                       </div>
-                      ${this.mobileCards ? this.renderCards(rows, columns) : null}`;
+                      ${this.mobileCards && !this.virtual ? this.renderCards(rows, columns) : null}`;
         const selectedCount = this.selectedKeys.length;
         return html`<div class="frame" aria-busy=${this.loading ? "true" : "false"}>
             ${

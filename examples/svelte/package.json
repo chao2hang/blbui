@@ -7,8 +7,8 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@chaos_team/blbui-core": "^0.0.13",
-    "@chaos_team/blbui-svelte": "^0.0.13",
+    "@chaos_team/blbui-core": "^0.0.14",
+    "@chaos_team/blbui-svelte": "^0.0.14",
     "svelte": "^5.57.0"
   },
   "devDependencies": {

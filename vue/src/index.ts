@@ -734,7 +734,7 @@ export const AdminNavbar = adminElement({
 export const AdminDatePicker = adminElement({
     name: "AdminDatePicker",
     tag: "aui-date-picker",
-    properties: ["value", "min", "max", "label", "disabled"],
+    properties: ["value", "min", "max", "label", "disabled", "picker"],
     events: [
         {
             name: "aui-date-change",
@@ -744,13 +744,20 @@ export const AdminDatePicker = adminElement({
         },
     ],
     emits: ["date-change", "update:value"],
-    props: { value: String, min: String, max: String, label: String, disabled: Boolean },
+    props: {
+        value: String,
+        min: String,
+        max: String,
+        label: String,
+        disabled: Boolean,
+        picker: String,
+    },
 });
 
 export const AdminTimePicker = adminElement({
     name: "AdminTimePicker",
     tag: "aui-time-picker",
-    properties: ["value", "min", "max", "step", "label", "disabled"],
+    properties: ["value", "min", "max", "step", "label", "disabled", "picker"],
     events: [
         {
             name: "aui-time-change",
@@ -767,6 +774,7 @@ export const AdminTimePicker = adminElement({
         step: Number,
         label: String,
         disabled: Boolean,
+        picker: String,
     },
 });
 

@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-当前版本为 `0.0.13`，已经提供 104 个已注册的无框架 Web Components，以及 React/Vue/Svelte 适配入口；连同 19 个 Business 组件，文档站共覆盖 123 个组件：
+当前版本为 `0.0.14`，已经提供 104 个已注册的无框架 Web Components，以及 React/Vue/Svelte 适配入口；连同 19 个 Business 组件，文档站共覆盖 123 个组件：
 
 | 包                         | 用途                                              |
 | -------------------------- | ------------------------------------------------- |
@@ -35,7 +35,7 @@ React / Vue 提供全部 104 个 Core 组件的 1:1 绑定（`Admin*` 命名）�
 
 ## 主题与 CSS 工具层
 
-Core 提供语义化 `--aui-*` token、daisyUI 风格但不绑定第三方命名空间的 CSS utilities，以及 9 套可运行时切换的主题：`obsidian`、`rounded`、`enterprise`、`modern`、`minimal`、`premium`、`chinese`、`atmospheric`、`glass`。每套主题均支持 `light` / `dark`，组件内部样式只依赖语义 token。
+Core 提供语义化 `--aui-*` token、daisyUI 风格但不绑定第三方命名空间的 CSS utilities，以及 9 套可运行时切换的主题：`obsidian`、`rounded`、`enterprise`、`modern`、`minimal`、`premium`、`chinese`、`atmospheric`、`glass`。每套主题均支持 `light` / `dark`，组件内部样式只依赖语义 token。Date/Time picker 默认保留原生兼容路径，也可设置 `picker="custom"` 使用完全主题化的弹出面板。
 
 ```ts
 import { setAdminTheme, toggleAdminThemeMode } from "@chaos_team/blbui-core";

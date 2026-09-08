@@ -28,10 +28,10 @@
 
 已补齐 Menu、Sidebar、Navbar、DatePicker、TimePicker、PinInput、Descriptions、Cascader、Transfer、ContextMenu、HoverCard、NotificationCenter、UploadList、FilePreview、Form、FormItem、SchemaForm、ProgressRing、TruncatedText、LoadingOverlay、ColumnSettings。DataGrid 已补齐排序、筛选、选择、批量操作、服务端分页、移动端卡片和轻量虚拟窗口；Business 已覆盖图表、workflow、权限、审计、导入导出和编辑器 adapter contract。下一阶段优先级：
 
-1. 外部宿主：真实 `web` 业务仓库进入工作区后，按迁移指南逐页迁移 tokens、Page、Table、FilterBar 和状态标签。
-2. 表单体验：评估自定义 Date/Time picker，以解决原生弹出面板无法完全主题化的限制。
-3. 性能：在真实长列表宿主接入后增加 DataGrid 滚动 FPS、主题切换耗时和大数据集渲染预算。
-4. 治理：定期清理重复组件、过期 token、未使用 utility 和文档示例漂移。
+1. [x] 外部宿主：新增可运行的 `examples/web` 业务宿主，按迁移指南接入 tokens、Page、FilterBar、DataGrid 和状态标签；真实业务仓库接入后继续逐页迁移。
+2. [x] 表单体验：Date/Time picker 增加 `picker="custom"` 主题化弹出面板，同时保留原生默认路径和既有事件契约。
+3. [x] 性能：新增 10,000 行虚拟 DataGrid 的渲染、滚动、主题切换和 FPS Playwright 预算；真实长列表宿主接入后用业务列渲染器复核。
+4. [ ] 治理：每季度清理重复组件、过期 token、未使用 utility 和文档示例漂移，并把静态检查接入发布门禁。
 
 每新增一个组件，必须同步：
 
@@ -98,6 +98,7 @@
 - LineChart 已完成 SVG 命名空间人工验收；AreaChart、PieChart、Gauge 已按同一 adapter contract 落地，并覆盖 null/empty、donut/legend 与 meter 可访问语义。
 - 0.0.10 的图表视觉矩阵新增 AreaChart、PieChart、Gauge 场景；0.0.11 增加图表 tooltip 与键盘点位事件，`fromPieData` / `normalizeGaugeValue` 保持外部图表运行时可选。
 - 0.0.12 增加 LineChart 与 AreaChart 多系列共享坐标域、图例和 series-aware 点位事件；AreaChart 多系列已补充文档站预览、React 类型、行为测试和主题/窄屏人工复核。编辑器 adapter 已补充 CodeMirror/TipTap/Monaco 和四种宿主生命周期示例。
+- 0.0.14 继续补齐可运行 Web 宿主、主题化 Date/Time picker 和长列表性能合同；原生 picker 仍保留为默认兼容模式。
 
 ## 每次迭代的完成定义
 
