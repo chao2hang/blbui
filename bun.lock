@@ -35,15 +35,15 @@
     },
     "business": {
       "name": "@chaos_team/blbui-business",
-      "version": "0.0.16",
+      "version": "0.0.17",
       "peerDependencies": {
-        "@chaos_team/blbui-core": "^0.0.16",
+        "@chaos_team/blbui-core": "^0.0.17",
         "lit": ">=3.0.0",
       },
     },
     "business-react": {
       "name": "@chaos_team/blbui-business-react",
-      "version": "0.0.16",
+      "version": "0.0.17",
       "peerDependencies": {
         "@chaos_team/blbui-business": "^0.0.16",
         "react": ">=18.0.0",
@@ -51,14 +51,14 @@
     },
     "core": {
       "name": "@chaos_team/blbui-core",
-      "version": "0.0.16",
+      "version": "0.0.17",
       "peerDependencies": {
         "lit": ">=3.0.0",
       },
     },
     "docs-site": {
       "name": "@chaos_team/blbui-docs",
-      "version": "0.0.16",
+      "version": "0.0.17",
       "dependencies": {
         "@chaos_team/blbui-business": "workspace:*",
         "@chaos_team/blbui-core": "workspace:*",
@@ -72,6 +72,7 @@
     "examples/web": {
       "name": "blbui-playground-web",
       "dependencies": {
+        "@chaos_team/blbui-business": "workspace:*",
         "@chaos_team/blbui-core": "workspace:*",
       },
       "devDependencies": {
@@ -81,7 +82,7 @@
     },
     "react": {
       "name": "@chaos_team/blbui-react",
-      "version": "0.0.16",
+      "version": "0.0.17",
       "peerDependencies": {
         "@chaos_team/blbui-core": "^0.0.16",
         "react": ">=18.0.0",
@@ -89,7 +90,7 @@
     },
     "svelte": {
       "name": "@chaos_team/blbui-svelte",
-      "version": "0.0.16",
+      "version": "0.0.17",
       "peerDependencies": {
         "@chaos_team/blbui-core": "^0.0.16",
         "svelte": "^5.0.0",
@@ -97,7 +98,7 @@
     },
     "vue": {
       "name": "@chaos_team/blbui-vue",
-      "version": "0.0.16",
+      "version": "0.0.17",
       "peerDependencies": {
         "@chaos_team/blbui-core": "^0.0.16",
         "vue": "^3.5.0",

@@ -228,11 +228,15 @@ export class AdminListViewElement extends AdminElement {
         items: { attribute: false },
         loading: { type: Boolean, reflect: true },
         error: { type: Boolean, reflect: true },
+        permissionDenied: { type: Boolean, attribute: "permission-denied", reflect: true },
         selectable: { type: Boolean, reflect: true },
         selectedKeys: { attribute: false },
         loadingLabel: { type: String, attribute: "loading-label" },
         emptyLabel: { type: String, attribute: "empty-label" },
         errorLabel: { type: String, attribute: "error-label" },
+        permissionDeniedLabel: { type: String, attribute: "permission-denied-label" },
+        retryable: { type: Boolean, reflect: true },
+        retryLabel: { type: String, attribute: "retry-label" },
     };
 
     static styles = css`
@@ -299,16 +303,45 @@ export class AdminListViewElement extends AdminElement {
         .state[role="alert"] {
             color: var(--aui-danger);
         }
+        .state-actions {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        button.retry {
+            min-height: 28px;
+            padding: 5px 9px;
+            border: 1px solid currentColor;
+            border-radius: var(--aui-radius-sm);
+            background: transparent;
+            color: inherit;
+            cursor: pointer;
+            font: 700 10px/1 var(--aui-font-mono);
+            text-transform: uppercase;
+        }
     `;
 
     items: AdminListViewItem[] = [];
     loading = false;
     error = false;
+    permissionDenied = false;
     selectable = true;
     selectedKeys: Array<string | number> = [];
     loadingLabel = "LOADING...";
     emptyLabel = "NO ITEMS AVAILABLE";
     errorLabel = "FAILED TO LOAD ITEMS";
+    permissionDeniedLabel = "PERMISSION DENIED";
+    retryable = true;
+    retryLabel = "RETRY";
+
+    private retry(): void {
+        if (!this.retryable || this.loading) return;
+        this.dispatchDetail("aui-retry", {
+            source: "list-view",
+            reason: this.permissionDenied ? "permission-denied" : "error",
+        });
+    }
 
     private select(item: AdminListViewItem): void {
         if (item.disabled) return;
@@ -325,28 +358,42 @@ export class AdminListViewElement extends AdminElement {
     render() {
         const content = this.loading
             ? html`<div class="state" role="status" aria-live="polite">${this.loadingLabel}</div>`
-            : this.error
-              ? html`<div class="state" role="alert">${this.errorLabel}</div>`
-              : this.items.length
-                ? html`<ul class="list">
-                      ${this.items.map(
-                          (item) => html`<li>
-                              <button
-                                  class="item"
-                                  type="button"
-                                  ?disabled=${item.disabled}
-                                  aria-selected=${this.selectedKeys.includes(item.id) ? "true" : "false"}
-                                  @click=${() => this.select(item)}
-                              >
-                                  <span class="title">${item.title}</span>
-                                  ${item.status ? html`<span class="status">${item.status}</span>` : null}
-                                  ${item.description ? html`<span class="description">${item.description}</span>` : null}
-                                  ${item.meta ? html`<span class="meta">${item.meta}</span>` : null}
-                              </button>
-                          </li>`,
-                      )}
-                  </ul>`
-                : html`<div class="state" role="status">${this.emptyLabel}</div>`;
+            : this.permissionDenied
+              ? html`<div class="state permission-state" role="status">
+                    <span>${this.permissionDeniedLabel}</span>
+                    <div class="state-actions"><slot name="permission"></slot></div>
+                </div>`
+              : this.error
+                ? html`<div class="state" role="alert">
+                      <span>${this.errorLabel}</span>
+                      <div class="state-actions">
+                          <slot name="retry"
+                              ><button class="retry" type="button" @click=${this.retry}>
+                                  ${this.retryLabel}
+                              </button></slot
+                          >
+                      </div>
+                  </div>`
+                : this.items.length
+                  ? html`<ul class="list">
+                        ${this.items.map(
+                            (item) => html`<li>
+                                <button
+                                    class="item"
+                                    type="button"
+                                    ?disabled=${item.disabled}
+                                    aria-selected=${this.selectedKeys.includes(item.id) ? "true" : "false"}
+                                    @click=${() => this.select(item)}
+                                >
+                                    <span class="title">${item.title}</span>
+                                    ${item.status ? html`<span class="status">${item.status}</span>` : null}
+                                    ${item.description ? html`<span class="description">${item.description}</span>` : null}
+                                    ${item.meta ? html`<span class="meta">${item.meta}</span>` : null}
+                                </button>
+                            </li>`,
+                        )}
+                    </ul>`
+                  : html`<div class="state" role="status">${this.emptyLabel}</div>`;
         return html`${content}<slot></slot>`;
     }
 }

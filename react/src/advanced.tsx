@@ -43,6 +43,7 @@ import type {
     AdminFormLayout,
     AdminSchemaFormField,
     AdminSchemaFormValue,
+    AdminAsyncStateProps,
 } from "@chaos_team/blbui-core";
 
 import "@chaos_team/blbui-core/styles.css";
@@ -1223,7 +1224,7 @@ export function AdminTreeTable(props: AdminTreeTableProps) {
     });
 }
 
-export interface AdminListViewProps extends ElementProps {
+export interface AdminListViewProps extends ElementProps, AdminAsyncStateProps {
     items?: AdminListViewItem[];
     loading?: boolean;
     error?: boolean;
@@ -1232,6 +1233,7 @@ export interface AdminListViewProps extends ElementProps {
     loadingLabel?: string;
     emptyLabel?: string;
     errorLabel?: string;
+    onRetry?: (detail: { source: string; reason: "error" | "permission-denied" }) => void;
     onSelect?: (detail: {
         id: string | number;
         item: AdminListViewItem;
@@ -1240,6 +1242,7 @@ export interface AdminListViewProps extends ElementProps {
 }
 export function AdminListView(props: AdminListViewProps) {
     const {
+        children,
         items,
         loading,
         error,
@@ -1248,32 +1251,58 @@ export function AdminListView(props: AdminListViewProps) {
         loadingLabel,
         emptyLabel,
         errorLabel,
+        permissionDenied,
+        permissionDeniedLabel,
+        retryable,
+        retryLabel,
+        onRetry,
         onSelect,
         ...rest
     } = props;
     const { setRef } = useBinding(
         undefined,
-        { items, loading, error, selectable, selectedKeys, loadingLabel, emptyLabel, errorLabel },
-        { "aui-list-view-select": onSelect },
+        {
+            items,
+            loading,
+            error,
+            selectable,
+            selectedKeys,
+            loadingLabel,
+            emptyLabel,
+            errorLabel,
+            permissionDenied,
+            permissionDeniedLabel,
+            retryable,
+            retryLabel,
+        },
+        { "aui-list-view-select": onSelect, "aui-retry": onRetry },
     );
-    return createElement("aui-list-view", {
-        ...elementProps(
-            props,
-            [
-                "items",
-                "loading",
-                "error",
-                "selectable",
-                "selectedKeys",
-                "loadingLabel",
-                "emptyLabel",
-                "errorLabel",
-            ],
-            ["onSelect"],
-        ),
-        ...rest,
-        ref: setRef,
-    });
+    return createElement(
+        "aui-list-view",
+        {
+            ...elementProps(
+                props,
+                [
+                    "items",
+                    "loading",
+                    "error",
+                    "selectable",
+                    "selectedKeys",
+                    "loadingLabel",
+                    "emptyLabel",
+                    "errorLabel",
+                    "permissionDenied",
+                    "permissionDeniedLabel",
+                    "retryable",
+                    "retryLabel",
+                ],
+                ["onSelect", "onRetry"],
+            ),
+            ...rest,
+            ref: setRef,
+        },
+        children,
+    );
 }
 
 export interface AdminFilterBuilderProps extends ElementProps {
@@ -1381,7 +1410,7 @@ export function AdminLogViewer(props: AdminLogViewerProps) {
         props.children,
     );
 }
-export interface AdminDataGridProps extends ElementProps {
+export interface AdminDataGridProps extends ElementProps, AdminAsyncStateProps {
     columns?: AdminDataGridColumn[];
     rows?: Array<Record<string, unknown> & { id?: string | number }>;
     loading?: boolean;
@@ -1393,6 +1422,7 @@ export interface AdminDataGridProps extends ElementProps {
     emptyLabel?: string;
     loadingLabel?: string;
     errorLabel?: string;
+    onRetry?: (detail: { source: string; reason: "error" | "permission-denied" }) => void;
     sortKey?: string;
     sortDirection?: AdminDataGridSortDirection;
     selectedKeys?: Array<string | number>;
@@ -1421,6 +1451,7 @@ export interface AdminDataGridProps extends ElementProps {
 }
 export function AdminDataGrid(props: AdminDataGridProps) {
     const {
+        children,
         columns,
         rows,
         loading,
@@ -1432,6 +1463,10 @@ export function AdminDataGrid(props: AdminDataGridProps) {
         emptyLabel,
         loadingLabel,
         errorLabel,
+        permissionDenied,
+        permissionDeniedLabel,
+        retryable,
+        retryLabel,
         sortKey,
         sortDirection,
         selectedKeys,
@@ -1449,6 +1484,7 @@ export function AdminDataGrid(props: AdminDataGridProps) {
         onSelectionChange,
         onBatchAction,
         onPageChange,
+        onRetry,
         ...rest
     } = props;
     const { setRef } = useBinding(
@@ -1465,6 +1501,10 @@ export function AdminDataGrid(props: AdminDataGridProps) {
             emptyLabel,
             loadingLabel,
             errorLabel,
+            permissionDenied,
+            permissionDeniedLabel,
+            retryable,
+            retryLabel,
             sortKey,
             sortDirection,
             selectedKeys,
@@ -1484,47 +1524,57 @@ export function AdminDataGrid(props: AdminDataGridProps) {
             "aui-selection-change": onSelectionChange,
             "aui-batch-action": onBatchAction,
             "aui-page-change": onPageChange,
+            "aui-retry": onRetry,
         },
     );
-    return createElement("aui-data-grid", {
-        ...elementProps(
-            props,
-            [
-                "columns",
-                "rows",
-                "loading",
-                "error",
-                "selectable",
-                "mobileCards",
-                "virtual",
-                "serverSide",
-                "emptyLabel",
-                "loadingLabel",
-                "errorLabel",
-                "sortKey",
-                "sortDirection",
-                "selectedKeys",
-                "filters",
-                "batchActions",
-                "page",
-                "pageSize",
-                "total",
-                "pageSizeOptions",
-                "rowHeight",
-                "virtualOverscan",
-                "rowKey",
-            ],
-            [
-                "onSortChange",
-                "onFilterChange",
-                "onSelectionChange",
-                "onBatchAction",
-                "onPageChange",
-            ],
-        ),
-        ...rest,
-        ref: setRef,
-    });
+    return createElement(
+        "aui-data-grid",
+        {
+            ...elementProps(
+                props,
+                [
+                    "columns",
+                    "rows",
+                    "loading",
+                    "error",
+                    "selectable",
+                    "mobileCards",
+                    "virtual",
+                    "serverSide",
+                    "emptyLabel",
+                    "loadingLabel",
+                    "errorLabel",
+                    "permissionDenied",
+                    "permissionDeniedLabel",
+                    "retryable",
+                    "retryLabel",
+                    "sortKey",
+                    "sortDirection",
+                    "selectedKeys",
+                    "filters",
+                    "batchActions",
+                    "page",
+                    "pageSize",
+                    "total",
+                    "pageSizeOptions",
+                    "rowHeight",
+                    "virtualOverscan",
+                    "rowKey",
+                ],
+                [
+                    "onSortChange",
+                    "onFilterChange",
+                    "onSelectionChange",
+                    "onBatchAction",
+                    "onPageChange",
+                    "onRetry",
+                ],
+            ),
+            ...rest,
+            ref: setRef,
+        },
+        children,
+    );
 }
 export interface AdminKanbanProps extends ElementProps {
     columns?: AdminKanbanColumn[];

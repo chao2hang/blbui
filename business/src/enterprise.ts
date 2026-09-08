@@ -349,11 +349,15 @@ export class AdminAuditLogElement extends AdminElement {
     entries: { attribute: false },
     loading: { type: Boolean, reflect: true },
     error: { type: Boolean, reflect: true },
+    permissionDenied: { type: Boolean, attribute: "permission-denied", reflect: true },
     query: { type: String },
     status: { type: String },
     emptyLabel: { type: String, attribute: "empty-label" },
     loadingLabel: { type: String, attribute: "loading-label" },
     errorLabel: { type: String, attribute: "error-label" },
+    permissionDeniedLabel: { type: String, attribute: "permission-denied-label" },
+    retryable: { type: Boolean, reflect: true },
+    retryLabel: { type: String, attribute: "retry-label" },
     hasMore: { type: Boolean, attribute: "has-more", reflect: true },
   };
 
@@ -375,19 +379,25 @@ export class AdminAuditLogElement extends AdminElement {
     .details { display: block; margin-top: 3px; color: var(--aui-text-muted); font-size: 10px; }
     .status { font-size: 10px; font-weight: 700; text-transform: uppercase; }
     .status-success { color: var(--aui-success); } .status-warning { color: var(--aui-warning); } .status-danger { color: var(--aui-danger); } .status-info { color: var(--aui-info); }
-    .state { min-height: 100px; display: grid; place-items: center; color: var(--aui-text-muted); }
+    .state { min-height: 100px; display: grid; place-items: center; gap: 8px; color: var(--aui-text-muted); }
     .error { color: var(--aui-danger); }
+    .permission { color: var(--aui-warning); }
+    .state button { padding: 5px 9px; border: 1px solid currentColor; border-radius: var(--aui-radius-sm); background: transparent; color: inherit; cursor: pointer; font: 700 10px/1 var(--aui-font-mono); text-transform: uppercase; }
     .more { display: flex; justify-content: center; padding-top: 10px; }
   `;
 
   entries: AdminAuditEntry[] = [];
   loading = false;
   error = false;
+  permissionDenied = false;
   query = "";
   status = "";
   emptyLabel = "NO AUDIT EVENTS";
   loadingLabel = "LOADING AUDIT EVENTS...";
   errorLabel = "FAILED TO LOAD AUDIT EVENTS";
+  permissionDeniedLabel = "PERMISSION DENIED";
+  retryable = true;
+  retryLabel = "RETRY";
   hasMore = false;
 
   private filter(event: Event): void {
@@ -402,6 +412,11 @@ export class AdminAuditLogElement extends AdminElement {
     this.dispatchDetail("aui-audit-load-more", { query: this.query, status: this.status });
   }
 
+  private retry(): void {
+    if (!this.retryable || this.loading) return;
+    this.dispatchDetail("aui-retry", { source: "audit-log", reason: this.permissionDenied ? "permission-denied" : "error" });
+  }
+
   render() {
     const query = this.query.trim().toLowerCase();
     const entries = this.entries.filter((entry) => {
@@ -411,9 +426,11 @@ export class AdminAuditLogElement extends AdminElement {
     });
     const content = this.loading
       ? html`<div class="state" role="status" aria-live="polite">${this.loadingLabel}</div>`
-      : this.error
-        ? html`<div class="state error" role="alert">${this.errorLabel}</div>`
-        : !entries.length
+      : this.permissionDenied
+        ? html`<div class="state permission" role="status">${this.permissionDeniedLabel}<div><slot name="permission"></slot></div></div>`
+        : this.error
+          ? html`<div class="state error" role="alert">${this.errorLabel}<div><slot name="retry"><button type="button" @click=${this.retry}>${this.retryLabel}</button></slot></div></div>`
+          : !entries.length
           ? html`<div class="state" role="status">${this.emptyLabel}</div>`
           : html`<table><thead><tr><th>TIME</th><th>ACTOR</th><th>ACTION</th><th>TARGET</th><th>STATUS</th></tr></thead><tbody>
               ${entries.map((entry) => html`<tr><td>${entry.time}</td><td><span class="actor">${entry.actor}</span></td><td>${entry.action}${entry.details ? html`<span class="details">${entry.details}</span>` : null}</td><td><span class="target">${entry.target}</span></td><td><span class=${`status status-${entry.status ?? "info"}`}>${entry.status ?? "info"}</span></td></tr>`)}

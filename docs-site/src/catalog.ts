@@ -526,7 +526,8 @@ export const catalog: CatalogItem[] = [
         "Table",
         "data",
         "Scrollable table frame with stable loading, error, and empty states.",
-        ["loading", "empty", "error", "loading-label", "empty-label", "error-label"],
+        ["loading", "empty", "error", "permission-denied", "loading-label", "empty-label", "error-label", "permission-denied-label", "retryable", "retry-label"],
+        ["aui-retry"],
     ),
     item(
         "data-grid",
@@ -534,7 +535,8 @@ export const catalog: CatalogItem[] = [
         "Data Grid",
         "data",
         "Configurable column/row grid for framework-neutral tabular data.",
-        ["columns", "rows", "loading", "empty-label"],
+        ["columns", "rows", "loading", "error", "permission-denied", "empty-label", "error-label", "permission-denied-label", "retryable", "retry-label"],
+        ["aui-retry"],
     ),
     item(
         "calendar",
@@ -865,8 +867,8 @@ catalog.push(
         "List View",
         "data",
         "Selectable operational list with loading, empty and error state contracts.",
-        ["items", "loading", "error", "selectable", "selected-keys"],
-        ["aui-list-view-select"],
+        ["items", "loading", "error", "permission-denied", "selectable", "selected-keys", "permission-denied-label", "retryable", "retry-label"],
+        ["aui-list-view-select", "aui-retry"],
     ),
     item(
         "filter-builder",
@@ -983,8 +985,8 @@ catalog.push(
         "Advanced Table",
         "business",
         "Selectable and sortable table for generic enterprise records.",
-        ["columns", "rows", "selectable", "loading"],
-        ["aui-selection-change", "aui-sort-change"],
+        ["columns", "rows", "selectable", "loading", "error", "permission-denied", "empty-label", "error-label", "permission-denied-label", "retryable", "retry-label"],
+        ["aui-selection-change", "aui-sort-change", "aui-retry"],
     ),
     item(
         "form-builder",
@@ -1095,8 +1097,8 @@ catalog.push(
         "Audit Log",
         "business",
         "Filterable operational audit stream with loading, error and load-more states.",
-        ["entries", "loading", "error", "query", "status", "has-more"],
-        ["aui-audit-filter-change", "aui-audit-load-more"],
+        ["entries", "loading", "error", "permission-denied", "query", "status", "has-more", "permission-denied-label", "retryable", "retry-label"],
+        ["aui-audit-filter-change", "aui-audit-load-more", "aui-retry"],
     ),
     item(
         "import-dialog",

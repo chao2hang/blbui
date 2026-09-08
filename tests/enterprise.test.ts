@@ -293,6 +293,20 @@ describe("enterprise workflow components", () => {
         expect(loadMore).toHaveBeenCalledWith({ query: "reject", status: "" });
     });
 
+    it("shares async permission and retry semantics with data components", async () => {
+        const audit = await element<AdminAuditLogElement>("aui-audit-log");
+        audit.error = true;
+        const retry = vi.fn();
+        audit.addEventListener("aui-retry", (event) => retry((event as CustomEvent).detail));
+        await audit.updateComplete;
+        audit.shadowRoot?.querySelector<HTMLButtonElement>(".state button")?.click();
+        expect(retry).toHaveBeenCalledWith({ source: "audit-log", reason: "error" });
+        audit.error = false;
+        audit.permissionDenied = true;
+        await audit.updateComplete;
+        expect(audit.shadowRoot?.querySelector('[role="status"]')?.textContent).toContain("PERMISSION DENIED");
+    });
+
     it("supports import preview, CSV export and guarded bulk actions", async () => {
         const importer = await element<AdminImportDialogElement>("aui-import-dialog");
         importer.open = true;

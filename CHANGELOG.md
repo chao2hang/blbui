@@ -6,6 +6,13 @@
 - 记录 Obsidian 深色窄屏场景在 fixed runner 上的实际高度与 SVG 绘制基线，golden 按 profile 分离维护。
 - 视觉矩阵继续作为 2 个平台 × 432 张 PNG 的发布前证据，新增基准须经过人工复核后再提交。
 
+## 0.0.17 — 2026-09-09
+
+- 统一 Core Table/DataGrid/ListView 与 Business AdvancedTable/AuditLog 的 permission denied、retry 事件和 retry/permission 插槽契约，并同步 React、Vue、Svelte 消费方式。
+- 新增 Business AdvancedTable 的 React、Vue、Svelte、Web Components 跨框架 parity fixture 与真实浏览器选择事件门禁。
+- 新增 release preflight：版本一致性、CHANGELOG、tag 命名和正式发布时的 npm 版本占用检查；发布 workflow 支持 token 与 npm Trusted Publishing/OIDC 路径。
+- 完成文档路线图状态修正、异步状态迁移文档和本轮主题/窄屏人工视觉抽查。
+
 ## 0.0.16 — 2026-09-08
 
 - 固定移动端 SchemaForm 的输入和 Select 控件尺寸、字段间距与文本行高，降低跨浏览器布局漂移。

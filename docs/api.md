@@ -62,8 +62,8 @@ The catalog currently describes **123 components** across Core and Business pack
 | Confirm Dialog | `aui-confirm-dialog` | overlay | `open`, `title`, `description`, `danger`, `loading` | `aui-confirm`, `aui-cancel` |
 | Drawer | `aui-drawer` | overlay | `open`, `title`, `side`, `width` | `aui-close` |
 | Data List | `aui-data-list` | data | `items` | — |
-| Table | `aui-table` | data | `loading`, `empty`, `error`, `loading-label`, `empty-label`, `error-label` | — |
-| Data Grid | `aui-data-grid` | data | `columns`, `rows`, `loading`, `empty-label` | — |
+| Table | `aui-table` | data | `loading`, `empty`, `error`, `permission-denied`, `loading-label`, `empty-label`, `error-label`, `permission-denied-label`, `retryable`, `retry-label` | `aui-retry` |
+| Data Grid | `aui-data-grid` | data | `columns`, `rows`, `loading`, `error`, `permission-denied`, `empty-label`, `error-label`, `permission-denied-label`, `retryable`, `retry-label` | `aui-retry` |
 | Date Input | `aui-calendar` | data | `value`, `min`, `max`, `label` | `aui-date-change` |
 | Calendar Grid | `aui-calendar-grid` | data | `month`, `year`, `selected` | `aui-date-change` |
 | Date Range | `aui-date-range` | data | `presets`, `start`, `end`, `start-label`, `end-label`, `min`, `max`, `preset-label`, `clearable`, `required`, `disabled` | `aui-range-change`, `aui-range-validation`, `aui-range-preset` |
@@ -100,7 +100,7 @@ The catalog currently describes **123 components** across Core and Business pack
 | Upload List | `aui-upload-list` | forms | `files`, `removable`, `retryable`, `previewable`, `compact`, `disabled`, `empty-label` | `aui-upload-change`, `aui-upload-remove`, `aui-upload-retry`, `aui-upload-preview` |
 | File Preview | `aui-file-preview` | data | `file`, `open`, `title`, `close-label`, `download-label`, `downloadable` | `aui-file-preview-close`, `aui-file-download` |
 | Tree Table | `aui-tree-table` | data | `columns`, `nodes`, `expanded`, `selected`, `selectable`, `empty-label` | `aui-tree-table-toggle`, `aui-tree-table-select` |
-| List View | `aui-list-view` | data | `items`, `loading`, `error`, `selectable`, `selected-keys` | `aui-list-view-select` |
+| List View | `aui-list-view` | data | `items`, `loading`, `error`, `permission-denied`, `selectable`, `selected-keys`, `permission-denied-label`, `retryable`, `retry-label` | `aui-list-view-select`, `aui-retry` |
 | Filter Builder | `aui-filter-builder` | forms | `fields`, `filters`, `max-rules`, `max-depth`, `add-label`, `add-group-label`, `clear-label`, `apply-label` | `aui-filter-builder-change`, `aui-filter-builder-submit` |
 | Query Builder | `aui-query-builder` | forms | `fields`, `rules`, `logic`, `max-depth`, `apply-label` | `aui-query-change`, `aui-query-submit` |
 | Form | `aui-form` | forms | `layout`, `loading`, `submit-label`, `reset-label`, `show-actions`, `no-validate` | `aui-submit`, `aui-invalid`, `aui-reset` |
@@ -112,7 +112,7 @@ The catalog currently describes **123 components** across Core and Business pack
 | Column Settings | `aui-column-settings` | data | `columns`, `visible-keys`, `open`, `title`, `close-label` | `aui-column-settings-change`, `aui-open-change` |
 | CRUD Page | `aui-crud-page` | business | `title`, `description`, `loading` | — |
 | CRUD Toolbar | `aui-crud-toolbar` | business | `selected`, `search-placeholder`, `loading` | `aui-search`, `aui-refresh` |
-| Advanced Table | `aui-advanced-table` | business | `columns`, `rows`, `selectable`, `loading` | `aui-selection-change`, `aui-sort-change` |
+| Advanced Table | `aui-advanced-table` | business | `columns`, `rows`, `selectable`, `loading`, `error`, `permission-denied`, `empty-label`, `error-label`, `permission-denied-label`, `retryable`, `retry-label` | `aui-selection-change`, `aui-sort-change`, `aui-retry` |
 | Form Builder | `aui-form-builder` | business | `fields`, `submit-label`, `loading` | `aui-form-change`, `aui-form-submit` |
 | Approval Timeline | `aui-approval-timeline` | business | `items`, `active` | — |
 | Metric Card | `aui-metric-card` | business | `label`, `value`, `unit`, `trend`, `tone` | — |
@@ -125,7 +125,7 @@ The catalog currently describes **123 components** across Core and Business pack
 | Sparkline | `aui-sparkline` | business | `values`, `label`, `color` | — |
 | Form Wizard | `aui-form-wizard` | business | `steps`, `active`, `completed`, `linear`, `next-label`, `previous-label`, `finish-label` | `aui-wizard-before-change`, `aui-wizard-change`, `aui-wizard-complete` |
 | Permission Matrix | `aui-permission-matrix` | business | `roles`, `resources`, `permissions`, `read-only`, `empty-label` | `aui-permission-change` |
-| Audit Log | `aui-audit-log` | business | `entries`, `loading`, `error`, `query`, `status`, `has-more` | `aui-audit-filter-change`, `aui-audit-load-more` |
+| Audit Log | `aui-audit-log` | business | `entries`, `loading`, `error`, `permission-denied`, `query`, `status`, `has-more`, `permission-denied-label`, `retryable`, `retry-label` | `aui-audit-filter-change`, `aui-audit-load-more`, `aui-retry` |
 | Import Dialog | `aui-import-dialog` | business | `open`, `title`, `accept`, `max-size`, `loading`, `rows`, `error` | `aui-import-parse`, `aui-import-submit`, `aui-import-cancel` |
 | Export Button | `aui-export-button` | business | `data`, `format`, `filename`, `label`, `disabled`, `loading` | `aui-export` |
 | Bulk Actions Toolbar | `aui-bulk-actions-toolbar` | business | `selected`, `actions`, `loading`, `clear-label` | `aui-bulk-action`, `aui-bulk-clear` |

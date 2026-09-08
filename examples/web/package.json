@@ -7,7 +7,8 @@
     "build": "tsc --noEmit && vite build"
   },
   "dependencies": {
-    "@chaos_team/blbui-core": "workspace:*"
+    "@chaos_team/blbui-core": "workspace:*",
+    "@chaos_team/blbui-business": "workspace:*"
   },
   "devDependencies": {
     "typescript": ">=5.7.0",

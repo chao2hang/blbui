@@ -24,11 +24,13 @@
 触发方式：
 
 ```bash
-git tag blbui-v0.0.16
-git push origin blbui-v0.0.16
+git tag blbui-v0.0.17
+git push origin blbui-v0.0.17
 ```
 
 或者在 GitHub Actions 中手动执行 `Publish BLBUI packages`。
+
+手动执行时选择 `dry_run=true` 只完成完整校验、构建和 pack，不会发布；正式发布时选择 `dry_run=false`，并选择 `token` 或已在 npm 为六个包配置完成的 `oidc` Trusted Publishing。tag 触发会强制校验 tag 必须为 `blbui-v<package version>`。
 
 ## NPM_TOKEN 方式
 
@@ -74,6 +76,7 @@ bun run typecheck
 bun run check:svelte
 bun run docs:check
 bun run build:packages
+bun run release:preflight
 
 npm pack --dry-run --prefix core
 npm pack --dry-run --prefix react
@@ -83,6 +86,12 @@ npm pack --dry-run --prefix business
 npm pack --dry-run --prefix business-react
 ```
 
+正式发布前的 npm 占用检查由 workflow 在发布 job 中执行：
+
+```bash
+BLBUI_CHECK_NPM=1 bun run release:preflight
+```
+
 ## 当前版本
 
-当前 package version 是 `0.0.16`。已经发布后不能重复发布同一个版本，需要先统一修改 workspace package 的 version，再创建新的 tag；每次版本同时更新 CHANGELOG、文档站版本标识和 peer dependency 范围。
+当前 package version 是 `0.0.17`。已经发布后不能重复发布同一个版本，需要先统一修改 workspace package 的 version，再创建新的 tag；每次版本同时更新 CHANGELOG、文档站版本标识和 peer dependency 范围。

@@ -7,8 +7,9 @@
     "build": "vue-tsc --noEmit && vite build"
   },
   "dependencies": {
-    "@chaos_team/blbui-core": "^0.0.16",
-    "@chaos_team/blbui-vue": "^0.0.16",
+    "@chaos_team/blbui-core": "^0.0.17",
+    "@chaos_team/blbui-vue": "^0.0.17",
+    "@chaos_team/blbui-business": "^0.0.17",
     "vue": "^3.5.0"
   },
   "devDependencies": {

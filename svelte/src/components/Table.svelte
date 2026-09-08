@@ -13,6 +13,11 @@ it under the terms of the GNU Affero General Public License.
   export let loadingLabel = 'Loading...'
   export let emptyLabel = 'No data available.'
   export let errorLabel = 'Failed to load data.'
+  export let permissionDenied = false
+  export let permissionDeniedLabel = 'You do not have permission to view this data.'
+  export let retryable = true
+  export let retryLabel = 'Retry'
+  export let onRetry: ((detail: { source: string; reason: 'error' | 'permission-denied' }) => void) | undefined = undefined
   let element: (HTMLElement & Record<string, unknown>) | undefined
   onMount(() => registerAdminElements())
   $: if (element) {
@@ -22,7 +27,16 @@ it under the terms of the GNU Affero General Public License.
     element.loadingLabel = loadingLabel
     element.emptyLabel = emptyLabel
     element.errorLabel = errorLabel
+    element.permissionDenied = permissionDenied
+    element.permissionDeniedLabel = permissionDeniedLabel
+    element.retryable = retryable
+    element.retryLabel = retryLabel
   }
+  onMount(() => {
+    const handler = (event: Event) => onRetry?.((event as CustomEvent).detail)
+    element?.addEventListener('aui-retry', handler)
+    return () => element?.removeEventListener('aui-retry', handler)
+  })
 </script>
 
-<aui-table bind:this={element}><slot /></aui-table>
+<aui-table bind:this={element}><slot /><span slot="retry"><slot name="retry" /></span><span slot="permission"><slot name="permission" /></span></aui-table>

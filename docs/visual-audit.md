@@ -3,12 +3,19 @@
 ## 本次验收
 
 - 日期：2026-09-08
-- 版本：0.0.16
+- 版本：0.0.17
 - 入口：http://127.0.0.1:4176/
 - 浏览器：Codex In-app Browser
 - 视口：桌面约 1280 × 720（页面有效宽度 1265px）；窄屏 390 × 844（页面有效宽度 375px）
 - 组件目录：123 个组件卡片，8 个分类
 - 主题矩阵：9 套主题 × light/dark = 18 个组合
+
+## 0.0.17 异步状态与 Business parity 复核
+
+- 日期：2026-09-09；入口：docs-site 本地 playground；浏览器：Codex In-app Browser。
+- 人工检查 Table/DataGrid/ListView/AdvancedTable/AuditLog 的 loading、empty、error、permission denied、retry 按钮、焦点环与具名插槽契约；默认 token、边框和状态色随主题切换正常。
+- 人工检查 Business AdvancedTable 在 React、Vue、Svelte、Web Components playground 的表格宽度、选择控件、窄屏横向滚动和事件反馈；未发现页面级横向溢出或主题覆盖缺口。
+- 自动化补充：四套真实浏览器 parity 均通过，Business 行选择 detail 在四个平台均为统一 `keys` 语义；本轮未改动既有 golden，待固定 runner CI 复核后再按规则提升基准。
 
 ## 结果
 

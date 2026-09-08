@@ -19,6 +19,8 @@ try {
     fixture.contractVersion !== 2 ||
     !fixture.tabs?.length ||
     !fixture.rows?.length ||
+    !fixture.business?.columns?.length ||
+    !fixture.business?.rows?.length ||
     !fixture.parityContract?.dialogModel ||
     !fixture.parityContract?.controlledState ||
     assertions?.initialPage !== 1 ||
@@ -53,8 +55,14 @@ for (const [framework, files] of Object.entries(required)) {
   const sourceFiles = files.filter((file) => file.startsWith("src/"));
   const source = (await Promise.all(sourceFiles.map((file) => readFile(join(directory, file), "utf8")))).join("\n");
   const frameworkChecks = framework === "web"
-    ? ["registerAdminElements", "setAdminTheme", "aui-data-grid", "grid.rows", "aui-input"]
+    ? ["registerAdminElements", "registerBusinessElements", "setAdminTheme", "aui-data-grid", "aui-advanced-table", "grid.rows", "aui-input"]
     : checks.flat();
+  const businessMarkers = framework === "react"
+    ? ["@chaos_team/blbui-business-react", "AdminAdvancedTable", "business", "data-parity-business-selection"]
+    : ["registerBusinessElements", "business", "aui-advanced-table", "data-parity-business-selection"];
+  for (const marker of businessMarkers) {
+    if (!source.includes(marker)) errors.push(`${framework}: Business parity is missing ${marker}`);
+  }
   for (const marker of frameworkChecks) if (!source.includes(marker)) errors.push(`${framework}: missing ${marker}`);
   if (framework === "web") {
     const packageJson = JSON.parse(await readFile(join(directory, "package.json"), "utf8"));

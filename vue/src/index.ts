@@ -492,9 +492,24 @@ export const AdminFilterBar = defineComponent({
     },
 });
 
-export const AdminTable = defineComponent({
+export const AdminTable = adminElement({
     name: "AdminTable",
-    inheritAttrs: false,
+    tag: "aui-table",
+    properties: [
+        "loading",
+        "empty",
+        "error",
+        "loadingLabel",
+        "emptyLabel",
+        "errorLabel",
+        "permissionDenied",
+        "permissionDeniedLabel",
+        "retryable",
+        "retryLabel",
+    ],
+    events: [{ name: "aui-retry", emit: "retry" }],
+    slots: ["retry", "permission"],
+    emits: ["retry"],
     props: {
         loading: Boolean,
         empty: Boolean,
@@ -502,24 +517,10 @@ export const AdminTable = defineComponent({
         loadingLabel: String,
         emptyLabel: String,
         errorLabel: String,
-    },
-    setup(props, context) {
-        return setupVueAdminComponent(
-            {
-                tag: "aui-table",
-                properties: [
-                    "loading",
-                    "empty",
-                    "error",
-                    "loadingLabel",
-                    "emptyLabel",
-                    "errorLabel",
-                ],
-            },
-            props,
-            context,
-            {},
-        );
+        permissionDenied: Boolean,
+        permissionDeniedLabel: String,
+        retryable: { type: Boolean, default: true },
+        retryLabel: String,
     },
 });
 
@@ -1276,6 +1277,10 @@ export const AdminDataGrid = adminElement({
         "emptyLabel",
         "loadingLabel",
         "errorLabel",
+        "permissionDenied",
+        "permissionDeniedLabel",
+        "retryable",
+        "retryLabel",
         "sortKey",
         "sortDirection",
         "selectedKeys",
@@ -1295,8 +1300,17 @@ export const AdminDataGrid = adminElement({
         { name: "aui-selection-change", emit: "selection-change" },
         { name: "aui-batch-action", emit: "batch-action" },
         { name: "aui-page-change", emit: "page-change" },
+        { name: "aui-retry", emit: "retry" },
     ],
-    emits: ["sort-change", "filter-change", "selection-change", "batch-action", "page-change"],
+    slots: ["retry", "permission"],
+    emits: [
+        "sort-change",
+        "filter-change",
+        "selection-change",
+        "batch-action",
+        "page-change",
+        "retry",
+    ],
     props: {
         columns: objectArray,
         rows: objectArray,
@@ -1309,6 +1323,10 @@ export const AdminDataGrid = adminElement({
         emptyLabel: String,
         loadingLabel: String,
         errorLabel: String,
+        permissionDenied: Boolean,
+        permissionDeniedLabel: String,
+        retryable: { type: Boolean, default: true },
+        retryLabel: String,
         sortKey: String,
         sortDirection: String,
         selectedKeys: objectArray,
@@ -1362,9 +1380,17 @@ export const AdminListView = adminElement({
         "loadingLabel",
         "emptyLabel",
         "errorLabel",
+        "permissionDenied",
+        "permissionDeniedLabel",
+        "retryable",
+        "retryLabel",
     ],
-    events: [{ name: "aui-list-view-select", emit: "select" }],
-    emits: ["select"],
+    events: [
+        { name: "aui-list-view-select", emit: "select" },
+        { name: "aui-retry", emit: "retry" },
+    ],
+    slots: ["retry", "permission"],
+    emits: ["select", "retry"],
     props: {
         items: objectArray,
         loading: Boolean,
@@ -1374,6 +1400,10 @@ export const AdminListView = adminElement({
         loadingLabel: String,
         emptyLabel: String,
         errorLabel: String,
+        permissionDenied: Boolean,
+        permissionDeniedLabel: String,
+        retryable: { type: Boolean, default: true },
+        retryLabel: String,
     },
 });
 

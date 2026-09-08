@@ -7,6 +7,7 @@ it under the terms of the GNU Affero General Public License.
 /// <reference path="./custom-elements.d.ts" />
 
 export * from "./base";
+export * from "./async-state";
 export * from "./button";
 export * from "./card";
 export * from "./data";

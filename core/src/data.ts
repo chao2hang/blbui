@@ -12,9 +12,13 @@ export class AdminTableElement extends AdminElement {
         loading: { type: Boolean, reflect: true },
         empty: { type: Boolean, reflect: true },
         error: { type: Boolean, reflect: true },
+        permissionDenied: { type: Boolean, attribute: "permission-denied", reflect: true },
         loadingLabel: { type: String, attribute: "loading-label" },
         emptyLabel: { type: String, attribute: "empty-label" },
         errorLabel: { type: String, attribute: "error-label" },
+        permissionDeniedLabel: { type: String, attribute: "permission-denied-label" },
+        retryable: { type: Boolean, reflect: true },
+        retryLabel: { type: String, attribute: "retry-label" },
     };
 
     static styles = css`
@@ -32,12 +36,14 @@ export class AdminTableElement extends AdminElement {
         }
         :host([loading]) .scroll,
         :host([empty]) .scroll,
-        :host([error]) .scroll {
+        :host([error]) .scroll,
+        :host([permission-denied]) .scroll {
             min-height: var(--aui-table-state-min-height, 96px);
         }
         :host([loading]) .scroll,
         :host([empty]) .scroll,
-        :host([error]) .scroll {
+        :host([error]) .scroll,
+        :host([permission-denied]) .scroll {
             visibility: hidden;
         }
         .state {
@@ -57,11 +63,41 @@ export class AdminTableElement extends AdminElement {
         }
         :host([loading]) .empty-state,
         :host([loading]) .error-state,
-        :host([error]) .empty-state {
+        :host([loading]) .permission-state,
+        :host([error]) .empty-state,
+        :host([error]) .permission-state,
+        :host([empty]) .permission-state,
+        :host([permission-denied]) .empty-state,
+        :host([permission-denied]) .error-state,
+        :host([permission-denied]) .loading-state {
             display: none;
         }
         .error-state {
             color: var(--aui-danger);
+        }
+        .permission-state {
+            color: var(--aui-warning);
+        }
+        .state-actions {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .retry {
+            min-height: 28px;
+            padding: 5px 9px;
+            border: 1px solid currentColor;
+            border-radius: var(--aui-radius-sm);
+            background: transparent;
+            color: inherit;
+            cursor: pointer;
+            font: 700 10px/1 var(--aui-font-mono);
+            text-transform: uppercase;
+        }
+        .retry:focus-visible {
+            outline: none;
+            box-shadow: var(--aui-focus-ring);
         }
         .loading-state {
             gap: 8px;
@@ -113,9 +149,21 @@ export class AdminTableElement extends AdminElement {
     loading = false;
     empty = false;
     error = false;
+    permissionDenied = false;
     loadingLabel = "Loading...";
     emptyLabel = "No data available.";
     errorLabel = "Failed to load data.";
+    permissionDeniedLabel = "You do not have permission to view this data.";
+    retryable = true;
+    retryLabel = "Retry";
+
+    private retry(): void {
+        if (!this.retryable || this.loading) return;
+        this.dispatchDetail("aui-retry", {
+            source: "table",
+            reason: this.permissionDenied ? "permission-denied" : "error",
+        });
+    }
 
     render() {
         return html`<div class="frame">
@@ -124,7 +172,20 @@ export class AdminTableElement extends AdminElement {
                 <span class="spinner" aria-hidden="true"><i></i><i></i><i></i></span
                 ><span>${this.loadingLabel}</span>
             </div>
-            <div class="state error-state" role="alert">${this.errorLabel}</div>
+            <div class="state error-state" role="alert">
+                <span>${this.errorLabel}</span>
+                <div class="state-actions">
+                    <slot name="retry"
+                        ><button class="retry" type="button" @click=${this.retry}>
+                            ${this.retryLabel}
+                        </button></slot
+                    >
+                </div>
+            </div>
+            <div class="state permission-state" role="status">
+                <span>${this.permissionDeniedLabel}</span>
+                <div class="state-actions"><slot name="permission"></slot></div>
+            </div>
             <div class="state empty-state" role="status">${this.emptyLabel}</div>
         </div>`;
     }

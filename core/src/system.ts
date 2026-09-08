@@ -429,6 +429,7 @@ export class AdminDataGridElement extends AdminElement {
         rows: { attribute: false },
         loading: { type: Boolean, reflect: true },
         error: { type: Boolean, reflect: true },
+        permissionDenied: { type: Boolean, attribute: "permission-denied", reflect: true },
         selectable: { type: Boolean, reflect: true },
         mobileCards: { type: Boolean, attribute: "mobile-cards", reflect: true },
         virtual: { type: Boolean, reflect: true },
@@ -436,6 +437,9 @@ export class AdminDataGridElement extends AdminElement {
         emptyLabel: { type: String, attribute: "empty-label" },
         loadingLabel: { type: String, attribute: "loading-label" },
         errorLabel: { type: String, attribute: "error-label" },
+        permissionDeniedLabel: { type: String, attribute: "permission-denied-label" },
+        retryable: { type: Boolean, reflect: true },
+        retryLabel: { type: String, attribute: "retry-label" },
         sortKey: { type: String, attribute: "sort-key" },
         sortDirection: { type: String, attribute: "sort-direction" },
         selectedKeys: { attribute: false },
@@ -626,6 +630,34 @@ export class AdminDataGridElement extends AdminElement {
         .error-state {
             color: var(--aui-danger);
         }
+        .permission-state {
+            min-height: var(--aui-table-state-min-height, 96px);
+            display: grid;
+            place-items: center;
+            gap: 8px;
+            color: var(--aui-warning);
+            text-align: center;
+        }
+        .state-actions {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+        .retry {
+            min-height: 28px;
+            padding: 5px 9px;
+            border: 1px solid currentColor;
+            border-radius: var(--aui-radius-sm);
+            background: transparent;
+            color: inherit;
+            cursor: pointer;
+            font: 700 10px/1 var(--aui-font-mono);
+            text-transform: uppercase;
+        }
+        .retry:focus-visible {
+            outline: none;
+            box-shadow: var(--aui-focus-ring);
+        }
         .cards {
             display: none;
             gap: 8px;
@@ -691,6 +723,7 @@ export class AdminDataGridElement extends AdminElement {
     rows: AdminDataGridRow[] = [];
     loading = false;
     error = false;
+    permissionDenied = false;
     selectable = false;
     mobileCards = true;
     virtual = false;
@@ -698,6 +731,17 @@ export class AdminDataGridElement extends AdminElement {
     emptyLabel = "NO DATA AVAILABLE";
     loadingLabel = "LOADING...";
     errorLabel = "FAILED TO LOAD DATA";
+    permissionDeniedLabel = "PERMISSION DENIED";
+    retryable = true;
+    retryLabel = "RETRY";
+
+    private retry(): void {
+        if (!this.retryable || this.loading) return;
+        this.dispatchDetail("aui-retry", {
+            source: "data-grid",
+            reason: this.permissionDenied ? "permission-denied" : "error",
+        });
+    }
     sortKey = "";
     sortDirection: AdminDataGridSortDirection = "asc";
     selectedKeys: Array<string | number> = [];
@@ -1052,18 +1096,32 @@ export class AdminDataGridElement extends AdminElement {
         const hasRows = rows.length > 0 || (this.serverSide && this.total > 0);
         const content = this.loading
             ? html`<div class="state" role="status" aria-live="polite">${this.loadingLabel}</div>`
-            : this.error
-              ? html`<div class="state error-state" role="alert">${this.errorLabel}</div>`
-              : !hasRows
-                ? html`<div class="state" role="status">${this.emptyLabel}</div>`
-                : html`<div
-                          class="scroll"
-                          data-virtual=${this.virtual ? "true" : "false"}
-                          @scroll=${this.onScroll}
-                      >
-                          ${this.renderTable(rows, columns)}
+            : this.permissionDenied
+              ? html`<div class="state permission-state" role="status">
+                    <span>${this.permissionDeniedLabel}</span>
+                    <div class="state-actions"><slot name="permission"></slot></div>
+                </div>`
+              : this.error
+                ? html`<div class="state error-state" role="alert">
+                      <span>${this.errorLabel}</span>
+                      <div class="state-actions">
+                          <slot name="retry"
+                              ><button class="retry" type="button" @click=${this.retry}>
+                                  ${this.retryLabel}
+                              </button></slot
+                          >
                       </div>
-                      ${this.mobileCards && !this.virtual ? this.renderCards(rows, columns) : null}`;
+                  </div>`
+                : !hasRows
+                  ? html`<div class="state" role="status">${this.emptyLabel}</div>`
+                  : html`<div
+                            class="scroll"
+                            data-virtual=${this.virtual ? "true" : "false"}
+                            @scroll=${this.onScroll}
+                        >
+                            ${this.renderTable(rows, columns)}
+                        </div>
+                        ${this.mobileCards && !this.virtual ? this.renderCards(rows, columns) : null}`;
         const selectedCount = this.selectedKeys.length;
         return html`<div class="frame" aria-busy=${this.loading ? "true" : "false"}>
             ${

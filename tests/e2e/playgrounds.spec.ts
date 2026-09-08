@@ -39,6 +39,9 @@ for (const playground of frameworkPlaygrounds) {
 
         await page.getByRole("button", { name: "NEXT" }).click();
         await expect(root).toHaveAttribute("data-parity-page", "2");
+        await expect(page.locator("#business-table")).toContainText("Gateway");
+        await page.locator("#business-table").getByRole("checkbox", { name: /Select row/ }).first().check();
+        await expect(page.locator("[data-parity-business-selection]")).toHaveAttribute("data-parity-business-selection", "1");
         expect(pageErrors).toEqual([]);
     });
 }
@@ -53,5 +56,8 @@ test("Web Components playground updates a DataGrid through DOM properties and ev
     await page.getByRole("textbox", { name: "Filter services" }).fill("edge");
     await expect(page.locator("aui-data-grid")).toContainText("Gateway / Edge");
     await expect(page.locator("aui-data-grid")).not.toContainText("Gateway / Production");
+    await expect(page.locator("#business-table")).toContainText("Gateway");
+    await page.locator("#business-table").getByRole("checkbox", { name: /Select row/ }).first().check();
+    await expect(page.locator("[data-parity-business-selection]")).toHaveAttribute("data-parity-business-selection", "1");
     expect(pageErrors).toEqual([]);
 });

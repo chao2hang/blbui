@@ -11,7 +11,12 @@ import {
     AdminTabs,
     AdminToastManager,
 } from "@chaos_team/blbui-react";
+import { AdminAdvancedTable } from "@chaos_team/blbui-business-react";
+import { registerBusinessElements } from "@chaos_team/blbui-business/register";
 import "@chaos_team/blbui-core/styles.css";
+import "@chaos_team/blbui-business/styles.css";
+
+registerBusinessElements();
 
 function App() {
     const contract = fixture.parityContract.assertions;
@@ -46,6 +51,16 @@ function App() {
                         <tbody>{visibleRows.map((row) => <tr key={row.id}><td>{row.id}</td><td>{row.status}</td><td>{row.region}</td><td>{query || "—"}</td></tr>)}</tbody>
                     </table>
                 </AdminTable>
+                <AdminAdvancedTable
+                    id="business-table"
+                    columns={fixture.business.columns}
+                    rows={fixture.business.rows}
+                    selectable
+                    onSelectionChange={(keys) => {
+                        document.querySelector("[data-parity-business-selection]")?.setAttribute("data-parity-business-selection", String(keys.length));
+                    }}
+                />
+                <output data-parity-business-selection="0">Business selection: 0</output>
                 <AdminPagination page={page} totalPages={contract.totalPages} onPageChange={setPage} />
                 <AdminToastManager items={toasts} onChange={setToasts} />
                 <AdminDialog open={open} title="Create channel" onOpenChange={setOpen}>

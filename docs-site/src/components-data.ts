@@ -1033,8 +1033,8 @@ export const components: ComponentItem[] = [
         description:
             "Data-first tabular layout with horizontally scrollable frame and stable states.",
         status: "stable",
-        props: ["loading", "empty", "loading-label", "empty-label"],
-        events: [],
+        props: ["loading", "empty", "error", "permission-denied", "loading-label", "empty-label", "error-label", "permission-denied-label", "retryable", "retry-label"],
+        events: ["aui-retry"],
         previewHtml: `<div style="width:100%;"><aui-table><table><thead><tr><th>GATEWAY</th><th>STATUS</th><th>LATENCY</th></tr></thead><tbody><tr><td>US-EAST</td><td><aui-status-tag status="success">ONLINE</aui-status-tag></td><td>18ms</td></tr><tr><td>EU-CENTRAL</td><td><aui-status-tag status="success">ONLINE</aui-status-tag></td><td>32ms</td></tr></tbody></table></aui-table></div>`,
         usage: {
             wc: `<aui-table>\n  <table>\n    <thead><tr><th>NAME</th><th>STATUS</th></tr></thead>\n    <tbody><tr><td>Route A</td><td>OK</td></tr></tbody>\n  </table>\n</aui-table>`,
@@ -1050,8 +1050,8 @@ export const components: ComponentItem[] = [
         category: "data",
         description: "Virtualized tabular matrix with sorting, selection and column sizing.",
         status: "stable",
-        props: ["columns", "rows", "loading", "empty-label"],
-        events: ["aui-sort", "aui-select"],
+        props: ["columns", "rows", "loading", "error", "permission-denied", "empty-label", "error-label", "permission-denied-label", "retryable", "retry-label"],
+        events: ["aui-sort-change", "aui-selection-change", "aui-retry"],
         initKey: "data-grid",
         previewHtml: `<div style="width:100%;"><aui-data-grid id="preview-data-grid"></aui-data-grid></div>`,
         usage: {
@@ -1883,8 +1883,8 @@ export const components: ComponentItem[] = [
         description:
             "Enterprise table with built-in selection, column sorters, pagination and actions.",
         status: "stable",
-        props: ["columns", "rows", "selectable", "loading"],
-        events: ["aui-select-row", "aui-sort"],
+        props: ["columns", "rows", "selectable", "loading", "error", "permission-denied", "empty-label", "error-label", "permission-denied-label", "retryable", "retry-label"],
+        events: ["aui-selection-change", "aui-sort-change", "aui-retry"],
         initKey: "advanced-table",
         previewHtml: `<div style="width:100%;"><aui-advanced-table id="preview-advanced-table" selectable></aui-advanced-table></div>`,
         usage: {
@@ -2102,8 +2102,8 @@ export const components: ComponentItem[] = [
         category: "data",
         description: "Selectable operational list with loading, empty and error state contracts.",
         status: "stable",
-        props: ["items", "loading", "error", "selectable", "selected-keys"],
-        events: ["aui-list-view-select"],
+        props: ["items", "loading", "error", "permission-denied", "selectable", "selected-keys", "permission-denied-label", "retryable", "retry-label"],
+        events: ["aui-list-view-select", "aui-retry"],
         initKey: "list-view",
         previewHtml: `<div style="width:100%;max-width:360px;"><aui-list-view id="preview-list-view"></aui-list-view></div>`,
         usage: {
@@ -2211,8 +2211,8 @@ export const components: ComponentItem[] = [
         description:
             "Filterable operational audit stream with loading, error and load-more states.",
         status: "stable",
-        props: ["entries", "loading", "error", "query", "status", "has-more"],
-        events: ["aui-audit-filter-change", "aui-audit-load-more"],
+        props: ["entries", "loading", "error", "permission-denied", "query", "status", "has-more", "permission-denied-label", "retryable", "retry-label"],
+        events: ["aui-audit-filter-change", "aui-audit-load-more", "aui-retry"],
         initKey: "audit-log",
         previewHtml: `<div style="width:100%;"><aui-audit-log id="preview-audit-log"></aui-audit-log></div>`,
         usage: {
@@ -2451,7 +2451,7 @@ export function initComponentDemo(root: HTMLElement): void {
     setProp("#preview-descriptions", "items", [
         { label: "REGION", value: "us-east-1", description: "Primary" },
         { label: "STATUS", value: "ONLINE" },
-        { label: "VERSION", value: "v0.0.16" },
+        { label: "VERSION", value: "v0.0.17" },
         { label: "OWNER", value: "Platform Ops" },
     ]);
     setProp("#preview-accordion", "items", [

@@ -14,7 +14,7 @@
 
 ### P0：语义 Token 与主题合同
 
-0.0.16 已在 0.0.15 基础上继续收紧：
+0.0.17 已在 0.0.16 基础上继续收紧：
 
 - 固化 surface、text、border、focus、status、overlay、shadow、radius、motion、form color-scheme 等 token。
 - 9 套主题均维护 light/dark 两套值；新增主题必须提供同一份 token 清单。
@@ -55,7 +55,7 @@
 - [x] Business 图表补充 `normalizeChartSeries`、`getChartDomain`、`fromChartData` contract，兼容常见 `{label, value}` / `{x, y}` 数据与 null telemetry gaps；Recharts/VChart 仍为可选集成。
 - CRUD、导入导出、批量操作、权限矩阵、审计日志继续放在 Business 包。
 - 图表、富文本、代码编辑器、文件管理以 peer dependency 或 adapter 方式接入。
-- 为异步业务组件统一 loading、empty、error、permission denied 和 retry 插槽。
+- [x] 为异步业务组件统一 loading、empty、error、permission denied、`aui-retry` 事件和 retry/permission 插槽；覆盖 Core Table/DataGrid/ListView 与 Business AdvancedTable/AuditLog，并同步 React/Vue/Svelte 绑定。
 
 ### P4：SSR、无障碍与性能
 
@@ -87,7 +87,7 @@
 | 框架 | Web Components、React、Vue、Svelte 的属性与事件行为一致                     |
 | 文档 | catalog 条目、预览、props/events、四框架 usage、截图和已知限制              |
 
-## 当前组件缺口（0.0.16 后）
+## 当前组件缺口（0.0.17 后）
 
 短期缺口集中在可复用的复杂交互，而不是继续堆叠展示型组件：
 
@@ -99,7 +99,7 @@
 - LineChart 已完成 SVG 命名空间人工验收；AreaChart、PieChart、Gauge 已按同一 adapter contract 落地，并覆盖 null/empty、donut/legend 与 meter 可访问语义。
 - 0.0.10 的图表视觉矩阵新增 AreaChart、PieChart、Gauge 场景；0.0.11 增加图表 tooltip 与键盘点位事件，`fromPieData` / `normalizeGaugeValue` 保持外部图表运行时可选。
 - 0.0.12 增加 LineChart 与 AreaChart 多系列共享坐标域、图例和 series-aware 点位事件；AreaChart 多系列已补充文档站预览、React 类型、行为测试和主题/窄屏人工复核。编辑器 adapter 已补充 CodeMirror/TipTap/Monaco 和四种宿主生命周期示例。
-- 0.0.16 已在四套 playground 的真实浏览器 parity、治理审计和跨框架受控属性修复基础上，收口移动端 SchemaForm 控件尺寸和 Windows/Ubuntu profile-specific visual golden；0.0.14 的 Web 宿主、主题化 Date/Time picker、长列表性能合同继续作为稳定基线；原生 picker 仍保留为默认兼容模式。
+- 0.0.17 在 0.0.16 的基础上统一异步状态契约、补齐 Business AdvancedTable 四框架 parity 与发布 preflight；0.0.16 的移动端 SchemaForm 控件尺寸和 Windows/Ubuntu profile-specific visual golden 继续作为稳定基线；原生 picker 仍保留为默认兼容模式。
 - 真实外部业务仓库的逐页迁移仍需宿主仓库配合，下一轮应优先落地 AdminButton、AdminPage/AdminPageHeader、AdminStatusTag 和 AdminLayout/AdminConsoleShell 的唯一挂载职责，再迁移 Users、Channels、Usage Logs 页面并清理旧兼容层。
 
 ## 每次迭代的完成定义

@@ -2,6 +2,7 @@
   import { onMount } from 'svelte'
   import fixture from '../../parity/fixture.json'
   import { registerAdminElements } from '@chaos_team/blbui-svelte'
+  import { registerBusinessElements } from '@chaos_team/blbui-business/register'
   import { AdminButton, AdminDialog, AdminInput, AdminPage, AdminPageHeader, AdminPagination, AdminShell, AdminStatusTag, AdminTable, AdminToastManager } from '@chaos_team/blbui-svelte'
 
   const contract = fixture.parityContract.assertions
@@ -16,7 +17,18 @@
     return matchesTab && matchesQuery
   })
   let toasts = [{ id: 'parity', title: 'PARITY READY', message: 'Svelte fixture is synchronized.', variant: 'success', duration: 0 }]
-  onMount(() => registerAdminElements())
+  let businessTable: (HTMLElement & Record<string, unknown>) | undefined
+  let businessSelection = 0
+  onMount(() => {
+    registerAdminElements()
+    registerBusinessElements()
+    if (businessTable) {
+      businessTable.columns = fixture.business.columns
+      businessTable.rows = fixture.business.rows
+      businessTable.selectable = true
+      businessTable.addEventListener('aui-selection-change', (event) => (businessSelection = (event as CustomEvent<{ keys: unknown[] }>).detail.keys.length))
+    }
+  })
 </script>
 
 <svelte:head><title>BLBUI Svelte Playground</title></svelte:head>
@@ -39,6 +51,8 @@
         <tbody>{#each visibleRows as row}<tr><td>{row.id}</td><td>{row.status}</td><td>{row.region}</td><td>{query || '—'}</td></tr>{/each}</tbody>
       </table>
     </AdminTable>
+    <aui-advanced-table id="business-table" bind:this={businessTable}></aui-advanced-table>
+    <output data-parity-business-selection={businessSelection}>Business selection: {businessSelection}</output>
     <AdminPagination {page} totalPages={contract.totalPages} onPageChange={(next) => (page = next)} />
     <AdminToastManager bind:items={toasts} />
     <AdminDialog bind:open title="Create channel">

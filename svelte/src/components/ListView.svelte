@@ -16,13 +16,23 @@ it under the terms of the GNU Affero General Public License.
   export let loadingLabel = 'LOADING...'
   export let emptyLabel = 'NO ITEMS AVAILABLE'
   export let errorLabel = 'FAILED TO LOAD ITEMS'
+  export let permissionDenied = false
+  export let permissionDeniedLabel = 'PERMISSION DENIED'
+  export let retryable = true
+  export let retryLabel = 'RETRY'
+  export let onRetry: ((detail: { source: string; reason: 'error' | 'permission-denied' }) => void) | undefined = undefined
   export let onSelect: ((detail: unknown) => void) | undefined = undefined
   let element: (HTMLElement & Record<string, unknown>) | undefined
   onMount(() => {
     registerAdminElements()
     const handler = (event: Event) => onSelect?.((event as CustomEvent).detail)
+    const retryHandler = (event: Event) => onRetry?.((event as CustomEvent).detail)
     element?.addEventListener('aui-list-view-select', handler)
-    return () => element?.removeEventListener('aui-list-view-select', handler)
+    element?.addEventListener('aui-retry', retryHandler)
+    return () => {
+      element?.removeEventListener('aui-list-view-select', handler)
+      element?.removeEventListener('aui-retry', retryHandler)
+    }
   })
   $: if (element) {
     element.items = items
@@ -33,7 +43,11 @@ it under the terms of the GNU Affero General Public License.
     element.loadingLabel = loadingLabel
     element.emptyLabel = emptyLabel
     element.errorLabel = errorLabel
+    element.permissionDenied = permissionDenied
+    element.permissionDeniedLabel = permissionDeniedLabel
+    element.retryable = retryable
+    element.retryLabel = retryLabel
   }
 </script>
 
-<aui-list-view bind:this={element}></aui-list-view>
+<aui-list-view bind:this={element}><span slot="retry"><slot name="retry" /></span><span slot="permission"><slot name="permission" /></span></aui-list-view>

@@ -58,6 +58,23 @@ describe("complex data components", () => {
         expect(list.shadowRoot?.querySelector('[role="status"]')?.textContent).toContain("LOADING");
     });
 
+    it("uses the shared permission-denied and retry contract", async () => {
+        const list = await element("aui-list-view");
+        list.error = true;
+        list.retryable = true;
+        const retry = vi.fn();
+        list.addEventListener("aui-retry", (event) => retry((event as CustomEvent).detail));
+        await list.updateComplete;
+        list.shadowRoot?.querySelector<HTMLButtonElement>(".retry")?.click();
+        expect(retry).toHaveBeenCalledWith({ source: "list-view", reason: "error" });
+
+        list.error = false;
+        list.permissionDenied = true;
+        await list.updateComplete;
+        expect(list.shadowRoot?.querySelector('[role="status"]')?.textContent).toContain("PERMISSION DENIED");
+        expect(list.shadowRoot?.querySelector(".retry")).toBeNull();
+    });
+
     it("creates filter and query rules using property-based schemas", async () => {
         const fields: AdminFilterField[] = [
             { key: "status", label: "Status", type: "select", options: [{ value: "ready", label: "Ready" }] },

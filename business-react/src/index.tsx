@@ -17,6 +17,12 @@ import type {
     AdminBulkAction,
     AdminImportRow,
 } from "@chaos_team/blbui-business";
+type AdminAsyncStateProps = {
+    permissionDenied?: boolean;
+    permissionDeniedLabel?: string;
+    retryable?: boolean;
+    retryLabel?: string;
+};
 export { fromTable, getAdapterSelection, virtualizeRows } from "@chaos_team/blbui-business";
 export {
     fromChartData,
@@ -173,15 +179,18 @@ export function AdminCrudToolbar(props: AdminCrudToolbarProps) {
     );
 }
 
-export interface AdminAdvancedTableProps extends CommonProps {
+export interface AdminAdvancedTableProps extends CommonProps, AdminAsyncStateProps {
     columns?: AdminBusinessColumn[];
     rows?: Array<Record<string, unknown> & { id?: string | number }>;
     selectable?: boolean;
     loading?: boolean;
+    error?: boolean;
+    errorLabel?: string;
     emptyLabel?: string;
     selectedKeys?: Array<string | number>;
     onSelectionChange?: (keys: Array<string | number>) => void;
     onSortChange?: (detail: { key: string; direction: string }) => void;
+    onRetry?: (detail: { source: string; reason: "error" | "permission-denied" }) => void;
 }
 export function AdminAdvancedTable(props: AdminAdvancedTableProps) {
     const { ref } = useBusinessElement(
@@ -190,8 +199,14 @@ export function AdminAdvancedTable(props: AdminAdvancedTableProps) {
             rows: props.rows,
             selectable: props.selectable,
             loading: props.loading,
+            error: props.error,
+            errorLabel: props.errorLabel,
             emptyLabel: props.emptyLabel,
             selectedKeys: props.selectedKeys,
+            permissionDenied: props.permissionDenied,
+            permissionDeniedLabel: props.permissionDeniedLabel,
+            retryable: props.retryable,
+            retryLabel: props.retryLabel,
         },
         {
             "aui-selection-change": props.onSelectionChange
@@ -201,6 +216,7 @@ export function AdminAdvancedTable(props: AdminAdvancedTableProps) {
             "aui-sort-change": props.onSortChange
                 ? (detail: { key: string; direction: string }) => props.onSortChange?.(detail)
                 : undefined,
+            "aui-retry": props.onRetry,
         },
     );
     const rest = restProps(props, [
@@ -212,8 +228,13 @@ export function AdminAdvancedTable(props: AdminAdvancedTableProps) {
         "selectedKeys",
         "onSelectionChange",
         "onSortChange",
+        "permissionDenied",
+        "permissionDeniedLabel",
+        "retryable",
+        "retryLabel",
+        "onRetry",
     ]);
-    return createElement("aui-advanced-table", { ...rest, ref, className: props.className });
+    return createElement("aui-advanced-table", { ...rest, ref, className: props.className }, props.children);
 }
 
 export interface AdminFormBuilderProps extends CommonProps {
@@ -579,7 +600,7 @@ export function AdminPermissionMatrix(props: AdminPermissionMatrixProps) {
     return createElement("aui-permission-matrix", { ...rest, ref, className: props.className });
 }
 
-export interface AdminAuditLogProps extends CommonProps {
+export interface AdminAuditLogProps extends CommonProps, AdminAsyncStateProps {
     entries?: AdminAuditEntry[];
     loading?: boolean;
     error?: boolean;
@@ -591,6 +612,7 @@ export interface AdminAuditLogProps extends CommonProps {
     hasMore?: boolean;
     onFilterChange?: (detail: { query: string; status: string }) => void;
     onLoadMore?: (detail: { query: string; status: string }) => void;
+    onRetry?: (detail: { source: string; reason: "error" | "permission-denied" }) => void;
 }
 export function AdminAuditLog(props: AdminAuditLogProps) {
     const { ref } = useBusinessElement(
@@ -604,6 +626,10 @@ export function AdminAuditLog(props: AdminAuditLogProps) {
             loadingLabel: props.loadingLabel,
             errorLabel: props.errorLabel,
             hasMore: props.hasMore,
+            permissionDenied: props.permissionDenied,
+            permissionDeniedLabel: props.permissionDeniedLabel,
+            retryable: props.retryable,
+            retryLabel: props.retryLabel,
         },
         {
             "aui-audit-filter-change": props.onFilterChange
@@ -612,6 +638,7 @@ export function AdminAuditLog(props: AdminAuditLogProps) {
             "aui-audit-load-more": props.onLoadMore
                 ? (detail: { query: string; status: string }) => props.onLoadMore?.(detail)
                 : undefined,
+            "aui-retry": props.onRetry,
         },
     );
     const rest = restProps(props, [
@@ -626,8 +653,13 @@ export function AdminAuditLog(props: AdminAuditLogProps) {
         "hasMore",
         "onFilterChange",
         "onLoadMore",
+        "permissionDenied",
+        "permissionDeniedLabel",
+        "retryable",
+        "retryLabel",
+        "onRetry",
     ]);
-    return createElement("aui-audit-log", { ...rest, ref, className: props.className });
+    return createElement("aui-audit-log", { ...rest, ref, className: props.className }, props.children);
 }
 
 export interface AdminImportDialogProps extends CommonProps {

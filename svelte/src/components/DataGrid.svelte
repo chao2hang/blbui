@@ -12,6 +12,10 @@ it under the terms of the GNU Affero General Public License.
   export let rows: Array<Record<string, unknown> & { id?: string | number }> = []
   export let loading = false
   export let error = false
+  export let permissionDenied = false
+  export let permissionDeniedLabel = 'PERMISSION DENIED'
+  export let retryable = true
+  export let retryLabel = 'RETRY'
   export let selectable = false
   export let mobileCards = true
   export let virtual = false
@@ -30,6 +34,7 @@ it under the terms of the GNU Affero General Public License.
   export let onSelectionChange: ((detail: { keys: Array<string | number> }) => void) | undefined = undefined
   export let onBatchAction: ((detail: unknown) => void) | undefined = undefined
   export let onPageChange: ((detail: { page: number; pageSize: number; total: number }) => void) | undefined = undefined
+  export let onRetry: ((detail: { source: string; reason: 'error' | 'permission-denied' }) => void) | undefined = undefined
   let element: (HTMLElement & Record<string, unknown>) | undefined
   onMount(() => {
     registerAdminElements()
@@ -39,6 +44,7 @@ it under the terms of the GNU Affero General Public License.
       ['aui-selection-change', event => onSelectionChange?.((event as CustomEvent).detail)],
       ['aui-batch-action', event => onBatchAction?.((event as CustomEvent).detail)],
       ['aui-page-change', event => onPageChange?.((event as CustomEvent).detail)],
+      ['aui-retry', event => (event as CustomEvent).detail && onRetry?.((event as CustomEvent).detail)],
     ]
     bindings.forEach(([name, handler]) => element?.addEventListener(name, handler as EventListener))
     return () => bindings.forEach(([name, handler]) => element?.removeEventListener(name, handler as EventListener))
@@ -48,6 +54,10 @@ it under the terms of the GNU Affero General Public License.
     element.rows = rows
     element.loading = loading
     element.error = error
+    element.permissionDenied = permissionDenied
+    element.permissionDeniedLabel = permissionDeniedLabel
+    element.retryable = retryable
+    element.retryLabel = retryLabel
     element.selectable = selectable
     element.mobileCards = mobileCards
     element.virtual = virtual
@@ -64,4 +74,4 @@ it under the terms of the GNU Affero General Public License.
   }
 </script>
 
-<aui-data-grid bind:this={element}></aui-data-grid>
+<aui-data-grid bind:this={element}><span slot="retry"><slot name="retry" /></span><span slot="permission"><slot name="permission" /></span></aui-data-grid>

@@ -8,6 +8,17 @@
     { "id": "gateway-prod", "status": "ONLINE", "region": "us-east-1" },
     { "id": "gateway-edge", "status": "DEGRADED", "region": "ap-southeast-1" }
   ],
+  "business": {
+    "columns": [
+      { "key": "id", "label": "ID", "sortable": true },
+      { "key": "name", "label": "SERVICE" },
+      { "key": "owner", "label": "OWNER" }
+    ],
+    "rows": [
+      { "id": "svc-gateway", "name": "Gateway", "owner": "Platform" },
+      { "id": "svc-worker", "name": "Worker", "owner": "Runtime" }
+    ]
+  },
   "steps": [
     { "id": "details", "label": "Details" },
     { "id": "policy", "label": "Policy" },

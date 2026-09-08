@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { registerBusinessElements } from "@chaos_team/blbui-business/register";
 import fixture from "../../parity/fixture.json";
 import {
   AdminButton,
@@ -20,6 +21,18 @@ const page = ref(contract.initialPage);
 query.value = contract.initialQuery;
 const tabs = fixture.tabs;
 const toasts = ref([{ id: "parity", title: "PARITY READY", message: "Vue fixture is synchronized.", variant: "success", duration: 0 }]);
+onMounted(() => {
+  registerBusinessElements();
+  const table = document.createElement("aui-advanced-table") as HTMLElement & Record<string, unknown>;
+  table.id = "business-table";
+  table.columns = fixture.business.columns;
+  table.rows = fixture.business.rows;
+  table.selectable = true;
+  table.addEventListener("aui-selection-change", (event) => {
+    document.querySelector("[data-parity-business-selection]")?.setAttribute("data-parity-business-selection", String((event as CustomEvent<{ keys: unknown[] }>).detail.keys.length));
+  });
+  document.querySelector("#business-table-mount")?.append(table);
+});
 const visibleRows = computed(() => {
   const normalizedQuery = query.value.trim().toLowerCase();
   return fixture.rows.filter((row) => {
@@ -44,6 +57,8 @@ const visibleRows = computed(() => {
           <tbody><tr v-for="row in visibleRows" :key="row.id"><td>{{ row.id }}</td><td>{{ row.status }}</td><td>{{ row.region }}</td><td>{{ query || "—" }}</td></tr></tbody>
         </table>
       </AdminTable>
+      <div id="business-table-mount"></div>
+      <output data-parity-business-selection="0">Business selection: 0</output>
       <AdminPagination :page="page" :total-pages="contract.totalPages" @page-change="page = $event" />
       <AdminToastManager v-model:items="toasts" />
       <AdminDialog v-model:open="open" title="Create channel">

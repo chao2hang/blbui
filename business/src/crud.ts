@@ -213,7 +213,13 @@ export class AdminAdvancedTableElement extends AdminElement {
     rows: { attribute: false },
     selectable: { type: Boolean, reflect: true },
     loading: { type: Boolean, reflect: true },
+    error: { type: Boolean, reflect: true },
+    permissionDenied: { type: Boolean, attribute: "permission-denied", reflect: true },
     emptyLabel: { type: String, attribute: "empty-label" },
+    errorLabel: { type: String, attribute: "error-label" },
+    permissionDeniedLabel: { type: String, attribute: "permission-denied-label" },
+    retryable: { type: Boolean, reflect: true },
+    retryLabel: { type: String, attribute: "retry-label" },
     selectedKeys: { attribute: false },
     sortKey: { type: String, attribute: "sort-key" },
     sortDirection: { type: String, attribute: "sort-direction" },
@@ -276,12 +282,21 @@ export class AdminAdvancedTableElement extends AdminElement {
       text-align: center;
       font: 11px/1 var(--aui-font-mono);
     }
+    .state[role="alert"] { color: var(--aui-danger); }
+    .state.permission { color: var(--aui-warning); }
+    .state button { margin-top: 8px; padding: 5px 9px; border: 1px solid currentColor; border-radius: var(--aui-radius-sm); background: transparent; color: inherit; cursor: pointer; font: 700 10px/1 var(--aui-font-mono); text-transform: uppercase; }
   `;
   columns: AdminBusinessColumn[] = [];
   rows: Array<Record<string, unknown> & { id?: string | number }> = [];
   selectable = false;
   loading = false;
+  error = false;
+  permissionDenied = false;
   emptyLabel = "NO DATA AVAILABLE";
+  errorLabel = "FAILED TO LOAD DATA";
+  permissionDeniedLabel = "PERMISSION DENIED";
+  retryable = true;
+  retryLabel = "RETRY";
   selectedKeys: Array<string | number> = [];
   sortKey = "";
   sortDirection: "asc" | "desc" = "asc";
@@ -290,6 +305,10 @@ export class AdminAdvancedTableElement extends AdminElement {
     index: number,
   ): string | number {
     return row.id ?? index;
+  }
+  private retry(): void {
+    if (!this.retryable || this.loading) return;
+    this.dispatchDetail("aui-retry", { source: "advanced-table", reason: this.permissionDenied ? "permission-denied" : "error" });
   }
   private toggleRow(key: string | number): void {
     this.selectedKeys = this.selectedKeys.includes(key)
@@ -372,7 +391,9 @@ export class AdminAdvancedTableElement extends AdminElement {
   render() {
     const allSelected = this.rows.length > 0 && this.selectedKeys.length === this.rows.length;
     let content: unknown = this.renderTable(allSelected);
-    if (this.loading) content = html`<div class="state">LOADING...</div>`;
+    if (this.loading) content = html`<div class="state" role="status" aria-live="polite">LOADING...</div>`;
+    else if (this.error) content = html`<div class="state" role="alert">${this.errorLabel}<div><slot name="retry"><button type="button" @click=${this.retry}>${this.retryLabel}</button></slot></div></div>`;
+    else if (this.permissionDenied) content = html`<div class="state permission" role="status">${this.permissionDeniedLabel}<div><slot name="permission"></slot></div></div>`;
     else if (this.rows.length === 0) {
       content = html`<div class="state" role="status">${this.emptyLabel}</div>`;
     }

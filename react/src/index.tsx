@@ -25,6 +25,7 @@ import type {
     AdminSelectOption,
     AdminTabItem,
     AdminNavItem,
+    AdminAsyncStateProps,
 } from "@chaos_team/blbui-core";
 
 import "@chaos_team/blbui-core/styles.css";
@@ -446,13 +447,14 @@ export function AdminFilterBar(props: ElementProps) {
     return createElement("aui-filter-bar", { ...rest, className, ref: setRef }, children);
 }
 
-export interface AdminTableProps extends ElementProps {
+export interface AdminTableProps extends ElementProps, AdminAsyncStateProps {
     loading?: boolean;
     empty?: boolean;
     error?: boolean;
     loadingLabel?: string;
     emptyLabel?: string;
     errorLabel?: string;
+    onRetry?: (detail: { source: string; reason: "error" | "permission-denied" }) => void;
 }
 
 export function AdminTable(props: AdminTableProps) {
@@ -466,6 +468,11 @@ export function AdminTable(props: AdminTableProps) {
         loadingLabel,
         emptyLabel,
         errorLabel,
+        permissionDenied,
+        permissionDeniedLabel,
+        retryable,
+        retryLabel,
+        onRetry,
         ...rest
     } = props;
     useElementProperties(element as RefObject<CustomElement | null>, {
@@ -475,7 +482,12 @@ export function AdminTable(props: AdminTableProps) {
         loadingLabel,
         emptyLabel,
         errorLabel,
+        permissionDenied,
+        permissionDeniedLabel,
+        retryable,
+        retryLabel,
     });
+    useCustomEvent(element, "aui-retry", onRetry);
     return createElement("aui-table", { ...rest, className, ref: setRef }, children);
 }
 

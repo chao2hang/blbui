@@ -28,6 +28,9 @@ declare namespace svelte.JSX {
         "on:aui-upload-retry"?: (event: CustomEvent<{ id: string; file: unknown }>) => void;
         "on:aui-upload-preview"?: (event: CustomEvent<{ id: string; file: unknown }>) => void;
         "on:aui-upload-change"?: (event: CustomEvent<{ files: unknown[] }>) => void;
+        "on:aui-retry"?: (
+            event: CustomEvent<{ source: string; reason: "error" | "permission-denied" }>,
+        ) => void;
         "on:aui-sort-change"?: (event: CustomEvent<{ key: string; direction: string }>) => void;
         "on:aui-filter-change"?: (
             event: CustomEvent<{ filters: Record<string, string>; key: string; value: string }>,
