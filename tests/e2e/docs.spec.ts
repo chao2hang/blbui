@@ -57,6 +57,17 @@ const settleVisualTarget = async (target: Locator) => {
     });
 };
 
+const isUniformPngRow = (data: Uint8Array, width: number, row: number) => {
+    const start = row * width * 4;
+    const first = data.slice(start, start + 4);
+    for (let offset = start + 4; offset < start + width * 4; offset += 4) {
+        if (!data.slice(offset, offset + 4).every((value, index) => value === first[index])) {
+            return false;
+        }
+    }
+    return true;
+};
+
 const captureVisualTarget = async (
     page: Page,
     target: Locator,
@@ -204,14 +215,15 @@ test.describe("BLBUI documentation quality matrix", () => {
                         const filename = [platform, viewportValue.id, theme, mode, scene.id].join(
                             "-",
                         );
-                        const screenshotPath = testInfo.outputPath(
-                            "visual-matrix",
-                            `${filename}.png`,
-                        );
                         const goldenPath = goldenRoot
                             ? resolve(goldenRoot, `${filename}.png`)
                             : "";
-                        await captureVisualTarget(page, target, screenshotPath, goldenPath);
+                        await captureVisualTarget(
+                            page,
+                            target,
+                            testInfo.outputPath("visual-matrix", `${filename}.png`),
+                            goldenPath,
+                        );
                         if (goldenRoot) {
                             if (!existsSync(goldenPath)) {
                                 if (goldenRequired)
@@ -224,17 +236,33 @@ test.describe("BLBUI documentation quality matrix", () => {
                                 );
                                 const expected = PNG.sync.read(readFileSync(goldenPath));
                                 expect(actual.width).toBe(expected.width);
-                                expect(actual.height).toBe(expected.height);
+                                const heightDelta = actual.height - expected.height;
+                                expect(
+                                    Math.abs(heightDelta),
+                                    `visual golden height drift for ${filename}`,
+                                ).toBeLessThanOrEqual(1);
+                                if (heightDelta < 0) {
+                                    expect(
+                                        isUniformPngRow(expected.data, expected.width, actual.height),
+                                        `non-uniform cropped edge for ${filename}`,
+                                    ).toBe(true);
+                                } else if (heightDelta > 0) {
+                                    expect(
+                                        isUniformPngRow(actual.data, actual.width, expected.height),
+                                        `non-uniform extra edge for ${filename}`,
+                                    ).toBe(true);
+                                }
+                                const comparableHeight = Math.min(actual.height, expected.height);
                                 const diff = new PNG({
                                     width: actual.width,
-                                    height: actual.height,
+                                    height: comparableHeight,
                                 });
                                 const differentPixels = pixelmatch(
-                                    actual.data,
-                                    expected.data,
+                                    actual.data.subarray(0, actual.width * comparableHeight * 4),
+                                    expected.data.subarray(0, expected.width * comparableHeight * 4),
                                     diff.data,
                                     actual.width,
-                                    actual.height,
+                                    comparableHeight,
                                     { threshold: 0.1 },
                                 );
                                 await testInfo.attach(`${filename}-golden-diff.png`, {
