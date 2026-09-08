@@ -148,6 +148,13 @@ test.describe("BLBUI documentation quality matrix", () => {
                         const target = page.locator(scene.selector).first();
                         await target.scrollIntoViewIfNeeded();
                         await expect(target).toBeVisible();
+                        await target.evaluate(async (element) => {
+                            const updateComplete = (element as HTMLElement & {
+                                updateComplete?: Promise<unknown>;
+                            }).updateComplete;
+                            if (updateComplete) await updateComplete;
+                            await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+                        });
                         const filename = [platform, viewportValue.id, theme, mode, scene.id].join(
                             "-",
                         );
