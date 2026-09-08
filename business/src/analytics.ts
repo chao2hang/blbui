@@ -125,12 +125,14 @@ export class AdminBarChartElement extends AdminElement {
         data: { attribute: false },
         height: { type: String },
         label: { type: String },
+        showTooltip: { type: Boolean, attribute: "show-tooltip" },
     };
     static styles = css`
         :host {
             display: block;
         }
         .chart {
+            position: relative;
             min-height: var(--aui-bar-height, 220px);
             display: flex;
             align-items: end;
@@ -158,6 +160,11 @@ export class AdminBarChartElement extends AdminElement {
             max-width: 38px;
             min-height: 3px;
             background: var(--aui-chart-bar, var(--aui-border-hover));
+            cursor: pointer;
+        }
+        .bar:focus-visible {
+            outline: 2px solid var(--aui-focus);
+            outline-offset: 3px;
         }
         .bar[data-peak="true"] {
             background: var(--aui-text-primary);
@@ -170,17 +177,49 @@ export class AdminBarChartElement extends AdminElement {
             color: var(--aui-text-secondary);
             font: 9px/1 var(--aui-font-mono);
         }
+        .tooltip {
+            position: absolute;
+            z-index: 2;
+            top: 4px;
+            left: 50%;
+            width: max-content;
+            max-width: min(220px, calc(100% - 8px));
+            padding: 5px 7px;
+            border: 1px solid var(--aui-border-hover);
+            background: var(--aui-header);
+            color: var(--aui-text-primary);
+            font: 10px/1.25 var(--aui-font-mono);
+            pointer-events: none;
+            transform: translateX(-50%);
+        }
     `;
     data: Array<{ label: string; value: number }> = [];
     height = "220px";
     label = "Chart";
+    showTooltip = true;
+    private activeIndex: number | null = null;
+
+    private activate(index: number): void {
+        if (!this.showTooltip) return;
+        this.activeIndex = index;
+        this.requestUpdate();
+        this.dispatchDetail("aui-chart-point", { index, point: this.data[index] });
+    }
+
+    private clear(index: number): void {
+        if (this.activeIndex !== index) return;
+        this.activeIndex = null;
+        this.requestUpdate();
+    }
+
     render() {
         const max = Math.max(...this.data.map((item) => item.value), 1);
         const peak = max;
+        const active = this.activeIndex === null ? undefined : this.data[this.activeIndex];
         return html`<div
             class="chart"
             style=${`--aui-bar-height:${this.height}`}
-            role="img"
+            role="group"
             aria-label=${this.label}
         >
             ${this.data.map(
@@ -189,12 +228,21 @@ export class AdminBarChartElement extends AdminElement {
                         <span class="value">${item.value}</span
                         ><span
                             class="bar"
+                            role="img"
+                            tabindex=${this.showTooltip ? "0" : "-1"}
+                            aria-label=${`${item.label}: ${item.value}`}
                             data-peak=${item.value === peak ? "true" : "false"}
                             style=${`height:${Math.max((item.value / max) * 78, 2)}%`}
+                            @pointerenter=${() => this.activate(this.data.indexOf(item))}
+                            @pointerleave=${() => this.clear(this.data.indexOf(item))}
+                            @focus=${() => this.activate(this.data.indexOf(item))}
+                            @blur=${() => this.clear(this.data.indexOf(item))}
+                            @click=${() => this.activate(this.data.indexOf(item))}
                         ></span
                         ><span class="label">${item.label}</span>
                     </div>`,
             )}
+            ${active ? html`<div class="tooltip" role="tooltip">${active.label}: ${active.value}</div>` : null}
         </div>`;
     }
 }
@@ -211,6 +259,7 @@ export class AdminLineChartElement extends AdminElement {
         label: { type: String },
         color: { type: String },
         showPoints: { type: Boolean, attribute: "show-points" },
+        showTooltip: { type: Boolean, attribute: "show-tooltip" },
     };
     static styles = css`
         :host {
@@ -245,6 +294,31 @@ export class AdminLineChartElement extends AdminElement {
             stroke: var(--aui-surface);
             stroke-width: 1.5;
             vector-effect: non-scaling-stroke;
+            cursor: pointer;
+        }
+        circle:focus-visible {
+            stroke: var(--aui-focus);
+            stroke-width: 2.5;
+            outline: none;
+        }
+        circle.hit-only {
+            fill: transparent;
+            stroke: transparent;
+        }
+        .tooltip {
+            position: absolute;
+            z-index: 2;
+            top: 7px;
+            left: 50%;
+            width: max-content;
+            max-width: calc(100% - 16px);
+            padding: 5px 7px;
+            border: 1px solid var(--aui-border-hover);
+            background: var(--aui-header);
+            color: var(--aui-text-primary);
+            font: 10px/1.25 var(--aui-font-mono);
+            pointer-events: none;
+            transform: translateX(-50%);
         }
         .labels {
             position: absolute;
@@ -270,6 +344,22 @@ export class AdminLineChartElement extends AdminElement {
     label = "Line chart";
     color = "var(--aui-primary)";
     showPoints = true;
+    showTooltip = true;
+    private activeIndex: number | null = null;
+
+    private activate(index: number): void {
+        const point = this.data[index];
+        if (!this.showTooltip || !point || point.value === null || !Number.isFinite(point.value)) return;
+        this.activeIndex = index;
+        this.requestUpdate();
+        this.dispatchDetail("aui-chart-point", { index, point });
+    }
+
+    private clear(index: number): void {
+        if (this.activeIndex !== index) return;
+        this.activeIndex = null;
+        this.requestUpdate();
+    }
 
     render() {
         const values = this.data
@@ -314,15 +404,16 @@ export class AdminLineChartElement extends AdminElement {
         return html`<div
             class="chart"
             style=${`--aui-line-height:${this.height};--aui-line-color:${this.color}`}
-            role="img"
+            role="group"
             aria-label=${this.label}
         >
-            ${svg`<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            ${svg`<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden=${this.showTooltip ? "false" : "true"}>
                 ${[20, 40, 60, 80].map((line) => svg`<line class="grid-line" x1="0" y1=${line} x2="100" y2=${line}></line>`)}
                 ${segments.map((points) => svg`<polyline points=${points.join(" ")}></polyline>`)}
-                ${this.showPoints ? this.data.map((point, index) => (point.value === null || !Number.isFinite(point.value) ? null : svg`<circle cx=${x(index)} cy=${y(point.value)} r="2.2"></circle>`)) : null}
+                ${this.data.map((point, index) => (point.value === null || !Number.isFinite(point.value) ? null : svg`<circle class=${this.showPoints ? "" : "hit-only"} cx=${x(index)} cy=${y(point.value)} r=${this.showPoints ? "2.2" : "4"} tabindex=${this.showTooltip ? "0" : "-1"} role="img" aria-label=${`${point.label}: ${point.value}`} @pointerenter=${() => this.activate(index)} @pointerleave=${() => this.clear(index)} @focus=${() => this.activate(index)} @blur=${() => this.clear(index)} @click=${() => this.activate(index)}></circle>`))}
             </svg>`}
             <div class="labels">${labels.map((point) => html`<span>${point.label}</span>`)}</div>
+            ${this.activeIndex !== null && this.data[this.activeIndex]?.value !== null ? html`<div class="tooltip" role="tooltip">${this.data[this.activeIndex].label}: ${this.data[this.activeIndex].value}</div>` : null}
         </div>`;
     }
 }
@@ -413,6 +504,7 @@ export class AdminAreaChartElement extends AdminElement {
         label: { type: String },
         color: { type: String },
         showPoints: { type: Boolean, attribute: "show-points" },
+        showTooltip: { type: Boolean, attribute: "show-tooltip" },
     };
     static styles = [
         css`
@@ -447,6 +539,31 @@ export class AdminAreaChartElement extends AdminElement {
                 stroke: var(--aui-surface);
                 stroke-width: 1.5;
                 vector-effect: non-scaling-stroke;
+                cursor: pointer;
+            }
+            circle:focus-visible {
+                stroke: var(--aui-focus);
+                stroke-width: 2.5;
+                outline: none;
+            }
+            circle.hit-only {
+                fill: transparent;
+                stroke: transparent;
+            }
+            .tooltip {
+                position: absolute;
+                z-index: 2;
+                top: 7px;
+                left: 50%;
+                width: max-content;
+                max-width: calc(100% - 16px);
+                padding: 5px 7px;
+                border: 1px solid var(--aui-border-hover);
+                background: var(--aui-header);
+                color: var(--aui-text-primary);
+                font: 10px/1.25 var(--aui-font-mono);
+                pointer-events: none;
+                transform: translateX(-50%);
             }
         `,
         chartScales,
@@ -456,6 +573,22 @@ export class AdminAreaChartElement extends AdminElement {
     label = "Area chart";
     color = "var(--aui-primary)";
     showPoints = true;
+    showTooltip = true;
+    private activeIndex: number | null = null;
+
+    private activate(index: number): void {
+        const point = this.data[index];
+        if (!this.showTooltip || !point || point.value === null || !Number.isFinite(point.value)) return;
+        this.activeIndex = index;
+        this.requestUpdate();
+        this.dispatchDetail("aui-chart-point", { index, point });
+    }
+
+    private clear(index: number): void {
+        if (this.activeIndex !== index) return;
+        this.activeIndex = null;
+        this.requestUpdate();
+    }
 
     render() {
         const scale = chartScale(this.data);
@@ -464,8 +597,8 @@ export class AdminAreaChartElement extends AdminElement {
                 <div class="empty">No chart data</div>
             </div>`;
         const segments = chartSegments(this.data, scale);
-        return html`<div class="chart" style=${`--aui-area-height:${this.height};--aui-area-color:${this.color}`} role="img" aria-label=${this.label}>
-            ${svg`<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        return html`<div class="chart" style=${`--aui-area-height:${this.height};--aui-area-color:${this.color}`} role="group" aria-label=${this.label}>
+            ${svg`<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden=${this.showTooltip ? "false" : "true"}>
                 ${chartGrid()}
                 ${segments.map((points) => {
                     const first = points[0]?.split(",");
@@ -473,9 +606,10 @@ export class AdminAreaChartElement extends AdminElement {
                     if (!first || !last) return null;
                     return svg`<polygon points=${`${first[0]},88 ${points.join(" ")} ${last[0]},88`}></polygon><polyline points=${points.join(" ")}></polyline>`;
                 })}
-                ${this.showPoints ? this.data.map((point, index) => point.value === null || !Number.isFinite(point.value) ? null : svg`<circle cx=${scale.x(index)} cy=${scale.y(point.value)} r="2.2"></circle>`) : null}
+                ${this.data.map((point, index) => point.value === null || !Number.isFinite(point.value) ? null : svg`<circle class=${this.showPoints ? "" : "hit-only"} cx=${scale.x(index)} cy=${scale.y(point.value)} r=${this.showPoints ? "2.2" : "4"} tabindex=${this.showTooltip ? "0" : "-1"} role="img" aria-label=${`${point.label}: ${point.value}`} @pointerenter=${() => this.activate(index)} @pointerleave=${() => this.clear(index)} @focus=${() => this.activate(index)} @blur=${() => this.clear(index)} @click=${() => this.activate(index)}></circle>`)}
             </svg>`}
             <div class="labels">${chartLabels(this.data).map((point) => html`<span>${point.label}</span>`)}</div>
+            ${this.activeIndex !== null && this.data[this.activeIndex]?.value !== null ? html`<div class="tooltip" role="tooltip">${this.data[this.activeIndex].label}: ${this.data[this.activeIndex].value}</div>` : null}
         </div>`;
     }
 }
@@ -510,12 +644,14 @@ export class AdminPieChartElement extends AdminElement {
         label: { type: String },
         donut: { type: Boolean },
         showLegend: { type: Boolean, attribute: "show-legend" },
+        showTooltip: { type: Boolean, attribute: "show-tooltip" },
     };
     static styles = css`
         :host {
             display: block;
         }
         .chart {
+            position: relative;
             display: grid;
             grid-template-columns: minmax(120px, 1fr) minmax(120px, 1fr);
             align-items: center;
@@ -534,6 +670,27 @@ export class AdminPieChartElement extends AdminElement {
             stroke: var(--aui-surface);
             stroke-width: 1;
             vector-effect: non-scaling-stroke;
+            cursor: pointer;
+        }
+        path:focus-visible {
+            stroke: var(--aui-focus);
+            stroke-width: 2.5;
+            outline: none;
+        }
+        .tooltip {
+            position: absolute;
+            z-index: 2;
+            top: 7px;
+            left: 25%;
+            width: max-content;
+            max-width: calc(100% - 16px);
+            padding: 5px 7px;
+            border: 1px solid var(--aui-border-hover);
+            background: var(--aui-header);
+            color: var(--aui-text-primary);
+            font: 10px/1.25 var(--aui-font-mono);
+            pointer-events: none;
+            transform: translateX(-50%);
         }
         .legend {
             display: grid;
@@ -584,6 +741,21 @@ export class AdminPieChartElement extends AdminElement {
     label = "Pie chart";
     donut = false;
     showLegend = true;
+    showTooltip = true;
+    private activeIndex: number | null = null;
+
+    private activate(index: number): void {
+        if (!this.showTooltip || !this.data[index]) return;
+        this.activeIndex = index;
+        this.requestUpdate();
+        this.dispatchDetail("aui-chart-point", { index, point: this.data[index] });
+    }
+
+    private clear(index: number): void {
+        if (this.activeIndex !== index) return;
+        this.activeIndex = null;
+        this.requestUpdate();
+    }
 
     render() {
         const entries = normalizePieData(this.data);
@@ -598,13 +770,14 @@ export class AdminPieChartElement extends AdminElement {
             angle += (item.value / total) * 360;
             return { item, index, start, end: angle };
         });
-        return html`<div class="chart" style=${`--aui-pie-height:${this.height}`} role="img" aria-label=${this.label}>
-            ${svg`<svg viewBox="0 0 100 100" aria-hidden="true">
-                ${slices.map(({ item, index, start, end }) => svg`<path d=${piePath(start, end, this.donut ? 20 : 0)} fill=${item.color ?? `var(--aui-chart-series-${(index % 4) + 1}, var(--aui-primary))`}></path>`)}
+        return html`<div class="chart" style=${`--aui-pie-height:${this.height}`} role="group" aria-label=${this.label}>
+            ${svg`<svg viewBox="0 0 100 100" aria-hidden=${this.showTooltip ? "false" : "true"}>
+                ${slices.map(({ item, index, start, end }) => svg`<path d=${piePath(start, end, this.donut ? 20 : 0)} fill=${item.color ?? `var(--aui-chart-series-${(index % 4) + 1}, var(--aui-primary))`} tabindex=${this.showTooltip ? "0" : "-1"} role="img" aria-label=${`${item.label}: ${Math.round((item.value / total) * 100)}%`} @pointerenter=${() => this.activate(index)} @pointerleave=${() => this.clear(index)} @focus=${() => this.activate(index)} @blur=${() => this.clear(index)} @click=${() => this.activate(index)}></path>`)}
             </svg>`}
             ${this.showLegend ? html`<ul class="legend" aria-label="${this.label} legend">
                 ${slices.map(({ item }) => html`<li class="legend-item"><span class="legend-label"><i class="swatch" style=${`background:${item.color ?? "var(--aui-primary)"}`}></i><span>${item.label}</span></span><strong>${Math.round((item.value / total) * 100)}%</strong></li>`)}
             </ul>` : null}
+            ${this.activeIndex !== null && slices[this.activeIndex] ? html`<div class="tooltip" role="tooltip">${slices[this.activeIndex].item.label}: ${slices[this.activeIndex].item.value} (${Math.round((slices[this.activeIndex].item.value / total) * 100)}%)</div>` : null}
         </div>`;
     }
 }

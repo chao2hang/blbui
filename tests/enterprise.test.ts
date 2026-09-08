@@ -132,6 +132,33 @@ describe("enterprise workflow components", () => {
         expect(meter?.getAttribute("aria-valuemax")).toBe("100");
     });
 
+    it("exposes keyboard chart points with a themed tooltip event", async () => {
+        const chart = await element<AdminLineChartElement>("aui-line-chart");
+        chart.data = [
+            { label: "A", value: 10 },
+            { label: "B", value: null },
+            { label: "C", value: 30 },
+        ];
+        const points: unknown[] = [];
+        chart.addEventListener("aui-chart-point", (event) =>
+            points.push((event as CustomEvent).detail),
+        );
+        await chart.updateComplete;
+
+        const point = chart.shadowRoot?.querySelector<SVGCircleElement>("circle");
+        expect(point?.getAttribute("tabindex")).toBe("0");
+        point?.dispatchEvent(new FocusEvent("focus"));
+        await chart.updateComplete;
+        expect(chart.shadowRoot?.querySelector('[role="tooltip"]')?.textContent).toContain("A: 10");
+        expect(points).toEqual([{ index: 0, point: { label: "A", value: 10 } }]);
+
+        const area = await element<AdminAreaChartElement>("aui-area-chart");
+        area.showTooltip = false;
+        area.data = [{ label: "A", value: 1 }];
+        await area.updateComplete;
+        expect(area.shadowRoot?.querySelector("circle")?.getAttribute("tabindex")).toBe("-1");
+    });
+
     it("moves through a linear wizard and emits completion", async () => {
         const wizard = await element<AdminFormWizardElement>("aui-form-wizard");
         wizard.steps = [

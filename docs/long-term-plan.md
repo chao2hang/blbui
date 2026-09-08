@@ -14,12 +14,13 @@
 
 ### P0：语义 Token 与主题合同
 
-0.0.10 已在 0.0.9 基础上继续收紧：
+0.0.11 已在 0.0.10 基础上继续收紧：
 
 - 固化 surface、text、border、focus、status、overlay、shadow、radius、motion、form color-scheme 等 token。
 - 9 套主题均维护 light/dark 两套值；新增主题必须提供同一份 token 清单。
 - `bun run theme:check` 已纳入发布检查，验证 9 × 2 选择器和核心语义 token 不缺失。
 - CSS utilities 只使用 AUI 命名空间，禁止把业务页面的硬编码颜色复制进组件样式。
+- [x] Business 图表统一支持 hover/键盘 tooltip、`aui-chart-point` 事件和 React `onPoint` 回调；关闭 tooltip 时仍保留 null gap 与静态可访问图形。
 - [x] 增加 token lint：扫描组件源码中的颜色字面量、固定圆角和固定阴影。
 - [x] 对 glass、atmospheric 主题提供 backdrop-filter 不可用时的实色降级。
 
@@ -27,7 +28,7 @@
 
 已补齐 Menu、Sidebar、Navbar、DatePicker、TimePicker、PinInput、Descriptions、Cascader、Transfer、ContextMenu、HoverCard、NotificationCenter、UploadList、FilePreview、Form、FormItem、SchemaForm、ProgressRing、TruncatedText、LoadingOverlay、ColumnSettings。DataGrid 已补齐排序、筛选、选择、批量操作、服务端分页、移动端卡片和轻量虚拟窗口；Business 增加轻量 LineChart，支持主题 token 与 null telemetry gap。下一批优先级：
 
-1. 交互基础：统一已覆盖浮层的焦点恢复、outside-dismiss 和复杂嵌套场景。
+1. 交互基础：继续覆盖 Dialog/Drawer/Popover/Dropdown 的嵌套浮层焦点栈和触摸 outside-dismiss。
 2. 表单高级：DateRangePicker 增强、FormWizard、FilterBuilder、QueryBuilder。
 3. 数据展示：TreeTable、ListView，以及可选 TanStack Table / Virtual adapter。
 4. 系统布局：PageHeader responsive actions、SSR/hydration 下的注册时机。
@@ -86,7 +87,7 @@
 | 框架 | Web Components、React、Vue、Svelte 的属性与事件行为一致                     |
 | 文档 | catalog 条目、预览、props/events、四框架 usage、截图和已知限制              |
 
-## 当前组件缺口（0.0.10 后）
+## 当前组件缺口（0.0.11 后）
 
 短期缺口集中在可复用的复杂交互，而不是继续堆叠展示型组件：
 
@@ -96,7 +97,7 @@
 - PermissionMatrix、AuditLog、ImportDialog、ExportButton、BulkActionsToolbar 和更完整的 workflow 业务组件已落地。
 - React/Vue/Svelte parity playground 与 SSR/hydration 验证已落地；跨平台截图矩阵范围已版本化，后续在固定 runner 上积累 PNG golden 产物。
 - LineChart 已完成 SVG 命名空间人工验收；AreaChart、PieChart、Gauge 已按同一 adapter contract 落地，并覆盖 null/empty、donut/legend 与 meter 可访问语义。
-- 0.0.10 的图表视觉矩阵新增 AreaChart、PieChart、Gauge 场景；`fromPieData` / `normalizeGaugeValue` 保持外部图表运行时可选。
+- 0.0.10 的图表视觉矩阵新增 AreaChart、PieChart、Gauge 场景；0.0.11 增加图表 tooltip 与键盘点位事件，`fromPieData` / `normalizeGaugeValue` 保持外部图表运行时可选。
 
 ## 每次迭代的完成定义
 

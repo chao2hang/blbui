@@ -3,6 +3,7 @@
 ## 本次验收
 
 - 日期：2026-09-08
+- 版本：0.0.11
 - 入口：http://127.0.0.1:4176/
 - 浏览器：Codex In-app Browser
 - 视口：桌面约 1280 × 720（页面有效宽度 1265px）；窄屏 390 × 844（页面有效宽度 375px）
@@ -67,3 +68,11 @@
 ## 后续验收规则
 
 每次新增或修改组件必须更新本记录对应矩阵，并至少复核：默认 light/dark、圆角主题、Glass/Atmospheric、窄屏、键盘焦点、禁用/加载/空/错误状态。发布前运行 `bun run release:check`，并将新的视觉差异和已知限制写入本文件。
+
+## 0.0.11 图表 tooltip/focus 复核
+
+- 入口：`http://127.0.0.1:4179/#components`；Chrome 桌面视口；Business 分类显示 19 个组件。
+- Bar Chart：Obsidian dark 与 Glass light 下人工确认悬浮/键盘点位均显示 `12:00: 920`，焦点描边、tooltip 对比度和图表布局正常。
+- Area Chart：Obsidian dark 下人工确认悬浮/键盘点位均显示 `04:00: 29`，空值间隙与焦点描边保持稳定。
+- Pie Chart：Obsidian dark 下人工确认悬浮/键盘分区均显示 `EDGE: 42 (42%)`，donut、legend 和 tooltip 不发生布局跳动。
+- 主题抽查：Glass dark/light 均覆盖图表；日间 tooltip 背景、边框、文字与焦点色满足可读性要求。

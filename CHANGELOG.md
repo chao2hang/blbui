@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.11 — 2026-09-08
+
+- 为 Bar/Line/Area/Pie 图表增加主题化 hover 与键盘 tooltip，新增 `aui-chart-point` 事件和 React `onPoint` 回调；关闭 tooltip 时仍保持静态可访问语义与 null telemetry gap。
+- 收口 Popover/Dropdown 的 Escape、outside-dismiss 和触发器焦点恢复，补充焦点行为回归测试。
+- 同步 123 个组件的目录/API 文档、三框架示例版本和长期计划；保留 Enterprise/FormBuilder 的 select 自定义箭头视觉修复。
+
 ## 0.0.10 — 2026-09-08
 
 - 新增 Business `AreaChart`、`PieChart`、`Gauge`，并补齐 React 绑定、主题 token、API/目录文档与 adapter contract。

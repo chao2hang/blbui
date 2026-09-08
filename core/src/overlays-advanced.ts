@@ -135,19 +135,45 @@ export class AdminPopoverElement extends AdminElement {
     open = false;
     title = "";
     private titleId = nextUid("popover-title");
+    private lastFocused: HTMLElement | null = null;
     private readonly onDocumentClick = (event: Event) => {
         if (!this.contains(event.target as Node)) this.close();
     };
     private readonly onDocumentKeydown = (event: KeyboardEvent) => {
-        if (event.key === "Escape") this.close();
+        if (event.key === "Escape") {
+            event.preventDefault();
+            this.close();
+        }
     };
+    private triggerElement(): HTMLElement | null {
+        return (
+            this.shadowRoot
+                ?.querySelector<HTMLSlotElement>("slot[name='trigger']")
+                ?.assignedElements()
+                .find((node): node is HTMLElement => node instanceof HTMLElement) ?? null
+        );
+    }
     private close(): void {
         if (!this.open) return;
         this.open = false;
         this.dispatchDetail("aui-open-change", { open: false });
+        this.lastFocused?.focus();
+        this.lastFocused = null;
     }
-    private toggle(): void {
-        this.open = !this.open;
+    private toggle(event: Event): void {
+        if (this.open) {
+            this.close();
+            return;
+        }
+        if (!this.open) {
+            this.lastFocused =
+                this.triggerElement() ??
+                [...event.composedPath()].find(
+                    (node): node is HTMLElement => node instanceof HTMLElement && node !== this,
+                ) ??
+                (document.activeElement instanceof HTMLElement ? document.activeElement : null);
+        }
+        this.open = true;
         this.dispatchDetail("aui-open-change", { open: this.open });
     }
     protected updated(changed: Map<string, unknown>): void {
@@ -166,6 +192,7 @@ export class AdminPopoverElement extends AdminElement {
         super.disconnectedCallback();
         document.removeEventListener("click", this.onDocumentClick, true);
         document.removeEventListener("keydown", this.onDocumentKeydown);
+        this.lastFocused = null;
     }
     render() {
         return html`<span @click=${this.toggle}><slot name="trigger"></slot><slot></slot></span>
@@ -234,9 +261,24 @@ export class AdminDropdownElement extends AdminElement {
     `;
     items: AdminMenuItem[] = [];
     open = false;
+    private lastFocused: HTMLElement | null = null;
     private readonly onDocumentClick = (event: Event) => {
         if (!this.contains(event.target as Node)) this.close();
     };
+    private readonly onDocumentKeydown = (event: KeyboardEvent) => {
+        if (event.key === "Escape" && this.open) {
+            event.preventDefault();
+            this.close();
+        }
+    };
+    private triggerElement(): HTMLElement | null {
+        return (
+            this.shadowRoot
+                ?.querySelector<HTMLSlotElement>("slot[name='trigger']")
+                ?.assignedElements()
+                .find((node): node is HTMLElement => node instanceof HTMLElement) ?? null
+        );
+    }
     private readonly onMenuKeydown = (event: KeyboardEvent) => {
         const buttons = this.shadowRoot?.querySelectorAll<HTMLElement>(
             ".menu button[role='menuitem']",
@@ -265,20 +307,25 @@ export class AdminDropdownElement extends AdminElement {
                 event.preventDefault();
                 break;
             case "Escape":
-            case "Tab":
+                event.preventDefault();
                 this.close();
+                break;
+            case "Tab":
+                this.close(false);
                 break;
         }
     };
-    private close(): void {
+    private close(restoreFocus = true): void {
         if (!this.open) return;
         this.open = false;
         this.dispatchDetail("aui-open-change", { open: false });
+        if (restoreFocus) this.lastFocused?.focus();
+        this.lastFocused = null;
     }
     private select(item: AdminMenuItem): void {
         if (item.disabled || item.separator) return;
         this.dispatchDetail("aui-menu-select", { id: item.id });
-        this.open = false;
+        this.close();
     }
     private syncTriggerAria(): void {
         for (const node of this.shadowRoot
@@ -294,11 +341,13 @@ export class AdminDropdownElement extends AdminElement {
         if (changed.has("open")) {
             if (this.open) {
                 document.addEventListener("click", this.onDocumentClick, true);
+                document.addEventListener("keydown", this.onDocumentKeydown);
                 this.shadowRoot
                     ?.querySelector<HTMLElement>(".menu button[role='menuitem']")
                     ?.focus();
             } else {
                 document.removeEventListener("click", this.onDocumentClick, true);
+                document.removeEventListener("keydown", this.onDocumentKeydown);
             }
             this.syncTriggerAria();
         }
@@ -306,11 +355,27 @@ export class AdminDropdownElement extends AdminElement {
     disconnectedCallback(): void {
         super.disconnectedCallback();
         document.removeEventListener("click", this.onDocumentClick, true);
+        document.removeEventListener("keydown", this.onDocumentKeydown);
+        this.lastFocused = null;
     }
     render() {
         return html`<span
-                @click=${() => {
-                    this.open = !this.open;
+                @click=${(event: Event) => {
+                    if (!this.open) {
+                        this.lastFocused =
+                            this.triggerElement() ?? [...event.composedPath()].find(
+                                (node): node is HTMLElement =>
+                                    node instanceof HTMLElement && node !== this,
+                            ) ??
+                            (document.activeElement instanceof HTMLElement
+                                ? document.activeElement
+                                : null);
+                    }
+                    if (this.open) {
+                        this.close();
+                        return;
+                    }
+                    this.open = true;
                     this.dispatchDetail("aui-open-change", { open: this.open });
                 }}
                 ><slot name="trigger" @slotchange=${this.syncTriggerAria}><slot></slot></slot

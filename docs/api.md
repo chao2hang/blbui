@@ -117,10 +117,10 @@ The catalog currently describes **123 components** across Core and Business pack
 | Approval Timeline | `aui-approval-timeline` | business | `items`, `active` | — |
 | Metric Card | `aui-metric-card` | business | `label`, `value`, `unit`, `trend`, `tone` | — |
 | Metric Grid | `aui-metric-grid` | business | `items`, `columns` | — |
-| Bar Chart | `aui-bar-chart` | business | `data`, `height`, `label` | — |
-| Line Chart | `aui-line-chart` | business | `data`, `height`, `label`, `color`, `show-points` | — |
-| Area Chart | `aui-area-chart` | business | `data`, `height`, `label`, `color`, `show-points` | — |
-| Pie Chart | `aui-pie-chart` | business | `data`, `height`, `label`, `donut`, `show-legend` | — |
+| Bar Chart | `aui-bar-chart` | business | `data`, `height`, `label`, `show-tooltip` | `aui-chart-point` |
+| Line Chart | `aui-line-chart` | business | `data`, `height`, `label`, `color`, `show-points`, `show-tooltip` | `aui-chart-point` |
+| Area Chart | `aui-area-chart` | business | `data`, `height`, `label`, `color`, `show-points`, `show-tooltip` | `aui-chart-point` |
+| Pie Chart | `aui-pie-chart` | business | `data`, `height`, `label`, `donut`, `show-legend`, `show-tooltip` | `aui-chart-point` |
 | Gauge | `aui-gauge` | business | `value`, `min`, `max`, `height`, `label`, `unit`, `color` | — |
 | Sparkline | `aui-sparkline` | business | `values`, `label`, `color` | — |
 | Form Wizard | `aui-form-wizard` | business | `steps`, `active`, `completed`, `linear`, `next-label`, `previous-label`, `finish-label` | `aui-wizard-before-change`, `aui-wizard-change`, `aui-wizard-complete` |

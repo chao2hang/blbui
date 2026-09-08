@@ -56,6 +56,22 @@ export class AdminFormBuilderElement extends AdminElement {
       outline: 0;
       font: 12px/1.3 var(--aui-font-mono);
     }
+    select {
+      padding-right: 46px;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, var(--aui-text-muted) 50%),
+        linear-gradient(135deg, var(--aui-text-muted) 50%, transparent 50%);
+      background-position:
+        calc(100% - 15px) 50%,
+        calc(100% - 11px) 50%;
+      background-repeat: no-repeat;
+      background-size: 4px 4px;
+    }
+    select::-ms-expand {
+      display: none;
+    }
     textarea {
       min-height: 92px;
       resize: vertical;

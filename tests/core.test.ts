@@ -681,6 +681,40 @@ describe("accessibility contracts", () => {
         expect(popover.open).toBe(false);
     });
 
+    it("restores focus to popover and dropdown triggers after dismissal", async () => {
+        const popover = document.createElement("aui-popover") as HTMLElement & {
+            open: boolean;
+            updateComplete: Promise<boolean>;
+        };
+        popover.innerHTML = '<button slot="trigger">MORE</button><span slot="content">BODY</span>';
+        document.body.append(popover);
+        await popover.updateComplete;
+        const popoverTrigger = popover.querySelector("button") as HTMLButtonElement;
+        popoverTrigger.focus();
+        popover.shadowRoot?.querySelector("span")?.dispatchEvent(new MouseEvent("click", { bubbles: true, composed: true }));
+        await popover.updateComplete;
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+        await popover.updateComplete;
+        expect(document.activeElement).toBe(popoverTrigger);
+
+        const dropdown = document.createElement("aui-dropdown") as HTMLElement & {
+            items: Array<{ id: string; label: string }>;
+            open: boolean;
+            updateComplete: Promise<boolean>;
+        };
+        dropdown.items = [{ id: "refresh", label: "Refresh" }];
+        dropdown.innerHTML = '<button slot="trigger">MENU</button>';
+        document.body.append(dropdown);
+        await dropdown.updateComplete;
+        const dropdownTrigger = dropdown.querySelector("button") as HTMLButtonElement;
+        dropdownTrigger.focus();
+        dropdown.shadowRoot?.querySelector("span")?.dispatchEvent(new MouseEvent("click", { bubbles: true, composed: true }));
+        await dropdown.updateComplete;
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+        await dropdown.updateComplete;
+        expect(document.activeElement).toBe(dropdownTrigger);
+    });
+
     it("navigates a dropdown menu with arrow keys and renders separators inert", async () => {
         const dropdown = document.createElement("aui-dropdown") as HTMLElement & {
             items: Array<{ id: string; label: string; separator?: boolean }>;

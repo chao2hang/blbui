@@ -1,6 +1,6 @@
 {
   "name": "@chaos_team/blbui-docs",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "private": true,
   "description": "Documentation site and interactive playground for BLBUI.",
   "type": "module",

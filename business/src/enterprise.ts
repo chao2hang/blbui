@@ -362,6 +362,8 @@ export class AdminAuditLogElement extends AdminElement {
     .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
     input, select, button { min-height: 32px; box-sizing: border-box; border: 1px solid var(--aui-border); background: var(--aui-control-bg); color: var(--aui-text); font: 11px/1.2 var(--aui-font-mono); }
     input, select { min-width: 150px; padding: 7px 8px; }
+    select { padding-right: 34px; appearance: none; -webkit-appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--aui-text-muted) 50%), linear-gradient(135deg, var(--aui-text-muted) 50%, transparent 50%); background-position: calc(100% - 13px) 50%, calc(100% - 9px) 50%; background-repeat: no-repeat; background-size: 4px 4px; }
+    select::-ms-expand { display: none; }
     button { padding: 7px 10px; cursor: pointer; }
     button:hover:not(:disabled), input:focus, select:focus { border-color: var(--aui-focus); box-shadow: var(--aui-focus-ring); outline: none; }
     button:disabled { cursor: not-allowed; opacity: .45; }
