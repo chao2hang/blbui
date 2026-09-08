@@ -4,7 +4,7 @@ import vue from "@vitejs/plugin-vue";
 const source = (path: string) => new URL(path, import.meta.url).pathname;
 
 export default defineConfig({
-    plugins: [vue()],
+    plugins: [vue({ template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith("aui-") } } })],
     resolve: {
         alias: [
             { find: "@chaos_team/blbui-core/register", replacement: source("../../core/src/register.ts") },

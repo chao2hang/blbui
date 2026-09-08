@@ -56,6 +56,11 @@ for (const playground of frameworkPlaygrounds) {
         await expect(page.locator("#business-table")).toContainText("Gateway");
         await page.locator("#business-table").getByRole("checkbox", { name: /Select row/ }).first().check();
         await expect(page.locator("[data-parity-business-selection]")).toHaveAttribute("data-parity-business-selection", "1");
+        if (playground.name !== "React") {
+            await expect(page.locator("aui-permission-matrix")).toContainText("Operator");
+            await expect(page.locator("aui-audit-log")).toContainText("channel.updated");
+            await expect(page.locator("aui-export-button")).toContainText("EXPORT");
+        }
         expect(pageErrors).toEqual([]);
     });
 }

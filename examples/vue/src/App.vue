@@ -26,6 +26,10 @@ const recoverFromAsyncError = () => {
 };
 query.value = contract.initialQuery;
 const tabs = fixture.tabs;
+const businessRoles = [{ id: "operator", label: "Operator" }];
+const businessResources = [{ id: "channels", label: "Channels" }];
+const businessPermissions = { operator: { channels: "read" } };
+const auditEntries = [{ id: "evt-1", actor: "operator", action: "channel.updated", time: "09:42" }];
 const toasts = ref([{ id: "parity", title: "PARITY READY", message: "Vue fixture is synchronized.", variant: "success", duration: 0 }]);
 onMounted(() => {
   registerBusinessElements();
@@ -81,6 +85,15 @@ const visibleRows = computed(() => {
       </section>
       <div id="business-table-mount"></div>
       <output data-parity-business-selection="0">Business selection: 0</output>
+      <section aria-label="Business direct Custom Elements" style="margin-top: 20px">
+        <aui-permission-matrix
+          :roles.prop="businessRoles"
+          :resources.prop="businessResources"
+          :permissions.prop="businessPermissions"
+        />
+        <aui-audit-log :entries.prop="auditEntries" has-more />
+        <aui-export-button :data.prop="visibleRows" format="csv" filename="channels" />
+      </section>
       <AdminPagination :page="page" :total-pages="contract.totalPages" @page-change="page = $event" />
       <AdminToastManager v-model:items="toasts" />
       <AdminDialog v-model:open="open" title="Create channel">

@@ -21,6 +21,9 @@
   let toasts = [{ id: 'parity', title: 'PARITY READY', message: 'Svelte fixture is synchronized.', variant: 'success', duration: 0 }]
   let businessTable: (HTMLElement & Record<string, unknown>) | undefined
   let businessSelection = 0
+  let permissionMatrix: (HTMLElement & Record<string, unknown>) | undefined
+  let auditLog: (HTMLElement & Record<string, unknown>) | undefined
+  let exportButton: (HTMLElement & Record<string, unknown>) | undefined
   onMount(() => {
     registerAdminElements()
     registerBusinessElements()
@@ -29,6 +32,17 @@
       businessTable.rows = fixture.business.rows
       businessTable.selectable = true
       businessTable.addEventListener('aui-selection-change', (event) => (businessSelection = (event as CustomEvent<{ keys: unknown[] }>).detail.keys.length))
+    }
+    if (permissionMatrix) {
+      permissionMatrix.roles = [{ id: 'operator', label: 'Operator' }]
+      permissionMatrix.resources = [{ id: 'channels', label: 'Channels' }]
+      permissionMatrix.permissions = { operator: { channels: 'read' } }
+    }
+    if (auditLog) auditLog.entries = [{ id: 'evt-1', actor: 'operator', action: 'channel.updated', time: '09:42' }]
+    if (exportButton) {
+      exportButton.data = fixture.rows
+      exportButton.format = 'csv'
+      exportButton.filename = 'channels'
     }
   })
 </script>
@@ -71,6 +85,11 @@
     </section>
     <aui-advanced-table id="business-table" bind:this={businessTable}></aui-advanced-table>
     <output data-parity-business-selection={businessSelection}>Business selection: {businessSelection}</output>
+    <section aria-label="Business direct Custom Elements" style="margin-top: 20px">
+      <aui-permission-matrix bind:this={permissionMatrix}></aui-permission-matrix>
+      <aui-audit-log bind:this={auditLog} has-more></aui-audit-log>
+      <aui-export-button bind:this={exportButton}></aui-export-button>
+    </section>
     <AdminPagination {page} totalPages={contract.totalPages} onPageChange={(next) => (page = next)} />
     <AdminToastManager bind:items={toasts} />
     <AdminDialog bind:open title="Create channel">

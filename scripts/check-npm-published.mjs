@@ -4,7 +4,7 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License.
 */
 
-import { readFile } from "node:fs/promises";
+import { appendFile, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
@@ -31,6 +31,33 @@ async function readPublishedVersion(name) {
     return metadata.versions?.[version] ? version : undefined;
 }
 
+async function writeSummary(status, missing = []) {
+    const summaryPath = process.env.GITHUB_STEP_SUMMARY;
+    if (!summaryPath) return;
+    const missingSet = new Set(missing);
+    const rows = manifests
+        .map((manifest) => {
+            const state = missingSet.has(manifest.name) ? "❌ missing" : "✅ visible";
+            return `| ${manifest.name} | ${version} | ${state} |`;
+        })
+        .join("\n");
+    await appendFile(
+        summaryPath,
+        [
+            "## BLBUI npm publication",
+            "",
+            `- Status: **${status}**`,
+            `- Registry: ${registry}`,
+            `- Version: \`${version}\``,
+            "",
+            "| Package | Version | Visibility |",
+            "| --- | --- | --- |",
+            rows,
+            "",
+        ].join("\n"),
+    );
+}
+
 const started = Date.now();
 const missing = new Set(manifests.map((manifest) => manifest.name));
 while (missing.size > 0) {
@@ -46,10 +73,12 @@ while (missing.size > 0) {
     );
     for (const [name, published] of results) if (published === version) missing.delete(name);
     if (!missing.size) {
+        await writeSummary("verified");
         console.log(`npm publication verified: ${manifests.length} packages at ${version}`);
         break;
     }
     if (Date.now() - started >= timeoutMs) {
+        await writeSummary("timed out", [...missing]);
         console.error(
             `npm publication verification timed out for ${[...missing].join(", ")} at ${version}`,
         );

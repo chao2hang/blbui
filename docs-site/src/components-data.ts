@@ -1854,7 +1854,7 @@ export const components: ComponentItem[] = [
         usage: {
             wc: `<aui-crud-page title="API Keys" description="Manage developer tokens"></aui-crud-page>`,
             react: `import { AdminCrudPage } from '@chaos_team/blbui-business-react'\n\n<AdminCrudPage title="API Keys" description="Manage developer tokens" />`,
-            vue: `<AdminCrudPage title="API Keys" description="Manage developer tokens" />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-crud-page title="API Keys" description="Manage developer tokens"></aui-crud-page>`,
             svelte: `<aui-crud-page title="API Keys" description="Manage developer tokens"></aui-crud-page>`,
         },
     },
@@ -1871,7 +1871,7 @@ export const components: ComponentItem[] = [
         usage: {
             wc: `<aui-crud-toolbar search-placeholder="Filter channels..."></aui-crud-toolbar>`,
             react: `import { AdminCrudToolbar } from '@chaos_team/blbui-business-react'\n\n<AdminCrudToolbar searchPlaceholder="Filter channels..." onSearch={(value) => console.log(value)} />`,
-            vue: `<AdminCrudToolbar search-placeholder="Filter channels..." @create="handleCreate" />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-crud-toolbar search-placeholder="Filter channels..."></aui-crud-toolbar>`,
             svelte: `<aui-crud-toolbar search-placeholder="Filter channels..."></aui-crud-toolbar>`,
         },
     },
@@ -1890,7 +1890,7 @@ export const components: ComponentItem[] = [
         usage: {
             wc: `<aui-advanced-table id="enterprise-table" selectable></aui-advanced-table>`,
             react: `import { AdminAdvancedTable } from '@chaos_team/blbui-business-react'\n\n<AdminAdvancedTable columns={columns} rows={rows} selectable onSelectionChange={(keys) => console.log(keys)} />`,
-            vue: `<AdminAdvancedTable :columns="columns" :rows="rows" :selectable="true" />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-advanced-table :columns.prop="columns" :rows.prop="rows" selectable></aui-advanced-table>`,
             svelte: `<aui-advanced-table selectable></aui-advanced-table>`,
         },
     },
@@ -1908,7 +1908,7 @@ export const components: ComponentItem[] = [
         usage: {
             wc: `<aui-form-builder id="schema-form" submit-label="SAVE CONFIG"></aui-form-builder>`,
             react: `import { AdminFormBuilder } from '@chaos_team/blbui-business-react'\n\n<AdminFormBuilder fields={formSchema} submitLabel="SAVE" onSubmit={handleSubmit} />`,
-            vue: `<AdminFormBuilder :fields="formSchema" submit-label="SAVE" @submit="handleSubmit" />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-form-builder :fields.prop="formSchema" submit-label="SAVE"></aui-form-builder>`,
             svelte: `<aui-form-builder submit-label="SAVE"></aui-form-builder>`,
         },
     },
@@ -1926,7 +1926,7 @@ export const components: ComponentItem[] = [
         usage: {
             wc: `<aui-approval-timeline id="flow-timeline" active="1"></aui-approval-timeline>`,
             react: `import { AdminApprovalTimeline } from '@chaos_team/blbui-business-react'\n\n<AdminApprovalTimeline items={approvalSteps} active={1} />`,
-            vue: `<AdminApprovalTimeline :items="approvalSteps" :active="1" />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-approval-timeline :items.prop="approvalSteps" :active="1"></aui-approval-timeline>`,
             svelte: `<aui-approval-timeline active={1}></aui-approval-timeline>`,
         },
     },
@@ -1943,7 +1943,7 @@ export const components: ComponentItem[] = [
         usage: {
             wc: `<aui-metric-card label="INGRESS" value="4.82" unit="GB/s" trend="+8.4%" tone="success"></aui-metric-card>`,
             react: `import { AdminMetricCard } from '@chaos_team/blbui-business-react'\n\n<AdminMetricCard label="INGRESS" value="4.82" unit="GB/s" trend="+8.4%" tone="success" />`,
-            vue: `<AdminMetricCard label="INGRESS" value="4.82" unit="GB/s" trend="+8.4%" tone="success" />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-metric-card label="INGRESS" value="4.82" unit="GB/s" trend="+8.4%" tone="success"></aui-metric-card>`,
             svelte: `<aui-metric-card label="INGRESS" value="4.82" unit="GB/s" trend="+8.4%" tone="success"></aui-metric-card>`,
         },
     },
@@ -1961,7 +1961,7 @@ export const components: ComponentItem[] = [
         usage: {
             wc: `<aui-metric-grid id="kpi-grid" columns="4"></aui-metric-grid>`,
             react: `import { AdminMetricGrid } from '@chaos_team/blbui-business-react'\n\n<AdminMetricGrid items={kpis} columns={4} />`,
-            vue: `<AdminMetricGrid :items="kpis" :columns="4" />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-metric-grid :items.prop="kpis" :columns="4"></aui-metric-grid>`,
             svelte: `<aui-metric-grid columns={4}></aui-metric-grid>`,
         },
     },
@@ -1979,7 +1979,7 @@ export const components: ComponentItem[] = [
         usage: {
             wc: `<aui-bar-chart id="traffic-bars" height="160px" label="Requests/sec" show-tooltip></aui-bar-chart>`,
             react: `import { AdminBarChart } from '@chaos_team/blbui-business-react'\n\n<AdminBarChart data={chartData} height="160px" label="Requests/sec" onPoint={(detail) => console.log(detail)} />`,
-            vue: `<AdminBarChart :data="chartData" height="160px" label="Requests/sec" />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-bar-chart :data.prop="chartData" height="160px" label="Requests/sec"></aui-bar-chart>`,
             svelte: `<aui-bar-chart height="160px" label="Requests/sec"></aui-bar-chart>`,
         },
     },
@@ -1997,7 +1997,7 @@ export const components: ComponentItem[] = [
         usage: {
             wc: `<aui-sparkline id="latency-sparkline" label="LATENCY (MS)" color="#10b981"></aui-sparkline>`,
             react: `import { AdminSparkline } from '@chaos_team/blbui-business-react'\n\n<AdminSparkline values={[18, 24, 30, 28, 22, 19, 16]} label="LATENCY (MS)" color="#10b981" />`,
-            vue: `<AdminSparkline :values="[18, 24, 30, 28, 22, 19, 16]" label="LATENCY (MS)" color="#10b981" />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-sparkline :values.prop="[18, 24, 30, 28, 22, 19, 16]" label="LATENCY (MS)" color="#10b981"></aui-sparkline>`,
             svelte: `<aui-sparkline label="LATENCY (MS)" color="#10b981"></aui-sparkline>`,
         },
     },
@@ -2054,7 +2054,7 @@ export const components: ComponentItem[] = [
         usage: {
             wc: `<aui-pie-chart id="traffic-mix" data={segments} donut label="Traffic mix"></aui-pie-chart>`,
             react: `import { AdminPieChart } from '@chaos_team/blbui-business-react'\n\n<AdminPieChart data={segments} donut label="Traffic mix" onPoint={(detail) => console.log(detail)} />`,
-            vue: `<AdminPieChart :data="segments" :donut="true" label="Traffic mix" />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-pie-chart :data.prop="segments" donut label="Traffic mix"></aui-pie-chart>`,
             svelte: `<aui-pie-chart data={segments} donut label="Traffic mix"></aui-pie-chart>`,
         },
     },
@@ -2073,7 +2073,7 @@ export const components: ComponentItem[] = [
         usage: {
             wc: `<aui-gauge value="78" max="100" label="SLO" unit="%"></aui-gauge>`,
             react: `import { AdminGauge } from '@chaos_team/blbui-business-react'\n\n<AdminGauge value={78} max={100} label="SLO" unit="%" />`,
-            vue: `<AdminGauge :value="78" :max="100" label="SLO" unit="%" />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-gauge value="78" max="100" label="SLO" unit="%"></aui-gauge>`,
             svelte: `<aui-gauge value={78} max={100} label="SLO" unit="%"></aui-gauge>`,
         },
     },
@@ -2182,7 +2182,7 @@ export const components: ComponentItem[] = [
             wc: `<aui-form-wizard id="wizard"></aui-form-wizard>\n<span slot="step-account">Account details</span>`,
             react: `import { AdminFormWizard } from '@chaos_team/blbui-business-react'\n\n<AdminFormWizard steps={steps} onComplete={handleComplete}>\n  <section slot="step-account">Account details</section>\n</AdminFormWizard>`,
             vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-form-wizard :steps.prop="steps" @aui-wizard-complete="handleComplete"><span slot="step-account">Account details</span></aui-form-wizard>`,
-            svelte: `<aui-form-wizard steps={steps} on:wizard-complete={handleComplete}><section slot="step-account">Account details</section></aui-form-wizard>`,
+            svelte: `<aui-form-wizard steps={steps} on:aui-wizard-complete={handleComplete}><section slot="step-account">Account details</section></aui-form-wizard>`,
         },
     },
     {
@@ -2200,7 +2200,7 @@ export const components: ComponentItem[] = [
             wc: `<aui-permission-matrix id="permissions"></aui-permission-matrix>`,
             react: `import { AdminPermissionMatrix } from '@chaos_team/blbui-business-react'\n\n<AdminPermissionMatrix roles={roles} resources={resources} permissions={permissions} onChange={savePermission} />`,
             vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-permission-matrix :roles.prop="roles" :resources.prop="resources" :permissions.prop="permissions" @aui-permission-change="savePermission" />`,
-            svelte: `<aui-permission-matrix roles={roles} resources={resources}></aui-permission-matrix>`,
+            svelte: `<aui-permission-matrix bind:this={matrix}></aui-permission-matrix>\n\n<script>\nmatrix.roles = roles\nmatrix.resources = resources\nmatrix.permissions = permissions\n</script>`,
         },
     },
     {
@@ -2219,7 +2219,7 @@ export const components: ComponentItem[] = [
             wc: `<aui-audit-log id="audit" has-more></aui-audit-log>`,
             react: `import { AdminAuditLog } from '@chaos_team/blbui-business-react'\n\n<AdminAuditLog entries={entries} hasMore onLoadMore={loadMore} />`,
             vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-audit-log :entries.prop="entries" has-more @aui-audit-load-more="loadMore" />`,
-            svelte: `<aui-audit-log entries={entries} hasMore on:audit-load-more={loadMore}></aui-audit-log>`,
+            svelte: `<aui-audit-log bind:this={auditLog} has-more on:aui-audit-load-more={loadMore}></aui-audit-log>\n\n<script>\nauditLog.entries = entries\n</script>`,
         },
     },
     {

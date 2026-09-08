@@ -23,7 +23,13 @@ if (new Set(manifests.map((manifest) => manifest.version)).size !== 1) {
 if (manifests.some((manifest) => manifest.private)) errors.push("publishable packages must not be private");
 
 const changelog = await readFile(`${root}/CHANGELOG.md`, "utf8");
+const publishWorkflow = await readFile(`${root}/.github/workflows/publish-blbui.yml`, "utf8");
+const npmVerifier = await readFile(`${root}/scripts/check-npm-published.mjs`, "utf8");
 if (!changelog.includes(`## ${version} —`)) errors.push(`CHANGELOG is missing ${version}`);
+for (const marker of ["bun run npm:verify", "NPM_CONFIG_PROVENANCE"]) {
+  if (!publishWorkflow.includes(marker)) errors.push(`publish workflow is missing ${marker}`);
+}
+if (!npmVerifier.includes("GITHUB_STEP_SUMMARY")) errors.push("npm verifier is missing GITHUB_STEP_SUMMARY");
 
 const isTagBuild = process.env.GITHUB_REF_TYPE === "tag" || process.env.GITHUB_REF?.startsWith("refs/tags/");
 const tag = process.env.GITHUB_REF_NAME ?? process.env.GITHUB_REF?.replace(/^refs\/tags\//, "");

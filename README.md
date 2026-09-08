@@ -209,6 +209,7 @@ Core 事件使用 `aui-*` 前缀并通过 `CustomEvent.detail` 传递结构化�
 完整的 Core / Business 分层、参考 `chaos-ui` 的组件矩阵和后续 ERP/CRM/图表/CRUD 组件路线见：
 
 - `docs/roadmap.md`
+- `docs/business-frameworks.md`（Business 在 Vue 3 / Svelte 5 中的直接用法）
 - `docs/architecture.md`
 - `docs/long-term-plan.md`
 

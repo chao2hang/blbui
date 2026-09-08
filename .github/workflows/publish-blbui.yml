@@ -57,7 +57,7 @@ jobs:
 
       - name: Check catalog, public API, themes and tokens
         working-directory: .
-        run: bun run catalog:check && bun run api:check && bun run theme:check && bun run token:check && bun run governance:check && bun run visual:check && bun run visual:golden:check && bun run examples:check && bun run migration:check
+        run: bun run catalog:check && bun run business:examples:check && bun run api:check && bun run theme:check && bun run token:check && bun run governance:check && bun run visual:check && bun run visual:golden:check && bun run examples:check && bun run migration:check
 
       - name: Check release metadata
         working-directory: .
@@ -166,7 +166,7 @@ jobs:
             (cd "$package" && npm publish --access public --provenance --ignore-scripts)
           done
 
-      - name: Verify npm publication visibility
+      - name: Verify npm publication visibility and write summary
         working-directory: .
         env:
           BLBUI_NPM_VERIFY_TIMEOUT_MS: "180000"

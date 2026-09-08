@@ -102,7 +102,8 @@
 - 0.0.12 增加 LineChart 与 AreaChart 多系列共享坐标域、图例和 series-aware 点位事件；AreaChart 多系列已补充文档站预览、React 类型、行为测试和主题/窄屏人工复核。编辑器 adapter 已补充 CodeMirror/TipTap/Monaco 和四种宿主生命周期示例。
 - 0.0.18 在 0.0.17 的基础上补齐 docs-site 异步状态实验台、错误重试与权限恢复回归，并修复 Table permission-denied 可见性；0.0.16 的移动端 SchemaForm 控件尺寸和 Windows/Ubuntu profile-specific visual golden 继续作为稳定基线；原生 picker 仍保留为默认兼容模式。
 - 真实外部业务仓库的逐页迁移仍需宿主仓库配合，下一轮应优先落地 AdminButton、AdminPage/AdminPageHeader、AdminStatusTag 和 AdminLayout/AdminConsoleShell 的唯一挂载职责，再迁移 Users、Channels、Usage Logs 页面并清理旧兼容层。
-- 下一轮内部质量重点：补齐 Business Vue/Svelte wrapper 的直接导出示例，并将 npm 可见性检查结果保存为发布 job summary；外部 `web/` 页面迁移仍以宿主源码进入工作区为前提。
+- [x] 补齐 Business Vue/Svelte 直接 Custom Elements 示例，覆盖 19 个元素，并让 catalog/发布门禁检查示例不会回退为未导出的 `Admin*` 标签。
+- [x] 将六个包的 npm 可见性检查结果保存为发布 job summary；外部 `web/` 页面迁移仍以宿主源码进入工作区为前提。
 
 ## 每次迭代的完成定义
 

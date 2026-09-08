@@ -91,7 +91,9 @@ npm pack --dry-run --prefix business-react
 发布 workflow 在六个包全部 `npm publish` 成功后，还会运行
 `bun run npm:verify`，轮询 npm registry 直到每个包的当前版本出现在公开
 metadata 中（默认最多等待 180 秒）。这覆盖 npm metadata 的短暂传播延迟；
-若任一包最终不可见，workflow 会失败而不是报告假成功。
+若任一包最终不可见，workflow 会失败而不是报告假成功。校验脚本还会在
+GitHub Actions 的 job summary 写入六个包的版本与可见性表，便于审计发布
+结果而不需要展开原始日志。
 
 ```bash
 BLBUI_CHECK_NPM=1 bun run release:preflight

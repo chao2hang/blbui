@@ -136,6 +136,7 @@ The catalog currently describes **123 components** across Core and Business pack
 - React bindings map CustomEvents to typed callback props and keep object/array inputs as properties.
 - Vue Core bindings expose the same properties and `v-model` mappings; Business-only elements can be registered with `registerBusinessElements()`.
 - Svelte wrappers cover the most frequently used Core controls; all other components remain directly consumable as registered Custom Elements.
+- Vue/Svelte Business direct usage, object-property binding and lifecycle cleanup are documented in `docs/business-frameworks.md`.
 - Every component uses semantic `--aui-*` tokens, so the nine themes and both color modes share one API contract.
 
 ## Business data adapter contract
