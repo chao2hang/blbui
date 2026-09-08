@@ -401,6 +401,7 @@ export class AdminSchemaFormElement extends AdminElement {
             select {
                 height: 38px;
                 min-height: 38px;
+                line-height: 20px;
             }
         }
     `;
