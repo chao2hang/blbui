@@ -363,7 +363,8 @@ export class AdminDropdownElement extends AdminElement {
                 @click=${(event: Event) => {
                     if (!this.open) {
                         this.lastFocused =
-                            this.triggerElement() ?? [...event.composedPath()].find(
+                            this.triggerElement() ??
+                            [...event.composedPath()].find(
                                 (node): node is HTMLElement =>
                                     node instanceof HTMLElement && node !== this,
                             ) ??
