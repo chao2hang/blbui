@@ -2200,7 +2200,7 @@ export const components: ComponentItem[] = [
             wc: `<aui-permission-matrix id="permissions"></aui-permission-matrix>`,
             react: `import { AdminPermissionMatrix } from '@chaos_team/blbui-business-react'\n\n<AdminPermissionMatrix roles={roles} resources={resources} permissions={permissions} onChange={savePermission} />`,
             vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-permission-matrix :roles.prop="roles" :resources.prop="resources" :permissions.prop="permissions" @aui-permission-change="savePermission" />`,
-            svelte: `<aui-permission-matrix bind:this={matrix}></aui-permission-matrix>\n\n<script>\nmatrix.roles = roles\nmatrix.resources = resources\nmatrix.permissions = permissions\n</script>`,
+            svelte: `<script lang="ts">\nimport { onMount } from 'svelte'\nlet matrix: HTMLElement & Record<string, unknown>\nonMount(() => {\n  matrix.roles = roles\n  matrix.resources = resources\n  matrix.permissions = permissions\n})\n</script>\n\n<aui-permission-matrix bind:this={matrix}></aui-permission-matrix>`,
         },
     },
     {
@@ -2219,7 +2219,7 @@ export const components: ComponentItem[] = [
             wc: `<aui-audit-log id="audit" has-more></aui-audit-log>`,
             react: `import { AdminAuditLog } from '@chaos_team/blbui-business-react'\n\n<AdminAuditLog entries={entries} hasMore onLoadMore={loadMore} />`,
             vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-audit-log :entries.prop="entries" has-more @aui-audit-load-more="loadMore" />`,
-            svelte: `<aui-audit-log bind:this={auditLog} has-more on:aui-audit-load-more={loadMore}></aui-audit-log>\n\n<script>\nauditLog.entries = entries\n</script>`,
+            svelte: `<script lang="ts">\nimport { onMount } from 'svelte'\nlet auditLog: HTMLElement & Record<string, unknown>\nonMount(() => { auditLog.entries = entries })\n</script>\n\n<aui-audit-log bind:this={auditLog} has-more on:aui-audit-load-more={loadMore}></aui-audit-log>`,
         },
     },
     {

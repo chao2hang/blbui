@@ -60,11 +60,11 @@
 
 ### P4：SSR、无障碍与性能
 
-- 覆盖 SSR/静态 HTML 注册顺序、hydration 和无 DOM 环境的 theme API。
+- [x] 覆盖 SSR/静态 HTML 注册顺序、hydration 和无 DOM 环境的 theme API。
 - [x] 用 Playwright 建立 keyboard、focus trap、escape、outside click、form validation 测试矩阵。
 - [x] 用 axe 做目录重点组件扫描，修复名称、描述、tab order 和 aria 状态问题。
 - [x] 对 docs playground 建立首屏和渲染节点数预算（DOMContentLoaded < 5s、节点 < 20,000、目录卡片数固定）；DataGrid/长列表的滚动性能预算继续由真实业务宿主接入后补充。
-- 验证 prefers-reduced-motion、forced-colors、键盘-only 和移动端 320px 宽度。
+- [x] 验证 prefers-reduced-motion、forced-colors、键盘-only 和移动端 320px 宽度。
 
 ### P5：视觉回归与发布治理
 
