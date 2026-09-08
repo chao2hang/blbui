@@ -31,7 +31,7 @@ describe("SSR and hydration helpers", () => {
     it("defines every public core tag before hydration continues", async () => {
         registerAdminElements();
         await whenAdminElementsDefined();
-        expect(adminElementTags).toHaveLength(103);
+        expect(adminElementTags).toHaveLength(104);
         for (const tag of adminElementTags) expect(customElements.get(tag)).toBeDefined();
     });
 

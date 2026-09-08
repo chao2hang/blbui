@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.7 — 2026-09-08
+
+- 扩展 Business 套件至 15 个组件，新增 FormWizard、PermissionMatrix、AuditLog、ImportDialog、ExportButton 和 BulkActionsToolbar，并补齐 React 绑定、目录预览与跨框架使用示例。
+- 增强 ToastManager 的持久化、最大数量、跨标签页同步和 Vue `v-model:items` 接入；FilterBuilder/QueryBuilder 支持嵌套 ALL/ANY 分组、深度限制和异步选项状态。
+- 增加业务数据适配器、可选虚拟行窗口、公共 API 检查与 API 文档生成；发布门禁覆盖 119 组件目录、SSR、三框架 playground、主题/token、320px/forced-colors/reduced-motion 和像素稳定性。
+- 完成 9 套主题 × light/dark 代表状态的人工视觉复核，修正 QueryBuilder 重复入口和 API 文档生成器对多行属性数组的解析。
+
 ## 0.0.6 — 2026-09-08
 
 - 新增 TreeTable、ListView、FilterBuilder、QueryBuilder，并同步 React/Vue/Svelte 绑定、目录预览和跨框架事件契约。

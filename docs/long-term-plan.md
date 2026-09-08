@@ -14,7 +14,7 @@
 
 ### P0：语义 Token 与主题合同
 
-0.0.6 已落地基础合同，后续持续收紧：
+0.0.7 已落地基础合同，后续持续收紧：
 
 - 固化 surface、text、border、focus、status、overlay、shadow、radius、motion、form color-scheme 等 token。
 - 9 套主题均维护 light/dark 两套值；新增主题必须提供同一份 token 清单。
@@ -67,8 +67,8 @@
 
 - 每个组件至少保存四张基准：默认 dark、默认 light、代表性圆角主题、glass/atmospheric 主题。
 - 主题矩阵按 9 × 2 运行，重点组件再覆盖 hover、focus、disabled、loading、empty、error。
-- 发布前执行 catalog、typecheck、build、Svelte、docs smoke、unit、a11y 和视觉冒烟；像素级 visual regression 基线仍待接入。
-- 0.0.6 已接入 pixelmatch 重复渲染稳定性门禁；跨平台 golden screenshot 继续按浏览器/操作系统沉淀，避免字体和系统控件差异造成误报。
+- 发布前执行 catalog、public API/docs、typecheck、build、Svelte、docs smoke、unit、a11y、320px/forced-colors 和视觉冒烟；像素级 visual regression 基线仍待跨平台沉淀。
+- 0.0.7 已接入 pixelmatch 重复渲染稳定性门禁；跨平台 golden screenshot 继续按浏览器/操作系统沉淀，避免字体和系统控件差异造成误报。
 - 组件状态发生变化时更新 changelog、migration note 和截图基准。
 - 每季度清理一次重复组件、过期 token、未使用 utility 和文档示例漂移。
 
@@ -84,14 +84,14 @@
 | 框架 | Web Components、React、Vue、Svelte 的属性与事件行为一致                     |
 | 文档 | catalog 条目、预览、props/events、四框架 usage、截图和已知限制              |
 
-## 当前组件缺口（0.0.6 后）
+## 当前组件缺口（0.0.7 后）
 
 短期缺口集中在可复用的复杂交互，而不是继续堆叠展示型组件：
 
-- FormWizard，以及 FilterBuilder/QueryBuilder 的嵌套分组和异步选项适配。
-- Toast manager、通知跨标签页同步、Result action slots。
+- FormWizard，以及 FilterBuilder/QueryBuilder 的嵌套分组和异步选项适配已落地。
+- Toast manager、通知跨标签页同步、Result action slots 已落地。
 - TreeTable、ListView 已提供首版；继续完善可选的 TanStack Table / Virtual adapter。
-- PermissionMatrix、AuditLog、导入导出和更完整的 workflow 业务组件。
+- PermissionMatrix、AuditLog、ImportDialog、ExportButton、BulkActionsToolbar 和更完整的 workflow 业务组件已落地。
 - React/Vue/Svelte parity playground 与 SSR/hydration 验证已落地；继续补跨平台截图像素基线。
 
 ## 每次迭代的完成定义

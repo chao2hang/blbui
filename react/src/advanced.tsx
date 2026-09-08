@@ -34,9 +34,12 @@ import type {
     AdminTreeNode,
     AdminTreeTableNode,
     AdminListViewItem,
+    AdminToastItem,
     AdminFilterField,
     AdminFilterRule,
+    AdminFilterNode,
     AdminQueryRule,
+    AdminQueryNode,
     AdminFormLayout,
     AdminSchemaFormField,
     AdminSchemaFormValue,
@@ -986,6 +989,39 @@ export interface AdminToastProps extends ElementProps {
     duration?: number;
     onClose?: () => void;
 }
+
+export interface AdminToastManagerProps extends ElementProps {
+    items?: AdminToastItem[];
+    position?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+    max?: number;
+    persistKey?: string;
+    syncTabs?: boolean;
+    channelName?: string;
+    label?: string;
+    onChange?: (items: AdminToastItem[]) => void;
+}
+export function AdminToastManager(props: AdminToastManagerProps) {
+    const { items, position, max, persistKey, syncTabs, channelName, label, onChange, ...rest } =
+        props;
+    const { setRef } = useBinding(
+        undefined,
+        { items, position, max, persistKey, syncTabs, channelName, label },
+        {
+            "aui-toast-manager-change": onChange
+                ? (detail: { items: AdminToastItem[] }) => onChange(detail.items)
+                : undefined,
+        },
+    );
+    return createElement("aui-toast-manager", {
+        ...elementProps(
+            props,
+            ["items", "position", "max", "persistKey", "syncTabs", "channelName", "label"],
+            ["onChange"],
+        ),
+        ...rest,
+        ref: setRef,
+    });
+}
 export function AdminToast(props: AdminToastProps) {
     const { open, title, message, variant, duration, onClose, ...rest } = props;
     const { setRef } = useBinding(
@@ -1205,9 +1241,11 @@ export function AdminListView(props: AdminListViewProps) {
 
 export interface AdminFilterBuilderProps extends ElementProps {
     fields?: AdminFilterField[];
-    filters?: AdminFilterRule[];
+    filters?: AdminFilterNode[];
     maxRules?: number;
+    maxDepth?: number;
     addLabel?: string;
+    addGroupLabel?: string;
     clearLabel?: string;
     applyLabel?: string;
     onChange?: (detail: { filters: AdminFilterRule[] }) => void;
@@ -1218,7 +1256,9 @@ export function AdminFilterBuilder(props: AdminFilterBuilderProps) {
         fields,
         filters,
         maxRules,
+        maxDepth,
         addLabel,
+        addGroupLabel,
         clearLabel,
         applyLabel,
         onChange,
@@ -1227,13 +1267,22 @@ export function AdminFilterBuilder(props: AdminFilterBuilderProps) {
     } = props;
     const { setRef } = useBinding(
         undefined,
-        { fields, filters, maxRules, addLabel, clearLabel, applyLabel },
+        { fields, filters, maxRules, maxDepth, addLabel, addGroupLabel, clearLabel, applyLabel },
         { "aui-filter-builder-change": onChange, "aui-filter-builder-submit": onSubmit },
     );
     return createElement("aui-filter-builder", {
         ...elementProps(
             props,
-            ["fields", "filters", "maxRules", "addLabel", "clearLabel", "applyLabel"],
+            [
+                "fields",
+                "filters",
+                "maxRules",
+                "maxDepth",
+                "addLabel",
+                "addGroupLabel",
+                "clearLabel",
+                "applyLabel",
+            ],
             ["onChange", "onSubmit"],
         ),
         ...rest,
@@ -1243,23 +1292,24 @@ export function AdminFilterBuilder(props: AdminFilterBuilderProps) {
 
 export interface AdminQueryBuilderProps extends ElementProps {
     fields?: AdminFilterField[];
-    rules?: AdminQueryRule[];
+    rules?: AdminQueryNode[];
     logic?: "and" | "or";
+    maxDepth?: number;
     applyLabel?: string;
     onChange?: (detail: { logic: "and" | "or"; rules: AdminQueryRule[] }) => void;
     onSubmit?: (detail: { logic: "and" | "or"; rules: AdminQueryRule[] }) => void;
 }
 export function AdminQueryBuilder(props: AdminQueryBuilderProps) {
-    const { fields, rules, logic, applyLabel, onChange, onSubmit, ...rest } = props;
+    const { fields, rules, logic, maxDepth, applyLabel, onChange, onSubmit, ...rest } = props;
     const { setRef } = useBinding(
         undefined,
-        { fields, rules, logic, applyLabel },
+        { fields, rules, logic, maxDepth, applyLabel },
         { "aui-query-change": onChange, "aui-query-submit": onSubmit },
     );
     return createElement("aui-query-builder", {
         ...elementProps(
             props,
-            ["fields", "rules", "logic", "applyLabel"],
+            ["fields", "rules", "logic", "maxDepth", "applyLabel"],
             ["onChange", "onSubmit"],
         ),
         ...rest,

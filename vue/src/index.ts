@@ -1372,7 +1372,16 @@ export const AdminListView = adminElement({
 export const AdminFilterBuilder = adminElement({
     name: "AdminFilterBuilder",
     tag: "aui-filter-builder",
-    properties: ["fields", "filters", "maxRules", "addLabel", "clearLabel", "applyLabel"],
+    properties: [
+        "fields",
+        "filters",
+        "maxRules",
+        "maxDepth",
+        "addLabel",
+        "addGroupLabel",
+        "clearLabel",
+        "applyLabel",
+    ],
     events: [
         { name: "aui-filter-builder-change", emit: "change" },
         { name: "aui-filter-builder-submit", emit: "submit" },
@@ -1382,7 +1391,9 @@ export const AdminFilterBuilder = adminElement({
         fields: objectArray,
         filters: objectArray,
         maxRules: Number,
+        maxDepth: Number,
         addLabel: String,
+        addGroupLabel: String,
         clearLabel: String,
         applyLabel: String,
     },
@@ -1391,13 +1402,19 @@ export const AdminFilterBuilder = adminElement({
 export const AdminQueryBuilder = adminElement({
     name: "AdminQueryBuilder",
     tag: "aui-query-builder",
-    properties: ["fields", "rules", "logic", "applyLabel"],
+    properties: ["fields", "rules", "logic", "maxDepth", "applyLabel"],
     events: [
         { name: "aui-query-change", emit: "change" },
         { name: "aui-query-submit", emit: "submit" },
     ],
     emits: ["change", "submit"],
-    props: { fields: objectArray, rules: objectArray, logic: String, applyLabel: String },
+    props: {
+        fields: objectArray,
+        rules: objectArray,
+        logic: String,
+        maxDepth: Number,
+        applyLabel: String,
+    },
 });
 
 export const AdminDateRange = adminElement({
@@ -1923,6 +1940,23 @@ export const AdminToast = adminElement({
     ],
     emits: ["close", "update:open"],
     props: { open: Boolean, title: String, message: String, variant: String, duration: Number },
+});
+
+export const AdminToastManager = adminElement({
+    name: "AdminToastManager",
+    tag: "aui-toast-manager",
+    properties: ["items", "position", "max", "persistKey", "syncTabs", "channelName", "label"],
+    events: [{ name: "aui-toast-manager-change", emit: "change", model: "items" }],
+    emits: ["change", "update:items"],
+    props: {
+        items: objectArray,
+        position: String,
+        max: Number,
+        persistKey: String,
+        syncTabs: Boolean,
+        channelName: String,
+        label: String,
+    },
 });
 
 export const AdminToggle = adminElement({

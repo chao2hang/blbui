@@ -1,6 +1,6 @@
 {
   "name": "@chaos_team/blbui",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "private": true,
   "description": "Obsidian Industrial Console component library for React, Vue and Svelte.",
   "workspaces": [
@@ -35,10 +35,12 @@
     "examples:check": "node scripts/check-playgrounds.mjs",
     "ssr:check": "node scripts/check-ssr.mjs",
     "build:packages": "bun scripts/build-packages.mjs",
-    "pack:check": "bun run build:packages && npm pack --dry-run --workspaces --if-present",
     "typecheck:docs": "node_modules/.bin/tsc -p docs-site/tsconfig.json",
     "catalog:check": "node scripts/check-catalog.mjs && node scripts/check-examples.mjs",
-    "release:check": "bun run catalog:check && bun run theme:check && bun run token:check && bun run examples:check && bun run typecheck && bun run ssr:check && bun run build:packages && bun run check:svelte && bun run docs:check && bun run test && bun run test:frameworks && bun run e2e:check"
+    "api:docs": "node scripts/generate-api-docs.mjs",
+    "api:check": "node scripts/check-public-api.mjs && node scripts/generate-api-docs.mjs --check",
+    "release:check": "bun run catalog:check && bun run api:check && bun run theme:check && bun run token:check && bun run examples:check && bun run typecheck && bun run ssr:check && bun run build:packages && bun run check:svelte && bun run docs:check && bun run test && bun run test:frameworks && bun run e2e:check && bun run pack:check",
+    "pack:check": "npm pack --dry-run --workspaces --if-present"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

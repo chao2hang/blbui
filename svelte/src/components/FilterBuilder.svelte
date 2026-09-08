@@ -11,7 +11,9 @@ it under the terms of the GNU Affero General Public License.
   export let fields: AdminFilterField[] = []
   export let filters: AdminFilterRule[] = []
   export let maxRules = 8
+  export let maxDepth = 2
   export let addLabel = 'ADD FILTER'
+  export let addGroupLabel = 'ADD GROUP'
   export let clearLabel = 'CLEAR'
   export let applyLabel = 'APPLY'
   export let onChange: ((detail: unknown) => void) | undefined = undefined
@@ -32,7 +34,9 @@ it under the terms of the GNU Affero General Public License.
     element.fields = fields
     element.filters = filters
     element.maxRules = maxRules
+    element.maxDepth = maxDepth
     element.addLabel = addLabel
+    element.addGroupLabel = addGroupLabel
     element.clearLabel = clearLabel
     element.applyLabel = applyLabel
   }

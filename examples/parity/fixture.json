@@ -1,0 +1,21 @@
+{
+  "tabs": [
+    { "id": "all", "label": "All" },
+    { "id": "healthy", "label": "Healthy" }
+  ],
+  "rows": [
+    { "id": "gateway-prod", "status": "ONLINE", "region": "us-east-1" },
+    { "id": "gateway-edge", "status": "DEGRADED", "region": "ap-southeast-1" }
+  ],
+  "steps": [
+    { "id": "details", "label": "Details" },
+    { "id": "policy", "label": "Policy" },
+    { "id": "review", "label": "Review" }
+  ],
+  "parityContract": {
+    "inputEvent": "value-change",
+    "paginationEvent": "page-change",
+    "dialogModel": "open",
+    "toastEvent": "toast-manager-change"
+  }
+}

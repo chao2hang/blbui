@@ -353,17 +353,32 @@ export class AdminListViewElement extends AdminElement {
 
 export type AdminFilterFieldType = "text" | "number" | "date" | "select";
 export type AdminFilterOperator = "equals" | "contains" | "startsWith" | "gt" | "lt" | "isEmpty";
+export interface AdminFilterOption {
+    value: string;
+    label: string;
+}
 export interface AdminFilterField {
     key: string;
     label: string;
     type?: AdminFilterFieldType;
-    options?: Array<{ value: string; label: string }>;
+    options?: AdminFilterOption[];
+    /** Resolve select options lazily when a field has a large or remote dictionary. */
+    loadOptions?: (query?: string) => AdminFilterOption[] | Promise<AdminFilterOption[]>;
 }
 export interface AdminFilterRule {
     id?: string;
     field: string;
     operator: AdminFilterOperator;
     value?: string;
+}
+export interface AdminFilterGroup {
+    id?: string;
+    logic: "and" | "or";
+    rules: AdminFilterNode[];
+}
+export type AdminFilterNode = AdminFilterRule | AdminFilterGroup;
+export function isAdminFilterGroup(node: AdminFilterNode): node is AdminFilterGroup {
+    return "rules" in node && Array.isArray(node.rules);
 }
 
 const builderStyles = css`
@@ -380,6 +395,29 @@ const builderStyles = css`
         grid-template-columns: minmax(120px, 0.8fr) minmax(110px, 0.7fr) minmax(140px, 1fr) auto;
         gap: 6px;
         align-items: center;
+    }
+    .group {
+        display: grid;
+        gap: 8px;
+        padding: 10px;
+        border: 1px dashed var(--aui-border);
+        background: var(--aui-surface);
+    }
+    .group[data-depth="1"] {
+        background: var(--aui-bg);
+    }
+    .group-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        color: var(--aui-text-muted);
+        font: 10px/1.2 var(--aui-font-mono);
+        text-transform: uppercase;
+    }
+    .group-heading select {
+        width: auto;
+        min-width: 130px;
     }
     select,
     input,
@@ -448,70 +486,219 @@ function filterValue(event: Event): string {
     return (event.target as HTMLInputElement | HTMLSelectElement).value;
 }
 
+function newFilterRule(prefix: string, field?: AdminFilterField): AdminFilterRule {
+    return {
+        id: nextUid(prefix),
+        field: field?.key ?? "",
+        operator: defaultOperator(field),
+        value: "",
+    };
+}
+
+function flattenFilterNodes(nodes: AdminFilterNode[]): AdminFilterRule[] {
+    return nodes.flatMap((node) =>
+        isAdminFilterGroup(node) ? flattenFilterNodes(node.rules) : [node],
+    );
+}
+
+function cloneFilterNodes(nodes: AdminFilterNode[]): AdminFilterNode[] {
+    return nodes.map((node) =>
+        isAdminFilterGroup(node) ? { ...node, rules: cloneFilterNodes(node.rules) } : { ...node },
+    );
+}
+
 export class AdminFilterBuilderElement extends AdminElement {
     static properties = {
         fields: { attribute: false },
         filters: { attribute: false },
         maxRules: { type: Number, attribute: "max-rules" },
+        maxDepth: { type: Number, attribute: "max-depth" },
         addLabel: { type: String, attribute: "add-label" },
+        addGroupLabel: { type: String, attribute: "add-group-label" },
         clearLabel: { type: String, attribute: "clear-label" },
         applyLabel: { type: String, attribute: "apply-label" },
     };
     static styles = builderStyles;
     fields: AdminFilterField[] = [];
-    filters: AdminFilterRule[] = [];
+    filters: AdminFilterNode[] = [];
     maxRules = 8;
+    maxDepth = 2;
     addLabel = "ADD FILTER";
+    addGroupLabel = "ADD GROUP";
     clearLabel = "CLEAR";
     applyLabel = "APPLY";
+    private readonly optionCache = new Map<string, AdminFilterOption[]>();
+    private readonly optionPending = new Set<string>();
+    private readonly optionErrors = new Set<string>();
 
     private emitChange(): void {
         this.dispatchDetail("aui-filter-builder-change", { filters: this.filters });
         this.requestUpdate();
     }
-    private add(): void {
-        if (this.filters.length >= this.maxRules || !this.fields.length) return;
-        const field = this.fields[0];
-        this.filters = [
-            ...this.filters,
-            {
-                id: nextUid("filter"),
-                field: field.key,
-                operator: defaultOperator(field),
-                value: "",
-            },
-        ];
+    private addRule(path: number[] = []): void {
+        if (flattenFilterNodes(this.filters).length >= this.maxRules || !this.fields.length) return;
+        const next = cloneFilterNodes(this.filters);
+        const target = this.nodesAt(next, path);
+        target.push(newFilterRule("filter", this.fields[0]));
+        this.filters = next;
         this.emitChange();
     }
-    private removeRule(index: number): void {
-        this.filters = this.filters.filter((_, itemIndex) => itemIndex !== index);
+    private addGroup(path: number[] = []): void {
+        if (path.length >= this.maxDepth) return;
+        const next = cloneFilterNodes(this.filters);
+        const target = this.nodesAt(next, path);
+        target.push({
+            id: nextUid("filter-group"),
+            logic: "and",
+            rules: [newFilterRule("filter", this.fields[0])],
+        });
+        this.filters = next;
         this.emitChange();
     }
-    private updateRule(index: number, patch: Partial<AdminFilterRule>): void {
-        this.filters = this.filters.map((rule, itemIndex) =>
-            itemIndex === index ? { ...rule, ...patch } : rule,
-        );
+    private nodesAt(nodes: AdminFilterNode[], path: number[]): AdminFilterNode[] {
+        let current = nodes;
+        for (const index of path) {
+            const node = current[index];
+            if (!node || !isAdminFilterGroup(node)) return current;
+            current = node.rules;
+        }
+        return current;
+    }
+    private removeNode(path: number[]): void {
+        if (!path.length) return;
+        const next = cloneFilterNodes(this.filters);
+        this.nodesAt(next, path.slice(0, -1)).splice(path.at(-1)!, 1);
+        this.filters = next;
         this.emitChange();
     }
-    private renderValue(rule: AdminFilterRule, index: number): unknown {
+    private updateNode(path: number[], patch: Partial<AdminFilterRule>): void {
+        const next = cloneFilterNodes(this.filters);
+        const parent = this.nodesAt(next, path.slice(0, -1));
+        const node = parent[path.at(-1)!];
+        if (!node || isAdminFilterGroup(node)) return;
+        parent[path.at(-1)!] = { ...node, ...patch };
+        this.filters = next;
+        this.emitChange();
+    }
+    private updateGroup(path: number[], logic: "and" | "or"): void {
+        const next = cloneFilterNodes(this.filters);
+        const parent = this.nodesAt(next, path.slice(0, -1));
+        const node = parent[path.at(-1)!];
+        if (!node || !isAdminFilterGroup(node)) return;
+        parent[path.at(-1)!] = { ...node, logic };
+        this.filters = next;
+        this.emitChange();
+    }
+    private ensureOptions(field?: AdminFilterField): void {
+        if (
+            !field?.loadOptions ||
+            this.optionCache.has(field.key) ||
+            this.optionPending.has(field.key)
+        )
+            return;
+        this.optionPending.add(field.key);
+        Promise.resolve()
+            .then(() => field.loadOptions?.())
+            .then((options) => this.optionCache.set(field.key, options ?? []))
+            .catch(() => this.optionErrors.add(field.key))
+            .finally(() => {
+                this.optionPending.delete(field.key);
+                this.requestUpdate();
+            });
+    }
+    private renderValue(rule: AdminFilterRule, path: number[]): unknown {
         if (rule.operator === "isEmpty") return html`<span class="empty">NO VALUE REQUIRED</span>`;
         const field = this.fields.find((item) => item.key === rule.field);
-        if (field?.options)
+        this.ensureOptions(field);
+        const options = field?.options ?? this.optionCache.get(field?.key ?? "");
+        if (field?.loadOptions && this.optionPending.has(field.key))
+            return html`<span class="empty" role="status">LOADING OPTIONS...</span>`;
+        if (field?.loadOptions && this.optionErrors.has(field.key))
+            return html`<span class="empty" role="alert">OPTIONS UNAVAILABLE</span>`;
+        if (options)
             return html`<select
                 aria-label="Filter value"
                 .value=${rule.value ?? ""}
-                @change=${(event: Event) => this.updateRule(index, { value: filterValue(event) })}
+                @change=${(event: Event) => this.updateNode(path, { value: filterValue(event) })}
             >
                 <option value="">SELECT...</option>
-                ${field.options.map((option) => html`<option value=${option.value}>${option.label}</option>`)}
+                ${options.map((option) => html`<option value=${option.value}>${option.label}</option>`)}
             </select>`;
         return html`<input
             aria-label="Filter value"
             type=${field?.type === "number" ? "number" : field?.type === "date" ? "date" : "text"}
             .value=${rule.value ?? ""}
             placeholder="VALUE"
-            @input=${(event: Event) => this.updateRule(index, { value: filterValue(event) })}
+            @input=${(event: Event) => this.updateNode(path, { value: filterValue(event) })}
         />`;
+    }
+    private renderNodes(nodes: AdminFilterNode[], parentPath: number[] = [], depth = 0): unknown {
+        return nodes.map((node, index) => {
+            const path = [...parentPath, index];
+            if (isAdminFilterGroup(node))
+                return html`<div class="group" data-depth=${depth + 1}>
+                    <div class="group-heading">
+                        <span>GROUP ${depth + 1}</span>
+                        <select
+                            aria-label="Group logic"
+                            .value=${node.logic}
+                            @change=${(event: Event) => this.updateGroup(path, filterValue(event) as "and" | "or")}
+                        >
+                            <option value="and">ALL CONDITIONS</option>
+                            <option value="or">ANY CONDITION</option>
+                        </select>
+                    </div>
+                    ${this.renderNodes(node.rules, path, depth + 1)}
+                    <div class="actions">
+                        <button
+                            type="button"
+                            @click=${() => this.addRule(path)}
+                            ?disabled=${flattenFilterNodes(this.filters).length >= this.maxRules}
+                        >
+                            ${this.addLabel}
+                        </button>
+                        ${depth + 1 < this.maxDepth ? html`<button type="button" @click=${() => this.addGroup(path)}>${this.addGroupLabel}</button>` : null}
+                        <button
+                            type="button"
+                            aria-label="Remove group"
+                            @click=${() => this.removeNode(path)}
+                        >
+                            REMOVE GROUP
+                        </button>
+                    </div>
+                </div>`;
+            return html`<div class="rule">
+                <select
+                    aria-label="Filter field"
+                    .value=${node.field}
+                    @change=${(event: Event) => {
+                        const field = this.fields.find((item) => item.key === filterValue(event));
+                        this.updateNode(path, {
+                            field: filterValue(event),
+                            operator: defaultOperator(field),
+                            value: "",
+                        });
+                    }}
+                >
+                    ${this.fields.map((field) => html`<option value=${field.key}>${field.label}</option>`)}
+                </select>
+                <select
+                    aria-label="Filter operator"
+                    .value=${node.operator}
+                    @change=${(event: Event) => this.updateNode(path, { operator: filterValue(event) as AdminFilterOperator, value: node.value })}
+                >
+                    ${filterOperators.map((operator) => html`<option value=${operator.value}>${operator.label}</option>`)}
+                </select>
+                ${this.renderValue(node, path)}
+                <button
+                    type="button"
+                    aria-label="Remove filter"
+                    @click=${() => this.removeNode(path)}
+                >
+                    ×
+                </button>
+            </div>`;
+        });
     }
     private submit(): void {
         this.dispatchDetail("aui-filter-builder-submit", { filters: this.filters });
@@ -527,53 +714,23 @@ export class AdminFilterBuilderElement extends AdminElement {
                 this.submit();
             }}
         >
-            ${
-                this.filters.length
-                    ? this.filters.map(
-                          (rule, index) => html`<div class="rule">
-                              <select
-                                  aria-label="Filter field"
-                                  .value=${rule.field}
-                                  @change=${(event: Event) => {
-                                      const field = this.fields.find(
-                                          (item) => item.key === filterValue(event),
-                                      );
-                                      this.updateRule(index, {
-                                          field: filterValue(event),
-                                          operator: defaultOperator(field),
-                                          value: "",
-                                      });
-                                  }}
-                              >
-                                  ${this.fields.map((field) => html`<option value=${field.key}>${field.label}</option>`)}
-                              </select>
-                              <select
-                                  aria-label="Filter operator"
-                                  .value=${rule.operator}
-                                  @change=${(event: Event) => this.updateRule(index, { operator: filterValue(event) as AdminFilterOperator })}
-                              >
-                                  ${filterOperators.map((operator) => html`<option value=${operator.value}>${operator.label}</option>`)}
-                              </select>
-                              ${this.renderValue(rule, index)}
-                              <button
-                                  type="button"
-                                  aria-label="Remove filter"
-                                  @click=${() => this.removeRule(index)}
-                              >
-                                  ×
-                              </button>
-                          </div>`,
-                      )
-                    : html`<span class="empty">NO FILTERS CONFIGURED</span>`
-            }
+            ${this.filters.length ? this.renderNodes(this.filters) : html`<span class="empty">NO FILTERS CONFIGURED</span>`}
             <div class="actions">
                 <button
                     type="button"
-                    @click=${this.add}
-                    ?disabled=${this.filters.length >= this.maxRules || !this.fields.length}
+                    @click=${() => this.addRule()}
+                    ?disabled=${flattenFilterNodes(this.filters).length >= this.maxRules || !this.fields.length}
                 >
-                    ${this.addLabel}</button
-                ><button type="button" @click=${this.clear} ?disabled=${!this.filters.length}>
+                    ${this.addLabel}
+                </button>
+                <button
+                    type="button"
+                    @click=${() => this.addGroup()}
+                    ?disabled=${!this.fields.length || this.maxDepth < 1}
+                >
+                    ${this.addGroupLabel}
+                </button>
+                <button type="button" @click=${this.clear} ?disabled=${!this.filters.length}>
                     ${this.clearLabel}</button
                 ><button type="submit" ?disabled=${!this.filters.length}>${this.applyLabel}</button>
             </div>
@@ -582,41 +739,173 @@ export class AdminFilterBuilderElement extends AdminElement {
 }
 
 export interface AdminQueryRule extends AdminFilterRule {}
+export interface AdminQueryGroup extends AdminFilterGroup {}
+export type AdminQueryNode = AdminQueryRule | AdminQueryGroup;
 
 export class AdminQueryBuilderElement extends AdminElement {
     static properties = {
         fields: { attribute: false },
         rules: { attribute: false },
         logic: { type: String, reflect: true },
+        maxDepth: { type: Number, attribute: "max-depth" },
         applyLabel: { type: String, attribute: "apply-label" },
     };
     static styles = builderStyles;
     fields: AdminFilterField[] = [];
-    rules: AdminQueryRule[] = [];
+    rules: AdminQueryNode[] = [];
     logic: "and" | "or" = "and";
+    maxDepth = 2;
     applyLabel = "RUN QUERY";
+    private readonly optionCache = new Map<string, AdminFilterOption[]>();
+    private readonly optionPending = new Set<string>();
+    private readonly optionErrors = new Set<string>();
     private emitChange(): void {
         this.dispatchDetail("aui-query-change", { logic: this.logic, rules: this.rules });
         this.requestUpdate();
     }
-    private add(): void {
+    private nodesAt(nodes: AdminQueryNode[], path: number[]): AdminQueryNode[] {
+        let current = nodes;
+        for (const index of path) {
+            const node = current[index];
+            if (!node || !isAdminFilterGroup(node)) return current;
+            current = node.rules as AdminQueryNode[];
+        }
+        return current;
+    }
+    private add(path: number[] = []): void {
         if (!this.fields.length) return;
-        const field = this.fields[0];
-        this.rules = [
-            ...this.rules,
-            { id: nextUid("query"), field: field.key, operator: defaultOperator(field), value: "" },
-        ];
+        const next = cloneFilterNodes(this.rules);
+        this.nodesAt(next as AdminQueryNode[], path).push(newFilterRule("query", this.fields[0]));
+        this.rules = next as AdminQueryNode[];
         this.emitChange();
     }
-    private updateRule(index: number, patch: Partial<AdminQueryRule>): void {
-        this.rules = this.rules.map((rule, itemIndex) =>
-            itemIndex === index ? { ...rule, ...patch } : rule,
-        );
+    private addGroup(path: number[] = []): void {
+        if (!this.fields.length || path.length >= this.maxDepth) return;
+        const next = cloneFilterNodes(this.rules);
+        this.nodesAt(next as AdminQueryNode[], path).push({
+            id: nextUid("query-group"),
+            logic: "and",
+            rules: [newFilterRule("query", this.fields[0])],
+        });
+        this.rules = next as AdminQueryNode[];
         this.emitChange();
     }
-    private removeRule(index: number): void {
-        this.rules = this.rules.filter((_, itemIndex) => itemIndex !== index);
+    private updateRule(path: number[], patch: Partial<AdminQueryRule>): void {
+        const next = cloneFilterNodes(this.rules) as AdminQueryNode[];
+        const parent = this.nodesAt(next, path.slice(0, -1));
+        const node = parent[path.at(-1)!];
+        if (!node || isAdminFilterGroup(node)) return;
+        parent[path.at(-1)!] = { ...node, ...patch };
+        this.rules = next;
         this.emitChange();
+    }
+    private updateGroup(path: number[], logic: "and" | "or"): void {
+        const next = cloneFilterNodes(this.rules) as AdminQueryNode[];
+        const parent = this.nodesAt(next, path.slice(0, -1));
+        const node = parent[path.at(-1)!];
+        if (!node || !isAdminFilterGroup(node)) return;
+        parent[path.at(-1)!] = { ...node, logic };
+        this.rules = next;
+        this.emitChange();
+    }
+    private removeNode(path: number[]): void {
+        if (!path.length) return;
+        const next = cloneFilterNodes(this.rules) as AdminQueryNode[];
+        this.nodesAt(next, path.slice(0, -1)).splice(path.at(-1)!, 1);
+        this.rules = next;
+        this.emitChange();
+    }
+    private ensureOptions(field?: AdminFilterField): void {
+        if (
+            !field?.loadOptions ||
+            this.optionCache.has(field.key) ||
+            this.optionPending.has(field.key)
+        )
+            return;
+        this.optionPending.add(field.key);
+        Promise.resolve()
+            .then(() => field.loadOptions?.())
+            .then((options) => this.optionCache.set(field.key, options ?? []))
+            .catch(() => this.optionErrors.add(field.key))
+            .finally(() => {
+                this.optionPending.delete(field.key);
+                this.requestUpdate();
+            });
+    }
+    private renderQueryValue(rule: AdminQueryRule, path: number[]): unknown {
+        if (rule.operator === "isEmpty") return html`<span class="empty">NO VALUE REQUIRED</span>`;
+        const field = this.fields.find((item) => item.key === rule.field);
+        this.ensureOptions(field);
+        const options = field?.options ?? this.optionCache.get(field?.key ?? "");
+        if (field?.loadOptions && this.optionPending.has(field.key))
+            return html`<span class="empty" role="status">LOADING OPTIONS...</span>`;
+        if (field?.loadOptions && this.optionErrors.has(field.key))
+            return html`<span class="empty" role="alert">OPTIONS UNAVAILABLE</span>`;
+        if (options)
+            return html`<select
+                aria-label="Query value"
+                .value=${rule.value ?? ""}
+                @change=${(event: Event) => this.updateRule(path, { value: filterValue(event) })}
+            >
+                <option value="">SELECT...</option>
+                ${options.map((option) => html`<option value=${option.value}>${option.label}</option>`)}
+            </select>`;
+        return html`<input
+            aria-label="Query value"
+            type=${field?.type === "number" ? "number" : field?.type === "date" ? "date" : "text"}
+            .value=${rule.value ?? ""}
+            @input=${(event: Event) => this.updateRule(path, { value: filterValue(event) })}
+        />`;
+    }
+    private renderNodes(nodes: AdminQueryNode[], parentPath: number[] = [], depth = 0): unknown {
+        return nodes.map((node, index) => {
+            const path = [...parentPath, index];
+            if (isAdminFilterGroup(node))
+                return html`<div class="group" data-depth=${depth + 1}>
+                    <div class="group-heading">
+                        <span>GROUP ${depth + 1}</span
+                        ><select
+                            aria-label="Group logic"
+                            .value=${node.logic}
+                            @change=${(event: Event) => this.updateGroup(path, filterValue(event) as "and" | "or")}
+                        >
+                            <option value="and">ALL CONDITIONS</option>
+                            <option value="or">ANY CONDITION</option>
+                        </select>
+                    </div>
+                    ${this.renderNodes(node.rules as AdminQueryNode[], path, depth + 1)}
+                    <div class="actions">
+                        <button type="button" @click=${() => this.add(path)}>ADD CONDITION</button
+                        >${depth + 1 < this.maxDepth ? html`<button type="button" @click=${() => this.addGroup(path)}>ADD GROUP</button>` : null}<button
+                            type="button"
+                            @click=${() => this.removeNode(path)}
+                        >
+                            REMOVE GROUP
+                        </button>
+                    </div>
+                </div>`;
+            return html`<div class="rule">
+                <select
+                    aria-label="Query field"
+                    .value=${node.field}
+                    @change=${(event: Event) => this.updateRule(path, { field: filterValue(event), value: "" })}
+                >
+                    ${this.fields.map((field) => html`<option value=${field.key}>${field.label}</option>`)}</select
+                ><select
+                    aria-label="Query operator"
+                    .value=${node.operator}
+                    @change=${(event: Event) => this.updateRule(path, { operator: filterValue(event) as AdminFilterOperator })}
+                >
+                    ${filterOperators.map((operator) => html`<option value=${operator.value}>${operator.label}</option>`)}</select
+                >${this.renderQueryValue(node, path)}<button
+                    type="button"
+                    aria-label="Remove condition"
+                    @click=${() => this.removeNode(path)}
+                >
+                    ×
+                </button>
+            </div>`;
+        });
     }
     private submit(): void {
         this.dispatchDetail("aui-query-submit", { logic: this.logic, rules: this.rules });
@@ -639,43 +928,19 @@ export class AdminQueryBuilderElement extends AdminElement {
                 >
                     <option value="and">ALL CONDITIONS</option>
                     <option value="or">ANY CONDITION</option></select
-                ><button type="button" @click=${this.add} ?disabled=${!this.fields.length}>
+            </div>
+            ${this.rules.length ? this.renderNodes(this.rules) : html`<span class="empty">NO CONDITIONS CONFIGURED</span>`}
+            <div class="actions">
+                <button type="button" @click=${() => this.add()} ?disabled=${!this.fields.length}>
                     ADD CONDITION
                 </button>
-            </div>
-            ${
-                this.rules.length
-                    ? this.rules.map(
-                          (rule, index) =>
-                              html`<div class="rule">
-                                  <select
-                                      aria-label="Query field"
-                                      .value=${rule.field}
-                                      @change=${(event: Event) => this.updateRule(index, { field: filterValue(event) })}
-                                  >
-                                      ${this.fields.map((field) => html`<option value=${field.key}>${field.label}</option>`)}</select
-                                  ><select
-                                      aria-label="Query operator"
-                                      .value=${rule.operator}
-                                      @change=${(event: Event) => this.updateRule(index, { operator: filterValue(event) as AdminFilterOperator })}
-                                  >
-                                      ${filterOperators.map((operator) => html`<option value=${operator.value}>${operator.label}</option>`)}</select
-                                  ><input
-                                      aria-label="Query value"
-                                      .value=${rule.value ?? ""}
-                                      @input=${(event: Event) => this.updateRule(index, { value: filterValue(event) })}
-                                  /><button
-                                      type="button"
-                                      aria-label="Remove condition"
-                                      @click=${() => this.removeRule(index)}
-                                  >
-                                      ×
-                                  </button>
-                              </div>`,
-                      )
-                    : html`<span class="empty">NO CONDITIONS CONFIGURED</span>`
-            }
-            <div class="actions">
+                <button
+                    type="button"
+                    @click=${() => this.addGroup()}
+                    ?disabled=${!this.fields.length || this.maxDepth < 1}
+                >
+                    ADD GROUP
+                </button>
                 <button type="submit" ?disabled=${!this.rules.length}>${this.applyLabel}</button>
             </div>
         </form>`;

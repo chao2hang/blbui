@@ -55,6 +55,7 @@ declare global {
         "aui-dropdown": import("./overlays-advanced").AdminDropdownElement;
         "aui-drawer": import("./overlays-advanced").AdminDrawerElement;
         "aui-toast": import("./overlays-advanced").AdminToastElement;
+        "aui-toast-manager": import("./notifications").AdminToastManagerElement;
         "aui-data-list": import("./data-advanced").AdminDataListElement;
         "aui-calendar": import("./data-advanced").AdminCalendarElement;
         "aui-search": import("./data-advanced").AdminSearchElement;

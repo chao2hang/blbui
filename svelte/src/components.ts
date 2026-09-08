@@ -14,6 +14,7 @@ export { default as AdminInput } from "./components/Input.svelte";
 export { default as AdminPage } from "./components/Page.svelte";
 export { default as AdminPagination } from "./components/Pagination.svelte";
 export { default as AdminNotificationCenter } from "./components/NotificationCenter.svelte";
+export { default as AdminToastManager } from "./components/ToastManager.svelte";
 export { default as AdminStatusTag } from "./components/StatusTag.svelte";
 export { default as AdminTable } from "./components/Table.svelte";
 export { default as AdminTransfer } from "./components/Transfer.svelte";

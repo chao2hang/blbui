@@ -3,25 +3,25 @@
 ## 本次验收
 
 - 日期：2026-09-08
-- 入口：http://localhost:4173/
+- 入口：http://127.0.0.1:4176/
 - 浏览器：Codex In-app Browser
 - 视口：桌面约 1280 × 720（页面有效宽度 1265px）；窄屏 390 × 844（页面有效宽度 375px）
-- 组件目录：112 个组件卡片，8 个分类
+- 组件目录：119 个组件卡片，8 个分类
 - 主题矩阵：9 套主题 × light/dark = 18 个组合
 
 ## 结果
 
 | 检查项 | 结果 | 说明 |
 | --- | --- | --- |
-| 组件目录完整渲染 | 通过 | 112/112 卡片存在并渲染；分类计数与可见数量一致；逐卡尺寸检查无 0 尺寸 |
+| 组件目录完整渲染 | 通过 | 119/119 卡片存在并渲染；分类计数与可见数量一致；逐卡尺寸检查无 0 尺寸 |
 | 页面级横向溢出 | 通过 | 桌面与 390px 窄屏均复核 `scrollWidth === clientWidth`；窄屏标题字号已收敛，水平滚动条已消除 |
-| 主题覆盖 | 通过 | 9 套主题 × light/dark 共 18 个组合均逐一切换目视；组件数量保持 112 个；新增组件只使用 AUI token |
+| 主题覆盖 | 通过 | 9 套主题 × light/dark 共 18 个组合均逐一切换目视；组件数量保持 119 个；新增组件只使用 AUI token |
 | 日夜切换 | 通过 | 根节点 `data-aui-mode` 正确在 light/dark 间切换 |
-| 分类筛选 | 通过 | Business 筛选准确显示 9 个业务组件，恢复 All 后显示 112 个 |
+| 分类筛选 | 通过 | Business 筛选准确显示 15 个业务组件，恢复 All 后显示 119 个 |
 | Dialog | 通过 | 打开、遮罩、焦点进入、ESC 关闭和焦点恢复均正常 |
 | Drawer | 通过 | 右侧抽屉打开、遮罩和 ESC 关闭均正常 |
 | Usage tabs | 通过 | Button 的 Web Components/React/Vue/Svelte 标签切换会更新代码片段 |
-| 代表组件视觉 | 通过 | 表单、导航、反馈、覆盖层、数据、布局、业务组件均有人工目视检查；0.0.6 新增/增强组件已单独复核 |
+| 代表组件视觉 | 通过 | 表单、导航、反馈、覆盖层、数据、布局、业务组件均有人工目视检查；0.0.7 新增/增强组件已单独复核 |
 | 代码区与卡片窄屏布局 | 通过 | 代码区可横向滚动；窄屏页面无级联横向溢出，卡片内部代码区保留局部滚动；浮层预览不再被 playground 纵向裁切 |
 
 ## 人工目视范围
@@ -44,6 +44,8 @@
 - Form / FormItem / SchemaForm：输入、Select、number、required 校验、提交和 reset 状态可见且可操作。
 - DataGrid / ColumnSettings：排序、筛选、行选择、批量操作、列显隐和移动端卡片状态可见且可操作。
 - TreeTable / ListView / FilterBuilder / QueryBuilder：展开选择、加载/空态、规则增删和 ALL/ANY 查询状态已检查。
+- FormWizard / PermissionMatrix / AuditLog：步骤切换、横向滚动、权限循环、筛选/空态/错误/加载状态已检查。
+- ImportDialog / ExportButton / BulkActionsToolbar：文件预览、CSV 导出事件、无选中时按钮禁用和危险操作标识已检查。
 - ProgressRing / TruncatedText / LoadingOverlay：进度、长文本可访问名称、遮罩 loading 状态均已检查。
 - Forms / Data 筛选：分别显示 26 / 14 个卡片，页面级横向溢出为 false。
 - 390px 窄屏：主题展示区与组件目录可滚动浏览，修复标题造成的 2px 页面级横向溢出。

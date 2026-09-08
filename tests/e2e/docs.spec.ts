@@ -24,7 +24,7 @@ const themes = [
 test.describe("BLBUI documentation quality matrix", () => {
     test("renders every catalog card without page-level overflow", async ({ page }) => {
         await page.goto("/");
-        await expect(page.locator("[data-catalog-id]")).toHaveCount(112);
+        await expect(page.locator("[data-catalog-id]")).toHaveCount(119);
         await expect
             .poll(() =>
                 page.evaluate(
@@ -36,6 +36,8 @@ test.describe("BLBUI documentation quality matrix", () => {
             .toBe(true);
         await expect(page.locator("#preview-data-grid table")).toBeVisible();
         await expect(page.locator("#preview-schema-form")).toBeVisible();
+        await expect(page.locator("#preview-export-button")).toBeVisible();
+        await expect(page.locator("#preview-bulk-actions")).toBeVisible();
     });
 
     test("covers all nine themes in light and dark modes", async ({ page }) => {
@@ -129,5 +131,31 @@ test.describe("BLBUI documentation quality matrix", () => {
         );
         await testInfo.attach("visual-diff.png", { body: PNG.sync.write(diff), contentType: "image/png" });
         expect(differentPixels, "repeated docs render must be pixel-stable").toBe(0);
+    });
+
+    test("holds at 320px with reduced motion and forced-colors", async ({ page }) => {
+        await page.emulateMedia({ reducedMotion: "reduce", forcedColors: "active" });
+        await page.setViewportSize({ width: 320, height: 720 });
+        await page.goto("/");
+        await expect
+            .poll(() =>
+                page.evaluate(
+                    () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+                ),
+            )
+            .toBe(true);
+        expect(await page.locator("[data-catalog-id]").count()).toBe(119);
+        await expect(page.locator("#preview-data-grid")).toBeVisible();
+        await expect(page.locator("#preview-permission-matrix")).toBeVisible();
+    });
+
+    test("stays within the docs render budget", async ({ page }) => {
+        await page.goto("/");
+        const budget = await page.evaluate(() => ({
+            nodes: document.querySelectorAll("*").length,
+            cards: document.querySelectorAll("[data-catalog-id]").length,
+        }));
+        expect(budget.cards).toBe(119);
+        expect(budget.nodes).toBeLessThan(20_000);
     });
 });

@@ -47,9 +47,9 @@ jobs:
         working-directory: .
         run: bunx playwright install --with-deps chromium
 
-      - name: Check catalog, themes and tokens
+      - name: Check catalog, public API, themes and tokens
         working-directory: .
-        run: bun run catalog:check && bun run theme:check && bun run token:check && bun run examples:check
+        run: bun run catalog:check && bun run api:check && bun run theme:check && bun run token:check && bun run examples:check
 
       - name: Typecheck package workspace
         working-directory: .
@@ -58,6 +58,10 @@ jobs:
       - name: Check formatting
         working-directory: .
         run: bun run format:check
+
+      - name: Check API documentation
+        working-directory: .
+        run: bun run api:check
 
       - name: Build publish artifacts
         working-directory: .

@@ -118,6 +118,7 @@ import {
     AdminTransferElement,
 } from "./interaction";
 import { AdminFilePreviewElement, AdminUploadListElement } from "./file-components";
+import { AdminToastManagerElement } from "./notifications";
 import {
     AdminFilterBuilderElement,
     AdminListViewElement,
@@ -185,6 +186,7 @@ export const adminElementTags = [
     "aui-dropdown",
     "aui-drawer",
     "aui-toast",
+    "aui-toast-manager",
     "aui-data-list",
     "aui-calendar",
     "aui-search",
@@ -292,6 +294,7 @@ export function registerAdminElements(): void {
     defineOnce("aui-dropdown", AdminDropdownElement);
     defineOnce("aui-drawer", AdminDrawerElement);
     defineOnce("aui-toast", AdminToastElement);
+    defineOnce("aui-toast-manager", AdminToastManagerElement);
     defineOnce("aui-data-list", AdminDataListElement);
     defineOnce("aui-calendar", AdminCalendarElement);
     defineOnce("aui-search", AdminSearchElement);

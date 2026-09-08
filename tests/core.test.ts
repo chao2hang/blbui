@@ -14,6 +14,7 @@ import type {
     AdminTabsElement,
 } from "../core/src";
 import { getAdminVirtualRange } from "../core/src/virtual";
+import type { AdminFilterBuilderElement, AdminQueryBuilderElement } from "../core/src/data-complex";
 
 beforeAll(() => {
     registerAdminElements();
@@ -963,6 +964,58 @@ describe("composed form and data contracts", () => {
         more!.click();
         await breadcrumb.updateComplete;
         expect(breadcrumb.shadowRoot?.querySelectorAll('[role="menuitem"]')).toHaveLength(3);
+    });
+
+    it("supports nested filter groups and lazy select options", async () => {
+        const builder = document.createElement("aui-filter-builder") as AdminFilterBuilderElement;
+        builder.fields = [
+            {
+                key: "owner",
+                label: "Owner",
+                type: "select",
+                loadOptions: async () => [{ value: "platform", label: "Platform" }],
+            },
+            { key: "latency", label: "Latency", type: "number" },
+        ];
+        builder.maxDepth = 2;
+        document.body.append(builder);
+        await builder.updateComplete;
+        builder.shadowRoot?.querySelector<HTMLButtonElement>("button:not([disabled])")?.click();
+        await builder.updateComplete;
+        expect(builder.filters).toHaveLength(1);
+        [...(builder.shadowRoot?.querySelectorAll<HTMLButtonElement>("button") ?? [])]
+            .find((button) => button.textContent?.includes("ADD GROUP"))
+            ?.click();
+        await builder.updateComplete;
+        expect(builder.filters.some((node) => "logic" in node && node.logic === "and")).toBe(true);
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        await builder.updateComplete;
+        expect(builder.shadowRoot?.querySelector('option[value="platform"]')).not.toBeNull();
+    });
+
+    it("supports query groups and emits the nested query model", async () => {
+        const builder = document.createElement("aui-query-builder") as AdminQueryBuilderElement;
+        builder.fields = [
+            {
+                key: "status",
+                label: "Status",
+                type: "select",
+                options: [{ value: "ready", label: "Ready" }],
+            },
+        ];
+        document.body.append(builder);
+        let detail: unknown;
+        builder.addEventListener(
+            "aui-query-change",
+            (event) => (detail = (event as CustomEvent).detail),
+        );
+        await builder.updateComplete;
+        [...(builder.shadowRoot?.querySelectorAll<HTMLButtonElement>("button") ?? [])]
+            .find((button) => button.textContent?.includes("ADD GROUP"))
+            ?.click();
+        await builder.updateComplete;
+        expect(builder.rules[0]).toMatchObject({ logic: "and" });
+        expect(detail).toMatchObject({ logic: "and", rules: [{ logic: "and" }] });
     });
 });
 

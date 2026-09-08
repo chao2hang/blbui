@@ -10,6 +10,16 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
+let errors = [];
+const parity = join(root, "examples", "parity", "fixture.json");
+try {
+  const fixture = JSON.parse(await readFile(parity, "utf8"));
+  if (!fixture.tabs?.length || !fixture.rows?.length || !fixture.parityContract?.dialogModel) {
+    errors.push("parity fixture must contain tabs, rows and the dialog model contract");
+  }
+} catch {
+  errors.push("parity fixture is missing or invalid JSON");
+}
 const required = {
   react: ["package.json", "index.html", "vite.config.ts", "tsconfig.json", "src/main.tsx"],
   vue: ["package.json", "index.html", "vite.config.ts", "tsconfig.json", "src/main.ts", "src/App.vue"],
@@ -19,7 +29,6 @@ const checks = [
   ["@chaos_team/blbui-core", "@chaos_team/blbui-core/styles.css"],
   ["AdminButton", "AdminInput", "AdminTable", "AdminPagination", "AdminDialog"],
 ];
-let errors = [];
 for (const [framework, files] of Object.entries(required)) {
   const directory = join(root, "examples", framework);
   for (const file of files) {
@@ -32,6 +41,7 @@ for (const [framework, files] of Object.entries(required)) {
   const sourceFiles = files.filter((file) => file.startsWith("src/"));
   const source = (await Promise.all(sourceFiles.map((file) => readFile(join(directory, file), "utf8")))).join("\n");
   for (const marker of checks.flat()) if (!source.includes(marker)) errors.push(`${framework}: missing ${marker}`);
+  if (!source.includes("parity/fixture.json")) errors.push(`${framework}: does not consume the parity fixture`);
   const packageJson = JSON.parse(await readFile(join(directory, "package.json"), "utf8"));
   if (!packageJson.scripts?.build) errors.push(`${framework}: package.json has no build script`);
   if (!errors.length) {

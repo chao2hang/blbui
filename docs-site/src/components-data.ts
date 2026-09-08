@@ -1627,6 +1627,25 @@ export const components: ComponentItem[] = [
         },
     },
     {
+        id: "toast-manager",
+        tag: "aui-toast-manager",
+        name: "Toast Manager",
+        category: "feedback",
+        description:
+            "Application-level toast queue with persistence and optional cross-tab synchronization.",
+        status: "stable",
+        props: ["items", "position", "max", "persist-key", "sync-tabs", "channel-name"],
+        events: ["aui-toast-manager-change"],
+        initKey: "toast-manager",
+        previewHtml: `<div style="width:100%;min-height:150px;position:relative;"><aui-toast-manager id="preview-toast-manager" position="top-right" style="position:absolute;inset:0;width:100%;pointer-events:auto;"></aui-toast-manager></div>`,
+        usage: {
+            wc: `<aui-toast-manager id="notifications" persist-key="ops-notifications" sync-tabs></aui-toast-manager>\n<script>\nnotifications.push({ title: 'Deploy complete', message: 'Production is healthy', variant: 'success' })\n</script>`,
+            react: `import { AdminToastManager } from '@chaos_team/blbui-react'\n\n<AdminToastManager items={items} persistKey="ops-notifications" syncTabs onChange={setItems} />`,
+            vue: `<AdminToastManager v-model:items="items" persist-key="ops-notifications" sync-tabs />`,
+            svelte: `import { AdminToastManager } from '@chaos_team/blbui-svelte/components'\n\n<AdminToastManager bind:items persistKey="ops-notifications" syncTabs />`,
+        },
+    },
+    {
         id: "upload-list",
         tag: "aui-upload-list",
         name: "Upload List",
@@ -2012,7 +2031,16 @@ export const components: ComponentItem[] = [
         category: "forms",
         description: "Schema-driven filter rows for reusable search and reporting panels.",
         status: "stable",
-        props: ["fields", "filters", "max-rules", "add-label", "clear-label", "apply-label"],
+        props: [
+            "fields",
+            "filters",
+            "max-rules",
+            "max-depth",
+            "add-label",
+            "add-group-label",
+            "clear-label",
+            "apply-label",
+        ],
         events: ["aui-filter-builder-change", "aui-filter-builder-submit"],
         initKey: "filter-builder",
         previewHtml: `<div style="width:100%;"><aui-filter-builder id="preview-filter-builder"></aui-filter-builder></div>`,
@@ -2030,7 +2058,7 @@ export const components: ComponentItem[] = [
         category: "forms",
         description: "Composable ALL/ANY query conditions with a framework-neutral rule schema.",
         status: "stable",
-        props: ["fields", "rules", "logic", "apply-label"],
+        props: ["fields", "rules", "logic", "max-depth", "apply-label"],
         events: ["aui-query-change", "aui-query-submit"],
         initKey: "query-builder",
         previewHtml: `<div style="width:100%;"><aui-query-builder id="preview-query-builder"></aui-query-builder></div>`,
@@ -2039,6 +2067,126 @@ export const components: ComponentItem[] = [
             react: `import { AdminQueryBuilder } from '@chaos_team/blbui-react'\n\n<AdminQueryBuilder fields={fields} logic="and" onSubmit={runQuery} />`,
             vue: `<AdminQueryBuilder :fields="fields" logic="and" @submit="runQuery" />`,
             svelte: `<aui-query-builder fields={fields} logic="and"></aui-query-builder>`,
+        },
+    },
+    {
+        id: "form-wizard",
+        tag: "aui-form-wizard",
+        name: "Form Wizard",
+        category: "business",
+        description:
+            "Linear or non-linear multi-step workflow with slotted content and completion events.",
+        status: "stable",
+        props: [
+            "steps",
+            "active",
+            "completed",
+            "linear",
+            "next-label",
+            "previous-label",
+            "finish-label",
+        ],
+        events: ["aui-wizard-before-change", "aui-wizard-change", "aui-wizard-complete"],
+        initKey: "form-wizard",
+        previewHtml: `<div style="width:100%;"><aui-form-wizard id="preview-form-wizard"></aui-form-wizard></div>`,
+        usage: {
+            wc: `<aui-form-wizard id="wizard"></aui-form-wizard>\n<span slot="step-account">Account details</span>`,
+            react: `import { AdminFormWizard } from '@chaos_team/blbui-business-react'\n\n<AdminFormWizard steps={steps} onComplete={handleComplete}>\n  <section slot="step-account">Account details</section>\n</AdminFormWizard>`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-form-wizard :steps.prop="steps" @aui-wizard-complete="handleComplete"><span slot="step-account">Account details</span></aui-form-wizard>`,
+            svelte: `<aui-form-wizard steps={steps} on:wizard-complete={handleComplete}><section slot="step-account">Account details</section></aui-form-wizard>`,
+        },
+    },
+    {
+        id: "permission-matrix",
+        tag: "aui-permission-matrix",
+        name: "Permission Matrix",
+        category: "business",
+        description: "Role/resource permission grid with read, write and admin levels.",
+        status: "stable",
+        props: ["roles", "resources", "permissions", "read-only", "empty-label"],
+        events: ["aui-permission-change"],
+        initKey: "permission-matrix",
+        previewHtml: `<div style="width:100%;"><aui-permission-matrix id="preview-permission-matrix"></aui-permission-matrix></div>`,
+        usage: {
+            wc: `<aui-permission-matrix id="permissions"></aui-permission-matrix>`,
+            react: `import { AdminPermissionMatrix } from '@chaos_team/blbui-business-react'\n\n<AdminPermissionMatrix roles={roles} resources={resources} permissions={permissions} onChange={savePermission} />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-permission-matrix :roles.prop="roles" :resources.prop="resources" :permissions.prop="permissions" @aui-permission-change="savePermission" />`,
+            svelte: `<aui-permission-matrix roles={roles} resources={resources}></aui-permission-matrix>`,
+        },
+    },
+    {
+        id: "audit-log",
+        tag: "aui-audit-log",
+        name: "Audit Log",
+        category: "business",
+        description:
+            "Filterable operational audit stream with loading, error and load-more states.",
+        status: "stable",
+        props: ["entries", "loading", "error", "query", "status", "has-more"],
+        events: ["aui-audit-filter-change", "aui-audit-load-more"],
+        initKey: "audit-log",
+        previewHtml: `<div style="width:100%;"><aui-audit-log id="preview-audit-log"></aui-audit-log></div>`,
+        usage: {
+            wc: `<aui-audit-log id="audit" has-more></aui-audit-log>`,
+            react: `import { AdminAuditLog } from '@chaos_team/blbui-business-react'\n\n<AdminAuditLog entries={entries} hasMore onLoadMore={loadMore} />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-audit-log :entries.prop="entries" has-more @aui-audit-load-more="loadMore" />`,
+            svelte: `<aui-audit-log entries={entries} hasMore on:audit-load-more={loadMore}></aui-audit-log>`,
+        },
+    },
+    {
+        id: "import-dialog",
+        tag: "aui-import-dialog",
+        name: "Import Dialog",
+        category: "business",
+        description:
+            "CSV/JSON import workflow with validation, preview, loading and submit states.",
+        status: "stable",
+        props: ["open", "title", "accept", "max-size", "loading", "rows", "error"],
+        events: ["aui-import-parse", "aui-import-submit", "aui-import-cancel"],
+        initKey: "import-dialog",
+        previewHtml: `<div style="width:100%;"><aui-import-dialog id="preview-import-dialog"></aui-import-dialog><button id="preview-import-open" type="button">OPEN IMPORT PREVIEW</button></div>`,
+        usage: {
+            wc: `<aui-import-dialog id="importer"></aui-import-dialog>\n<script>\nimporter.addEventListener('aui-import-submit', event => save(event.detail.rows))\nimporter.open = true\n</script>`,
+            react: `import { AdminImportDialog } from '@chaos_team/blbui-business-react'\n\n<AdminImportDialog open onSubmit={saveRows} />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-import-dialog :open.prop="open" @aui-import-submit="saveRows" />`,
+            svelte: `<aui-import-dialog bind:open on:aui-import-submit={saveRows}></aui-import-dialog>`,
+        },
+    },
+    {
+        id: "export-button",
+        tag: "aui-export-button",
+        name: "Export Button",
+        category: "business",
+        description:
+            "Dependency-free CSV/JSON export trigger with a framework-neutral event contract.",
+        status: "stable",
+        props: ["data", "format", "filename", "label", "disabled", "loading"],
+        events: ["aui-export"],
+        initKey: "export-button",
+        previewHtml: `<div style="width:100%;"><aui-export-button id="preview-export-button"></aui-export-button></div>`,
+        usage: {
+            wc: `<aui-export-button id="export" format="csv" filename="channels"></aui-export-button>`,
+            react: `import { AdminExportButton } from '@chaos_team/blbui-business-react'\n\n<AdminExportButton data={rows} format="csv" filename="channels" />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-export-button :data.prop="rows" format="csv" />`,
+            svelte: `<aui-export-button format="csv" filename="channels"></aui-export-button>`,
+        },
+    },
+    {
+        id: "bulk-actions-toolbar",
+        tag: "aui-bulk-actions-toolbar",
+        name: "Bulk Actions Toolbar",
+        category: "business",
+        description: "Selected-row summary and guarded batch actions for enterprise tables.",
+        status: "stable",
+        props: ["selected", "actions", "loading", "clear-label"],
+        events: ["aui-bulk-action", "aui-bulk-clear"],
+        initKey: "bulk-actions-toolbar",
+        previewHtml: `<div style="width:100%;"><aui-bulk-actions-toolbar id="preview-bulk-actions"></aui-bulk-actions-toolbar></div>`,
+        usage: {
+            wc: `<aui-bulk-actions-toolbar id="bulk" selected="3"></aui-bulk-actions-toolbar>`,
+            react: `import { AdminBulkActionsToolbar } from '@chaos_team/blbui-business-react'\n\n<AdminBulkActionsToolbar selected={selected.length} actions={actions} onAction={runAction} />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-bulk-actions-toolbar :selected="selected.length" :actions.prop="actions" />`,
+            svelte: `<aui-bulk-actions-toolbar selected={selected.length} actions={actions}></aui-bulk-actions-toolbar>`,
         },
     },
 ];
@@ -2214,7 +2362,7 @@ export function initComponentDemo(root: HTMLElement): void {
     setProp("#preview-descriptions", "items", [
         { label: "REGION", value: "us-east-1", description: "Primary" },
         { label: "STATUS", value: "ONLINE" },
-        { label: "VERSION", value: "v0.0.6" },
+        { label: "VERSION", value: "v0.0.7" },
         { label: "OWNER", value: "Platform Ops" },
     ]);
     setProp("#preview-accordion", "items", [
@@ -2395,16 +2543,45 @@ export function initComponentDemo(root: HTMLElement): void {
     ]);
     setProp("#preview-tree-table", "selectable", true);
     setProp("#preview-list-view", "items", [
-        { id: "alert-1", title: "Gateway latency elevated", description: "P99 exceeded 400ms in us-east-1", meta: "2 MIN AGO", status: "OPEN" },
-        { id: "alert-2", title: "Certificate rotation complete", description: "All edge nodes acknowledged the new certificate", meta: "18 MIN AGO", status: "RESOLVED" },
+        {
+            id: "alert-1",
+            title: "Gateway latency elevated",
+            description: "P99 exceeded 400ms in us-east-1",
+            meta: "2 MIN AGO",
+            status: "OPEN",
+        },
+        {
+            id: "alert-2",
+            title: "Certificate rotation complete",
+            description: "All edge nodes acknowledged the new certificate",
+            meta: "18 MIN AGO",
+            status: "RESOLVED",
+        },
     ]);
     setProp("#preview-chart-container", "legend", [
         { label: "ONLINE", color: "#10b981", value: "84%" },
         { label: "DEGRADED", color: "#f59e0b", value: "16%" },
     ]);
     setProp("#preview-chart-container", "tooltip", "P99 184 ms · us-east-1");
+    setProp("#preview-toast-manager", "items", [
+        {
+            id: "toast-demo",
+            title: "CONFIG PERSISTED",
+            message: "Notification queue is synchronized.",
+            variant: "success",
+            duration: 0,
+        },
+    ]);
     const filterFields = [
-        { key: "status", label: "STATUS", type: "select", options: [{ value: "online", label: "ONLINE" }, { value: "degraded", label: "DEGRADED" }] },
+        {
+            key: "status",
+            label: "STATUS",
+            type: "select",
+            options: [
+                { value: "online", label: "ONLINE" },
+                { value: "degraded", label: "DEGRADED" },
+            ],
+        },
         { key: "latency", label: "P99 LATENCY", type: "number" },
         { key: "created", label: "CREATED", type: "date" },
     ];
@@ -2443,4 +2620,57 @@ export function initComponentDemo(root: HTMLElement): void {
         { label: "20:00", value: 710 },
     ]);
     setProp("#preview-sparkline", "values", [18, 22, 29, 25, 20, 17, 24, 18]);
+    setProp("#preview-form-wizard", "steps", [
+        { id: "account", label: "ACCOUNT", description: "Identity" },
+        { id: "policy", label: "POLICY", description: "Access rules" },
+        { id: "review", label: "REVIEW", description: "Confirm" },
+    ]);
+    setProp("#preview-permission-matrix", "roles", [
+        { id: "admin", label: "ADMIN" },
+        { id: "ops", label: "OPS" },
+        { id: "viewer", label: "VIEWER" },
+    ]);
+    setProp("#preview-permission-matrix", "resources", [
+        { id: "routes", label: "ROUTES", description: "Routing configuration" },
+        { id: "audit", label: "AUDIT LOG", description: "Immutable events" },
+    ]);
+    setProp("#preview-permission-matrix", "permissions", {
+        routes: { admin: "admin", ops: "write", viewer: "read" },
+        audit: { admin: "admin", ops: "read", viewer: "none" },
+    });
+    setProp("#preview-audit-log", "entries", [
+        {
+            id: "evt-1",
+            time: "10:42:03",
+            actor: "sec-bot",
+            action: "Permission changed",
+            target: "OPS / ROUTES",
+            status: "success",
+            details: "write → admin",
+        },
+        {
+            id: "evt-2",
+            time: "10:38:17",
+            actor: "operator",
+            action: "Policy updated",
+            target: "gateway-prod",
+            status: "warning",
+            details: "Approval required",
+        },
+    ]);
+    setProp("#preview-export-button", "data", [
+        { id: "gateway-prod", status: "ONLINE", region: "us-east-1" },
+        { id: "gateway-canary", status: "DEGRADED", region: "eu-west-1" },
+    ]);
+    setProp("#preview-bulk-actions", "selected", 3);
+    setProp("#preview-bulk-actions", "actions", [
+        { id: "archive", label: "ARCHIVE" },
+        { id: "rotate", label: "ROTATE TOKEN" },
+        { id: "delete", label: "DELETE", danger: true },
+    ]);
+    root.querySelector("#preview-import-open")?.addEventListener("click", () => {
+        root.querySelector<HTMLElement & Record<string, unknown>>(
+            "#preview-import-dialog",
+        )?.setAttribute("open", "");
+    });
 }

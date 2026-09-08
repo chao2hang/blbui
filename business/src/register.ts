@@ -8,21 +8,37 @@ import { defineOnce } from "@chaos_team/blbui-core";
 import { AdminApprovalTimelineElement, AdminFormBuilderElement } from "./workflow";
 import { AdminAdvancedTableElement, AdminCrudPageElement, AdminCrudToolbarElement } from "./crud";
 import {
-  AdminBarChartElement,
-  AdminMetricCardElement,
-  AdminMetricGridElement,
-  AdminSparklineElement,
+    AdminBarChartElement,
+    AdminMetricCardElement,
+    AdminMetricGridElement,
+    AdminSparklineElement,
 } from "./analytics";
+import {
+    AdminAuditLogElement,
+    AdminFormWizardElement,
+    AdminPermissionMatrixElement,
+} from "./enterprise";
+import {
+    AdminBulkActionsToolbarElement,
+    AdminExportButtonElement,
+    AdminImportDialogElement,
+} from "./operations";
 
 export function registerBusinessElements(): void {
-  if (typeof customElements === "undefined") return;
-  defineOnce("aui-crud-page", AdminCrudPageElement);
-  defineOnce("aui-crud-toolbar", AdminCrudToolbarElement);
-  defineOnce("aui-advanced-table", AdminAdvancedTableElement);
-  defineOnce("aui-form-builder", AdminFormBuilderElement);
-  defineOnce("aui-approval-timeline", AdminApprovalTimelineElement);
-  defineOnce("aui-metric-card", AdminMetricCardElement);
-  defineOnce("aui-metric-grid", AdminMetricGridElement);
-  defineOnce("aui-bar-chart", AdminBarChartElement);
-  defineOnce("aui-sparkline", AdminSparklineElement);
+    if (typeof customElements === "undefined") return;
+    defineOnce("aui-crud-page", AdminCrudPageElement);
+    defineOnce("aui-crud-toolbar", AdminCrudToolbarElement);
+    defineOnce("aui-advanced-table", AdminAdvancedTableElement);
+    defineOnce("aui-form-builder", AdminFormBuilderElement);
+    defineOnce("aui-approval-timeline", AdminApprovalTimelineElement);
+    defineOnce("aui-metric-card", AdminMetricCardElement);
+    defineOnce("aui-metric-grid", AdminMetricGridElement);
+    defineOnce("aui-bar-chart", AdminBarChartElement);
+    defineOnce("aui-sparkline", AdminSparklineElement);
+    defineOnce("aui-form-wizard", AdminFormWizardElement);
+    defineOnce("aui-permission-matrix", AdminPermissionMatrixElement);
+    defineOnce("aui-audit-log", AdminAuditLogElement);
+    defineOnce("aui-import-dialog", AdminImportDialogElement);
+    defineOnce("aui-export-button", AdminExportButtonElement);
+    defineOnce("aui-bulk-actions-toolbar", AdminBulkActionsToolbarElement);
 }

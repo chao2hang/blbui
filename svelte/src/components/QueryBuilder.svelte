@@ -11,6 +11,7 @@ it under the terms of the GNU Affero General Public License.
   export let fields: AdminFilterField[] = []
   export let rules: AdminQueryRule[] = []
   export let logic: 'and' | 'or' = 'and'
+  export let maxDepth = 2
   export let applyLabel = 'RUN QUERY'
   export let onChange: ((detail: unknown) => void) | undefined = undefined
   export let onSubmit: ((detail: unknown) => void) | undefined = undefined
@@ -30,6 +31,7 @@ it under the terms of the GNU Affero General Public License.
     element.fields = fields
     element.rules = rules
     element.logic = logic
+    element.maxDepth = maxDepth
     element.applyLabel = applyLabel
   }
 </script>

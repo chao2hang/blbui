@@ -16,7 +16,7 @@
 
 ### Business / Domain packages
 
-当前已落地单一 `@chaos_team/blbui-business`（9 组件：CrudPage、CrudToolbar、AdvancedTable、FormBuilder、ApprovalTimeline、MetricCard、MetricGrid、BarChart、Sparkline），并配 `@chaos_team/blbui-business-react` 适配。参考 `chaos-ui` 中的企业系统能力，后续可独立拆分为可选包，不让 Core 绑定大型业务依赖：
+当前已落地单一 `@chaos_team/blbui-business`（15 组件：CrudPage、CrudToolbar、AdvancedTable、FormBuilder、ApprovalTimeline、MetricCard、MetricGrid、BarChart、Sparkline、FormWizard、PermissionMatrix、AuditLog、ImportDialog、ExportButton、BulkActionsToolbar），并配 `@chaos_team/blbui-business-react` 适配。参考 `chaos-ui` 中的企业系统能力，后续可独立拆分为可选包，不让 Core 绑定大型业务依赖：
 
 - `@chaos_team/blbui-business-crud`
     - CrudPage
@@ -67,7 +67,7 @@
 
 ## 当前状态
 
-当前已注册 103 个 Core Custom Elements。React 与 Vue 均提供 103:1 的完整同构绑定（`Admin*` 命名），Svelte 提供核心注册入口（`registerAdminElements` / `adminUi`）、core 类型再导出和 26 个常用组件封装，共 28 个公开导出。文档站 `docs-site/` 覆盖全部 112 个组件（含 9 个 Business）的实时预览与四框架用法。主题基础设施已包含 9 套主题和 light/dark 模式；DataGrid、组合式表单、移动端 Drawer、Breadcrumb 溢出、通知持久化、TreeTable/ListView/FilterBuilder/QueryBuilder 和 Playwright/a11y/pixelmatch 矩阵已落地。下一步：外部宿主迁移、跨平台截图基线沉淀、TanStack adapter 和业务权限/审计组件。
+当前已注册 104 个 Core Custom Elements。React 与 Vue 均提供 104:1 的完整 Core 同构绑定（`Admin*` 命名），Svelte 提供核心注册入口（`registerAdminElements` / `adminUi`）、27 个常用组件封装，共 29 个公开导出。Business 已有 15 个组件和 React 绑定，Vue/Svelte 可直接注册 Custom Elements 消费。文档站 `docs-site/` 覆盖全部 119 个组件（含 15 个 Business）的实时预览与四框架用法。主题基础设施已包含 9 套主题和 light/dark 模式；DataGrid、组合式表单、移动端 Drawer、Breadcrumb 溢出、通知持久化、TreeTable/ListView/FilterBuilder/QueryBuilder、Business workflow/权限/审计/导入导出和 Playwright/a11y/pixelmatch 矩阵已落地。下一步：外部宿主迁移、跨平台截图基线沉淀、TanStack adapter、更多业务图表与编辑器 adapter。
 
 ## 依赖边界
 

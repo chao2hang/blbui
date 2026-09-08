@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-当前版本为 `0.0.6`，已经提供 103 个已注册的无框架 Web Components，以及 React/Vue/Svelte 适配入口；连同 9 个 Business 组件，文档站共覆盖 112 个组件：
+当前版本为 `0.0.7`，已经提供 104 个已注册的无框架 Web Components，以及 React/Vue/Svelte 适配入口；连同 15 个 Business 组件，文档站共覆盖 119 个组件：
 
 | 包                         | 用途                                              |
 | -------------------------- | ------------------------------------------------- |
@@ -15,7 +15,7 @@
 
 ## 组件清单
 
-Core（103 个 Web Components，`@chaos_team/blbui-core`）：
+Core（104 个 Web Components，`@chaos_team/blbui-core`）：
 
 - **基础原语**（10）：`Button`、`IconButton`、`Badge`、`StatusTag`、`Avatar`、`Progress`、`ProgressRing`、`Rating`、`Kbd`、`ColorTag`
 - **表单控件**（26）：`Input`、`Textarea`、`Select`、`Combobox`、`MultiSelect`、`NumberInput`、`PasswordInput`、`Checkbox`、`Switch`、`RadioGroup`、`Slider`、`TagInput`、`InputGroup`、`Field`、`FileUpload`、`Search`、`ColorPicker`、`DatePicker`、`TimePicker`、`PinInput`、`Cascader`、`Transfer`、`UploadList`、`Form`、`FormItem`、`SchemaForm`
@@ -27,11 +27,11 @@ Core（103 个 Web Components，`@chaos_team/blbui-core`）：
 
 **高级查询/筛选**（2）：`FilterBuilder`、`QueryBuilder`
 
-Business（9 个，`@chaos_team/blbui-business`）：
+Business（15 个，`@chaos_team/blbui-business`）：
 
-- **业务套件**（9）：`CrudPage`、`CrudToolbar`、`AdvancedTable`、`FormBuilder`、`ApprovalTimeline`、`MetricCard`、`MetricGrid`、`BarChart`、`Sparkline`
+- **业务套件**（15）：`CrudPage`、`CrudToolbar`、`AdvancedTable`、`FormBuilder`、`ApprovalTimeline`、`MetricCard`、`MetricGrid`、`BarChart`、`Sparkline`、`FormWizard`、`PermissionMatrix`、`AuditLog`、`ImportDialog`、`ExportButton`、`BulkActionsToolbar`
 
-React / Vue 提供全部 103 个 Core 组件的 1:1 绑定（`Admin*` 命名）；Svelte 提供核心注册入口、26 个常用组件封装，共 28 个公开导出。
+React / Vue 提供全部 104 个 Core 组件的 1:1 绑定（`Admin*` 命名）；Business 当前提供 React 绑定，Vue/Svelte 可直接注册并消费对应 Custom Elements；Svelte 提供核心注册入口、27 个常用组件封装，共 29 个公开导出。
 
 ## 主题与 CSS 工具层
 
