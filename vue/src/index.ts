@@ -1146,9 +1146,15 @@ export const AdminCalendarGrid = adminElement({
 export const AdminChartContainer = adminElement({
     name: "AdminChartContainer",
     tag: "aui-chart-container",
-    properties: ["title", "description", "height"],
+    properties: ["title", "description", "height", "legend", "tooltip"],
     slots: ["actions"],
-    props: { title: String, description: String, height: String },
+    props: {
+        title: String,
+        description: String,
+        height: String,
+        legend: objectArray,
+        tooltip: String,
+    },
 });
 
 export const AdminCodeBlock = adminElement({
@@ -1317,18 +1323,114 @@ export const AdminDataList = adminElement({
     props: { items: objectArray, columns: Number },
 });
 
+export const AdminTreeTable = adminElement({
+    name: "AdminTreeTable",
+    tag: "aui-tree-table",
+    properties: ["columns", "nodes", "expanded", "selected", "selectable", "emptyLabel"],
+    events: [
+        { name: "aui-tree-table-toggle", emit: "toggle" },
+        { name: "aui-tree-table-select", emit: "select" },
+    ],
+    emits: ["toggle", "select"],
+    props: {
+        columns: objectArray,
+        nodes: objectArray,
+        expanded: objectArray,
+        selected: [String, Number],
+        selectable: Boolean,
+        emptyLabel: String,
+    },
+});
+
+export const AdminListView = adminElement({
+    name: "AdminListView",
+    tag: "aui-list-view",
+    properties: [
+        "items",
+        "loading",
+        "error",
+        "selectable",
+        "selectedKeys",
+        "loadingLabel",
+        "emptyLabel",
+        "errorLabel",
+    ],
+    events: [{ name: "aui-list-view-select", emit: "select" }],
+    emits: ["select"],
+    props: {
+        items: objectArray,
+        loading: Boolean,
+        error: Boolean,
+        selectable: Boolean,
+        selectedKeys: objectArray,
+        loadingLabel: String,
+        emptyLabel: String,
+        errorLabel: String,
+    },
+});
+
+export const AdminFilterBuilder = adminElement({
+    name: "AdminFilterBuilder",
+    tag: "aui-filter-builder",
+    properties: ["fields", "filters", "maxRules", "addLabel", "clearLabel", "applyLabel"],
+    events: [
+        { name: "aui-filter-builder-change", emit: "change" },
+        { name: "aui-filter-builder-submit", emit: "submit" },
+    ],
+    emits: ["change", "submit"],
+    props: {
+        fields: objectArray,
+        filters: objectArray,
+        maxRules: Number,
+        addLabel: String,
+        clearLabel: String,
+        applyLabel: String,
+    },
+});
+
+export const AdminQueryBuilder = adminElement({
+    name: "AdminQueryBuilder",
+    tag: "aui-query-builder",
+    properties: ["fields", "rules", "logic", "applyLabel"],
+    events: [
+        { name: "aui-query-change", emit: "change" },
+        { name: "aui-query-submit", emit: "submit" },
+    ],
+    emits: ["change", "submit"],
+    props: { fields: objectArray, rules: objectArray, logic: String, applyLabel: String },
+});
+
 export const AdminDateRange = adminElement({
     name: "AdminDateRange",
     tag: "aui-date-range",
-    properties: ["start", "end", "startLabel", "endLabel", "disabled"],
-    events: [{ name: "aui-range-change", emit: "range-change" }],
-    emits: ["range-change"],
+    properties: [
+        "start",
+        "end",
+        "startLabel",
+        "endLabel",
+        "min",
+        "max",
+        "required",
+        "disabled",
+        "invalid",
+        "error",
+    ],
+    events: [
+        { name: "aui-range-change", emit: "range-change" },
+        { name: "aui-range-validation", emit: "validation-change" },
+    ],
+    emits: ["range-change", "validation-change"],
     props: {
         start: String,
         end: String,
         startLabel: String,
         endLabel: String,
+        min: String,
+        max: String,
+        required: Boolean,
         disabled: Boolean,
+        invalid: Boolean,
+        error: String,
     },
 });
 

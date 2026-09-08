@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-当前版本为 `0.0.5`，已经提供 99 个已注册的无框架 Web Components，以及 React/Vue/Svelte 适配入口；连同 9 个 Business 组件，文档站共覆盖 108 个组件：
+当前版本为 `0.0.6`，已经提供 103 个已注册的无框架 Web Components，以及 React/Vue/Svelte 适配入口；连同 9 个 Business 组件，文档站共覆盖 112 个组件：
 
 | 包                         | 用途                                              |
 | -------------------------- | ------------------------------------------------- |
@@ -15,21 +15,23 @@
 
 ## 组件清单
 
-Core（99 个 Web Components，`@chaos_team/blbui-core`）：
+Core（103 个 Web Components，`@chaos_team/blbui-core`）：
 
 - **基础原语**（10）：`Button`、`IconButton`、`Badge`、`StatusTag`、`Avatar`、`Progress`、`ProgressRing`、`Rating`、`Kbd`、`ColorTag`
 - **表单控件**（26）：`Input`、`Textarea`、`Select`、`Combobox`、`MultiSelect`、`NumberInput`、`PasswordInput`、`Checkbox`、`Switch`、`RadioGroup`、`Slider`、`TagInput`、`InputGroup`、`Field`、`FileUpload`、`Search`、`ColorPicker`、`DatePicker`、`TimePicker`、`PinInput`、`Cascader`、`Transfer`、`UploadList`、`Form`、`FormItem`、`SchemaForm`
 - **导航**（14）：`Tabs`、`Breadcrumb`、`Nav`、`Pagination`、`Accordion`、`Collapsible`、`Stepper`、`List`、`Tree`、`Timeline`、`Toggle`、`ToggleGroup`、`Segmented`、`Menu`
 - **反馈与状态**（12）：`Alert`、`Result`、`EmptyState`、`ErrorState`、`Spinner`、`Skeleton`、`Toast`、`NotificationCenter`、`CopyableText`、`Separator`、`TruncatedText`、`LoadingOverlay`
 - **叠加层与弹窗**（9）：`Tooltip`、`Popover`、`Dropdown`、`Command`、`ContextMenu`、`HoverCard`、`Dialog`、`ConfirmDialog`、`Drawer`
-- **数据展示**（14）：`Table`、`DataList`、`DataGrid`、`Calendar`、`CalendarGrid`、`DateRange`、`ChartContainer`、`JSONViewer`、`LogViewer`、`Kanban`、`CodeBlock`、`Descriptions`、`FilePreview`、`ColumnSettings`
+- **数据展示**（16）：`Table`、`DataList`、`DataGrid`、`Calendar`、`CalendarGrid`、`DateRange`、`ChartContainer`、`JSONViewer`、`LogViewer`、`Kanban`、`CodeBlock`、`Descriptions`、`FilePreview`、`ColumnSettings`、`TreeTable`、`ListView`
 - **布局与表面**（14）：`Card`、`Container`、`Stack`、`Grid`、`Splitter`、`Shell`、`Page`、`PageHeader`、`FilterBar`、`Stat`、`AspectRatio`、`ScrollArea`、`Sidebar`、`Navbar`
+
+**高级查询/筛选**（2）：`FilterBuilder`、`QueryBuilder`
 
 Business（9 个，`@chaos_team/blbui-business`）：
 
 - **业务套件**（9）：`CrudPage`、`CrudToolbar`、`AdvancedTable`、`FormBuilder`、`ApprovalTimeline`、`MetricCard`、`MetricGrid`、`BarChart`、`Sparkline`
 
-React / Vue 提供全部 99 个 Core 组件的 1:1 绑定（`Admin*` 命名）；Svelte 提供核心注册入口、22 个常用组件封装，共 24 个公开导出。
+React / Vue 提供全部 103 个 Core 组件的 1:1 绑定（`Admin*` 命名）；Svelte 提供核心注册入口、26 个常用组件封装，共 28 个公开导出。
 
 ## 主题与 CSS 工具层
 

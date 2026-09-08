@@ -43,9 +43,25 @@ jobs:
         working-directory: .
         run: bun install --frozen-lockfile
 
+      - name: Install Playwright Chromium
+        working-directory: .
+        run: bunx playwright install --with-deps chromium
+
+      - name: Check catalog, themes and tokens
+        working-directory: .
+        run: bun run catalog:check && bun run theme:check && bun run token:check && bun run examples:check
+
       - name: Typecheck package workspace
         working-directory: .
         run: bun run typecheck
+
+      - name: Check formatting
+        working-directory: .
+        run: bun run format:check
+
+      - name: Check SSR and framework bindings
+        working-directory: .
+        run: bun run ssr:check && bun run test:frameworks
 
       - name: Build publish artifacts
         working-directory: .
@@ -64,6 +80,10 @@ jobs:
       - name: Run test suite
         working-directory: .
         run: bun run test
+
+      - name: Run browser quality gate
+        working-directory: .
+        run: bun run e2e:check
 
       - name: Pack all public packages
         working-directory: .

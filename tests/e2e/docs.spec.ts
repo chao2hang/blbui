@@ -6,6 +6,8 @@ it under the terms of the GNU Affero General Public License.
 
 import { expect, test } from "@playwright/test";
 import { AxeBuilder } from "@axe-core/playwright";
+import pixelmatch from "pixelmatch";
+import { PNG } from "pngjs";
 
 const themes = [
     "obsidian",
@@ -22,7 +24,7 @@ const themes = [
 test.describe("BLBUI documentation quality matrix", () => {
     test("renders every catalog card without page-level overflow", async ({ page }) => {
         await page.goto("/");
-        await expect(page.locator("[data-catalog-id]")).toHaveCount(108);
+        await expect(page.locator("[data-catalog-id]")).toHaveCount(112);
         await expect
             .poll(() =>
                 page.evaluate(
@@ -96,5 +98,36 @@ test.describe("BLBUI documentation quality matrix", () => {
             )
             .toBe(true);
         await page.screenshot({ path: testInfo.outputPath("docs-mobile-390.png"), fullPage: true });
+    });
+
+    test("keeps a deterministic visual render for pixel-level gating", async ({ page }, testInfo) => {
+        await page.emulateMedia({ reducedMotion: "reduce" });
+        await page.goto("/");
+        await page.addStyleTag({
+            content: "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}",
+        });
+        await page.evaluate(() => document.fonts?.ready);
+        const first = await page.screenshot({ fullPage: true });
+        await page.reload();
+        await page.addStyleTag({
+            content: "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}",
+        });
+        await page.evaluate(() => document.fonts?.ready);
+        const second = await page.screenshot({ fullPage: true });
+        const firstPng = PNG.sync.read(first);
+        const secondPng = PNG.sync.read(second);
+        expect(secondPng.width).toBe(firstPng.width);
+        expect(secondPng.height).toBe(firstPng.height);
+        const diff = new PNG({ width: firstPng.width, height: firstPng.height });
+        const differentPixels = pixelmatch(
+            firstPng.data,
+            secondPng.data,
+            diff.data,
+            firstPng.width,
+            firstPng.height,
+            { threshold: 0.1 },
+        );
+        await testInfo.attach("visual-diff.png", { body: PNG.sync.write(diff), contentType: "image/png" });
+        expect(differentPixels, "repeated docs render must be pixel-stable").toBe(0);
     });
 });

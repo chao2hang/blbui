@@ -64,4 +64,4 @@ it under the terms of the GNU Affero General Public License.
   }
 </script>
 
-<aui-data-grid bind:this={element} />
+<aui-data-grid bind:this={element}></aui-data-grid>

@@ -16,12 +16,14 @@ export * from "./form";
 export * from "./layout";
 export * from "./navigation";
 export * from "./data-advanced";
+export * from "./data-complex";
+export * from "./http";
 export * from "./overlays-advanced";
 export * from "./navigation-advanced";
 export * from "./forms-advanced";
 export * from "./primitives";
 
-export { registerAdminElements } from "./register";
+export { adminElementTags, registerAdminElements, whenAdminElementsDefined } from "./register";
 export * from "./controls";
 export * from "./system";
 export * from "./common";

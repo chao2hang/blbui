@@ -42,4 +42,4 @@ it under the terms of the GNU Affero General Public License.
   }
 </script>
 
-<aui-schema-form bind:this={element} />
+<aui-schema-form bind:this={element}></aui-schema-form>

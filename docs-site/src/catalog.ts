@@ -560,7 +560,7 @@ export const catalog: CatalogItem[] = [
         "Date Range",
         "data",
         "Two-ended date filter for reporting and analytics.",
-        ["start", "end", "start-label", "end-label"],
+        ["start", "end", "start-label", "end-label", "min", "max", "required"],
         ["aui-range-change"],
     ),
     item(
@@ -578,7 +578,7 @@ export const catalog: CatalogItem[] = [
         "Chart Container",
         "data",
         "Theme-aware chart frame that accepts any renderer through a slot.",
-        ["title", "description", "height"],
+        ["title", "description", "height", "legend", "tooltip"],
     ),
     item(
         "json-viewer",
@@ -827,6 +827,45 @@ export const catalog: CatalogItem[] = [
         ["aui-file-preview-close", "aui-file-download"],
     ),
 ];
+
+catalog.push(
+    item(
+        "tree-table",
+        "aui-tree-table",
+        "Tree Table",
+        "data",
+        "Hierarchical table with expandable nodes, selection and responsive overflow.",
+        ["columns", "nodes", "expanded", "selected", "selectable", "empty-label"],
+        ["aui-tree-table-toggle", "aui-tree-table-select"],
+    ),
+    item(
+        "list-view",
+        "aui-list-view",
+        "List View",
+        "data",
+        "Selectable operational list with loading, empty and error state contracts.",
+        ["items", "loading", "error", "selectable", "selected-keys"],
+        ["aui-list-view-select"],
+    ),
+    item(
+        "filter-builder",
+        "aui-filter-builder",
+        "Filter Builder",
+        "forms",
+        "Schema-driven filter rows for reusable search and reporting panels.",
+        ["fields", "filters", "max-rules", "add-label", "clear-label", "apply-label"],
+        ["aui-filter-builder-change", "aui-filter-builder-submit"],
+    ),
+    item(
+        "query-builder",
+        "aui-query-builder",
+        "Query Builder",
+        "forms",
+        "Composable ALL/ANY query conditions with a framework-neutral rule schema.",
+        ["fields", "rules", "logic", "apply-label"],
+        ["aui-query-change", "aui-query-submit"],
+    ),
+);
 
 catalog.push(
     item(

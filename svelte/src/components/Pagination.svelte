@@ -25,4 +25,4 @@ it under the terms of the GNU Affero General Public License.
   })
 </script>
 
-<aui-pagination bind:this={element} {page} {totalPages} {total} {pageSize} {previousLabel} {nextLabel} />
+<aui-pagination bind:this={element} {page} {totalPages} {total} {pageSize} {previousLabel} {nextLabel}></aui-pagination>

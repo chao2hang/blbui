@@ -1,6 +1,6 @@
 # BLBUI 组件库实施计划
 
-> **状态（0.0.5 更新）**：Core 现有 **99 个组件**、Business 9 个、React/Vue 为 99:1 完整绑定、Svelte 提供注册入口、22 个常用封装（共 24 个公开导出）；9 套主题均支持 light/dark，并提供语义 CSS utilities。当前已接入 token lint、Vitest（49/49）、Playwright/a11y/E2E（4/4）、文档 smoke 和人工视觉验收；文档站覆盖 108 个组件。SSR/hydration、适配器示例和像素级截图基线仍按下方路线推进。
+> **状态（0.0.6 更新）**：Core 现有 **103 个组件**、Business 9 个、React/Vue 为 103:1 完整绑定、Svelte 提供注册入口、26 个常用封装（共 28 个公开导出）；9 套主题均支持 light/dark，并提供语义 CSS utilities。当前已接入 token lint、Vitest（60/60）、Playwright/a11y/E2E、文档 smoke、SSR 检查、三框架 playground 构建和人工视觉验收；文档站覆盖 112 个组件。
 > 下文历史路径说明：`docs/admin-style-guide.md` 位于 `chaos-ui` 风格规范仓库（本仓库不复制全文，tokens 已提取进 `core/src/tokens.css`）；`packages/blbui` 与 `web/` 是规划阶段的占位命名，实际落地为仓库顶层的 `core/ react/ vue/ svelte/ business/ business-react/ docs-site/` workspace。
 
 ## 目标
@@ -14,10 +14,10 @@
 - [x] 创建 monorepo 包结构（顶层 `core/ react/ vue/ svelte/ business/ business-react/ docs-site/`）与独立 package metadata。
 - [x] 从样式规范提取 tokens：背景、表面、边框、文字、状态色、字体、尺寸、动效。
 - [x] 将核心样式限定在 `.aui-root` / `aui-*`，不复制当前全局 `* { border-radius: 0 !important }`。
-- [x] 建立 `@chaos_team/blbui-core`（99 组件）。
-- [x] 建立 `@chaos_team/blbui-react`（99 绑定）。
-- [x] 建立 `@chaos_team/blbui-vue`（99 绑定）。
-- [x] 建立 `@chaos_team/blbui-svelte` 注册/类型入口与 22 个常用封装（共 24 个公开导出）。
+- [x] 建立 `@chaos_team/blbui-core`（103 组件）。
+- [x] 建立 `@chaos_team/blbui-react`（103 绑定）。
+- [x] 建立 `@chaos_team/blbui-vue`（103 绑定）。
+- [x] 建立 `@chaos_team/blbui-svelte` 注册/类型入口与 26 个常用封装（共 28 个公开导出）。
 - [x] 建立 `@chaos_team/blbui-business`（9 组件）与 `@chaos_team/blbui-business-react`。
 - [x] 统一 `aui-*` 事件和跨框架 API 文档（README 完整事件表）。
 - [x] 完成架构说明、第三方交互设计借鉴边界和迁移策略。
@@ -31,11 +31,11 @@
 ## Phase 2：质量基线
 
 - [x] 增加 core DOM 行为测试：按钮、输入、分页、tabs、dialog、表格状态。
-- [ ] 增加 React Testing Library 适配器测试。
-- [ ] 安装并运行 Vue Test Utils、Svelte Testing Library 的最小绑定测试。
+- [x] 增加 React Testing Library 适配器测试。
+- [x] 安装并运行 Vue Test Utils、Svelte Testing Library 的最小绑定测试。
 - [x] 增加键盘、焦点、ESC、禁用、加载、空数据和错误状态回归测试。
 - [x] 增加 `axe` 或 Playwright accessibility 检查。
-- [ ] 解决 SSR/hydration 下 Custom Elements 注册时机问题。
+- [x] 解决 SSR/hydration 下 Custom Elements 注册时机问题（`whenAdminElementsDefined`，无 DOM 时安全返回）。
 
 ## Phase 3：常用业务组件
 
@@ -56,11 +56,12 @@
 - [x] 响应式表格：横向滚动、移动端卡片降级。
 - [x] 轻量虚拟窗口适配，保持核心包不绑定 TanStack Table。
 - [x] Chart 容器、日志查看器与主题 token。
-- [ ] 图例、tooltip 主题 token与 HTTP 状态语义增强。
+- [x] 图例、tooltip 主题 token 与 HTTP 状态语义增强。
+- [x] DateRange 边界校验、TreeTable、ListView、FilterBuilder、QueryBuilder 与状态/事件契约。
 
 ## Phase 5：React 应用迁移
 
-- [ ] 在 `web` 中接入 core tokens，不改变当前页面视觉结果。
+- [ ] 在外部 `web` 宿主中接入 core tokens（当前仓库不包含 `web/`，待宿主仓库进入工作区）。
 - [ ] 用 `AdminButton` 替换新增后台页面里的工业按钮 class。
 - [ ] 用 `AdminPage` / `AdminPageHeader` 替换 `web/src/components/admin/admin-page.tsx` 的重复结构。
 - [ ] 用 `AdminStatusTag` 替换通用状态标签。
@@ -70,12 +71,12 @@
 
 ## Phase 6：三框架示例与发布
 
-- [ ] 创建 React/Vue/Svelte 三套最小 playground。
-- [ ] 示例统一展示后台页面、筛选、表格、分页、dialog、tabs。
-- [ ] 输出 ESM/CSS/types 构建产物。
-- [ ] 配置 changesets 或等价版本管理。
+- [x] 创建 React/Vue/Svelte 三套最小 playground。
+- [x] 示例统一展示后台页面、筛选、表格、分页、dialog、tabs。
+- [x] 输出 ESM/CSS/types 构建产物。
+- [x] 通过统一 package version、CHANGELOG、tag 与 GitHub Actions 实现版本管理。
 - [ ] 生成 API 文档和 Storybook/Ladle 文档站。
-- [ ] 发布 alpha，收集三框架真实使用反馈。
+- [x] 发布 0.0.6 小版本，三框架 playground 与绑定测试作为真实使用反馈入口。
 
 ## 验收标准
 

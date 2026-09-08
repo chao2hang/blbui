@@ -1102,9 +1102,9 @@ export const components: ComponentItem[] = [
         category: "data",
         description: "Paired start and end date selector for reporting time windows.",
         status: "stable",
-        props: ["start", "end", "start-label", "end-label"],
+        props: ["start", "end", "start-label", "end-label", "min", "max", "required"],
         events: ["aui-change"],
-        previewHtml: `<div style="width:100%;max-width:340px;"><aui-date-range start="2026-09-01" end="2026-09-05"></aui-date-range></div>`,
+        previewHtml: `<div style="width:100%;max-width:340px;"><aui-date-range id="preview-date-range" start="2026-09-01" end="2026-09-05" min="2026-01-01" max="2026-12-31" required></aui-date-range></div>`,
         usage: {
             wc: `<aui-date-range start="2026-09-01" end="2026-09-05"></aui-date-range>`,
             react: `import { AdminDateRange } from '@chaos_team/blbui-react'\n\n<AdminDateRange start="2026-09-01" end="2026-09-05" onChange={setRange} />`,
@@ -1119,9 +1119,9 @@ export const components: ComponentItem[] = [
         category: "data",
         description: "Industrial visual wrap for svg and canvas diagrams with title bar.",
         status: "stable",
-        props: ["title", "description", "height"],
+        props: ["title", "description", "height", "legend", "tooltip"],
         events: [],
-        previewHtml: `<div style="width:100%;max-width:340px;"><aui-chart-container title="INGRESS RATE" description="Packets per second over 5m" height="90px"><div style="height:50px;display:flex;align-items:flex-end;gap:4px;padding:8px 0;"><div style="flex:1;background:var(--aui-border);height:40%;"></div><div style="flex:1;background:var(--aui-border);height:65%;"></div><div style="flex:1;background:var(--aui-info);height:90%;"></div><div style="flex:1;background:var(--aui-success);height:100%;"></div><div style="flex:1;background:var(--aui-success);height:85%;"></div></div></aui-chart-container></div>`,
+        previewHtml: `<div style="width:100%;max-width:340px;"><aui-chart-container id="preview-chart-container" title="INGRESS RATE" description="Packets per second over 5m" height="90px"><div style="height:50px;display:flex;align-items:flex-end;gap:4px;padding:8px 0;"><div style="flex:1;background:var(--aui-border);height:40%;"></div><div style="flex:1;background:var(--aui-border);height:65%;"></div><div style="flex:1;background:var(--aui-info);height:90%;"></div><div style="flex:1;background:var(--aui-success);height:100%;"></div><div style="flex:1;background:var(--aui-success);height:85%;"></div></div></aui-chart-container></div>`,
         usage: {
             wc: `<aui-chart-container title="Throughput" description="Requests/sec" height="180px">\n  <!-- Canvas or SVG -->\n</aui-chart-container>`,
             react: `import { AdminChartContainer } from '@chaos_team/blbui-react'\n\n<AdminChartContainer title="Throughput" description="Requests/sec" height="180px">\n  <canvas />\n</AdminChartContainer>`,
@@ -1969,6 +1969,78 @@ export const components: ComponentItem[] = [
             svelte: `<aui-sparkline label="LATENCY (MS)" color="#10b981"></aui-sparkline>`,
         },
     },
+    {
+        id: "tree-table",
+        tag: "aui-tree-table",
+        name: "Tree Table",
+        category: "data",
+        description: "Hierarchical table with expandable nodes, selection and responsive overflow.",
+        status: "stable",
+        props: ["columns", "nodes", "expanded", "selected", "selectable"],
+        events: ["aui-tree-table-toggle", "aui-tree-table-select"],
+        initKey: "tree-table",
+        previewHtml: `<div style="width:100%;"><aui-tree-table id="preview-tree-table"></aui-tree-table></div>`,
+        usage: {
+            wc: `<aui-tree-table id="resource-tree"></aui-tree-table>`,
+            react: `import { AdminTreeTable } from '@chaos_team/blbui-react'\n\n<AdminTreeTable columns={columns} nodes={nodes} selectable />`,
+            vue: `<AdminTreeTable :columns="columns" :nodes="nodes" selectable />`,
+            svelte: `import { AdminTreeTable } from '@chaos_team/blbui-svelte/components'\n\n<AdminTreeTable {columns} {nodes} selectable />`,
+        },
+    },
+    {
+        id: "list-view",
+        tag: "aui-list-view",
+        name: "List View",
+        category: "data",
+        description: "Selectable operational list with loading, empty and error state contracts.",
+        status: "stable",
+        props: ["items", "loading", "error", "selectable", "selected-keys"],
+        events: ["aui-list-view-select"],
+        initKey: "list-view",
+        previewHtml: `<div style="width:100%;max-width:360px;"><aui-list-view id="preview-list-view"></aui-list-view></div>`,
+        usage: {
+            wc: `<aui-list-view id="alerts-list"></aui-list-view>`,
+            react: `import { AdminListView } from '@chaos_team/blbui-react'\n\n<AdminListView items={items} onSelect={handleSelect} />`,
+            vue: `<AdminListView :items="items" @select="handleSelect" />`,
+            svelte: `<aui-list-view items={items}></aui-list-view>`,
+        },
+    },
+    {
+        id: "filter-builder",
+        tag: "aui-filter-builder",
+        name: "Filter Builder",
+        category: "forms",
+        description: "Schema-driven filter rows for reusable search and reporting panels.",
+        status: "stable",
+        props: ["fields", "filters", "max-rules", "add-label", "clear-label", "apply-label"],
+        events: ["aui-filter-builder-change", "aui-filter-builder-submit"],
+        initKey: "filter-builder",
+        previewHtml: `<div style="width:100%;"><aui-filter-builder id="preview-filter-builder"></aui-filter-builder></div>`,
+        usage: {
+            wc: `<aui-filter-builder id="filters"></aui-filter-builder>`,
+            react: `import { AdminFilterBuilder } from '@chaos_team/blbui-react'\n\n<AdminFilterBuilder fields={fields} onSubmit={runSearch} />`,
+            vue: `<AdminFilterBuilder :fields="fields" @submit="runSearch" />`,
+            svelte: `<aui-filter-builder fields={fields}></aui-filter-builder>`,
+        },
+    },
+    {
+        id: "query-builder",
+        tag: "aui-query-builder",
+        name: "Query Builder",
+        category: "forms",
+        description: "Composable ALL/ANY query conditions with a framework-neutral rule schema.",
+        status: "stable",
+        props: ["fields", "rules", "logic", "apply-label"],
+        events: ["aui-query-change", "aui-query-submit"],
+        initKey: "query-builder",
+        previewHtml: `<div style="width:100%;"><aui-query-builder id="preview-query-builder"></aui-query-builder></div>`,
+        usage: {
+            wc: `<aui-query-builder id="query"></aui-query-builder>`,
+            react: `import { AdminQueryBuilder } from '@chaos_team/blbui-react'\n\n<AdminQueryBuilder fields={fields} logic="and" onSubmit={runQuery} />`,
+            vue: `<AdminQueryBuilder :fields="fields" logic="and" @submit="runQuery" />`,
+            svelte: `<aui-query-builder fields={fields} logic="and"></aui-query-builder>`,
+        },
+    },
 ];
 
 export function initComponentDemo(root: HTMLElement): void {
@@ -2142,7 +2214,7 @@ export function initComponentDemo(root: HTMLElement): void {
     setProp("#preview-descriptions", "items", [
         { label: "REGION", value: "us-east-1", description: "Primary" },
         { label: "STATUS", value: "ONLINE" },
-        { label: "VERSION", value: "v0.0.5" },
+        { label: "VERSION", value: "v0.0.6" },
         { label: "OWNER", value: "Platform Ops" },
     ]);
     setProp("#preview-accordion", "items", [
@@ -2303,6 +2375,41 @@ export function initComponentDemo(root: HTMLElement): void {
             items: [{ id: "3", title: "v0.0.2 Release", meta: "RELEASE" }],
         },
     ]);
+    setProp("#preview-tree-table", "columns", [
+        { key: "label", label: "RESOURCE" },
+        { key: "status", label: "STATUS" },
+        { key: "owner", label: "OWNER" },
+    ]);
+    setProp("#preview-tree-table", "nodes", [
+        {
+            id: "root",
+            label: "gateway-prod",
+            status: "ONLINE",
+            owner: "OPS",
+            children: [
+                { id: "route-a", label: "chat-completions", status: "ONLINE", owner: "PLATFORM" },
+                { id: "route-b", label: "embeddings", status: "DEGRADED", owner: "DATA" },
+            ],
+        },
+        { id: "edge", label: "edge-canary", status: "PENDING", owner: "RELEASE" },
+    ]);
+    setProp("#preview-tree-table", "selectable", true);
+    setProp("#preview-list-view", "items", [
+        { id: "alert-1", title: "Gateway latency elevated", description: "P99 exceeded 400ms in us-east-1", meta: "2 MIN AGO", status: "OPEN" },
+        { id: "alert-2", title: "Certificate rotation complete", description: "All edge nodes acknowledged the new certificate", meta: "18 MIN AGO", status: "RESOLVED" },
+    ]);
+    setProp("#preview-chart-container", "legend", [
+        { label: "ONLINE", color: "#10b981", value: "84%" },
+        { label: "DEGRADED", color: "#f59e0b", value: "16%" },
+    ]);
+    setProp("#preview-chart-container", "tooltip", "P99 184 ms · us-east-1");
+    const filterFields = [
+        { key: "status", label: "STATUS", type: "select", options: [{ value: "online", label: "ONLINE" }, { value: "degraded", label: "DEGRADED" }] },
+        { key: "latency", label: "P99 LATENCY", type: "number" },
+        { key: "created", label: "CREATED", type: "date" },
+    ];
+    setProp("#preview-filter-builder", "fields", filterFields);
+    setProp("#preview-query-builder", "fields", filterFields);
 
     // Business
     setProp("#preview-advanced-table", "columns", [

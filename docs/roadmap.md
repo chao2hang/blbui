@@ -11,7 +11,7 @@
 - Navigation：Breadcrumb、Nav、Tabs、Pagination、Accordion、Collapsible、Stepper、Segmented、List、Tree、Timeline、Toggle、ToggleGroup
 - Feedback：Alert、Result、EmptyState、ErrorState、Spinner、Skeleton、Toast、NotificationCenter、Separator、CopyableText、TruncatedText、LoadingOverlay
 - Overlay：Tooltip、Popover、Dropdown、Command、Dialog、ConfirmDialog、Drawer
-- Data：Table、DataGrid、DataList、Calendar、CalendarGrid、DateRange、JSONViewer、LogViewer、ChartContainer、Kanban、CodeBlock、Descriptions、FilePreview、ColumnSettings
+- Data：Table、DataGrid、DataList、Calendar、CalendarGrid、DateRange、JSONViewer、LogViewer、ChartContainer、Kanban、CodeBlock、Descriptions、FilePreview、ColumnSettings、TreeTable、ListView
 - Layout：Shell、Page、PageHeader、FilterBar、Stat、Container、Stack、Grid、Splitter、AspectRatio、ScrollArea、Sidebar、Navbar
 
 ### Business / Domain packages
@@ -67,7 +67,7 @@
 
 ## 当前状态
 
-当前已注册 99 个 Core Custom Elements。React 与 Vue 均提供 99:1 的完整同构绑定（`Admin*` 命名），Svelte 提供核心注册入口（`registerAdminElements` / `adminUi`）、core 类型再导出和 22 个常用组件封装，共 24 个公开导出。文档站 `docs-site/` 覆盖全部 108 个组件（含 9 个 Business）的实时预览与四框架用法。主题基础设施已包含 9 套主题和 light/dark 模式；DataGrid、组合式表单、移动端 Drawer、Breadcrumb 溢出、通知持久化和 Playwright/a11y 矩阵已落地。下一步：三框架最小示例应用、SSR/hydration 验证、视觉截图基线和复杂业务组件 adapter。
+当前已注册 103 个 Core Custom Elements。React 与 Vue 均提供 103:1 的完整同构绑定（`Admin*` 命名），Svelte 提供核心注册入口（`registerAdminElements` / `adminUi`）、core 类型再导出和 26 个常用组件封装，共 28 个公开导出。文档站 `docs-site/` 覆盖全部 112 个组件（含 9 个 Business）的实时预览与四框架用法。主题基础设施已包含 9 套主题和 light/dark 模式；DataGrid、组合式表单、移动端 Drawer、Breadcrumb 溢出、通知持久化、TreeTable/ListView/FilterBuilder/QueryBuilder 和 Playwright/a11y/pixelmatch 矩阵已落地。下一步：外部宿主迁移、跨平台截图基线沉淀、TanStack adapter 和业务权限/审计组件。
 
 ## 依赖边界
 

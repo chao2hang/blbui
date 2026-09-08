@@ -59,4 +59,4 @@ it under the terms of the GNU Affero General Public License.
   }
 </script>
 
-<aui-upload-list bind:this={element} />
+<aui-upload-list bind:this={element}></aui-upload-list>

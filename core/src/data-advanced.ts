@@ -352,6 +352,8 @@ export class AdminChartContainerElement extends AdminElement {
         title: { type: String },
         description: { type: String },
         height: { type: String },
+        legend: { attribute: false },
+        tooltip: { type: String },
     };
     static styles = css`
         :host {
@@ -398,10 +400,47 @@ export class AdminChartContainerElement extends AdminElement {
                     var(--aui-grid-line) 80px
                 );
         }
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 8px;
+            color: var(--aui-chart-legend);
+            font: 10px/1.2 var(--aui-font-mono);
+            text-transform: uppercase;
+        }
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .legend-swatch {
+            width: 8px;
+            height: 8px;
+            border-radius: var(--aui-radius-full);
+            background: var(--aui-accent);
+        }
+        .tooltip {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            max-width: calc(100% - 20px);
+            padding: 5px 7px;
+            border: 1px solid var(--aui-chart-tooltip-border);
+            border-radius: var(--aui-radius-sm);
+            background: var(--aui-chart-tooltip-bg);
+            color: var(--aui-chart-tooltip-text);
+            font: 10px/1.2 var(--aui-font-mono);
+        }
+        .body {
+            position: relative;
+        }
     `;
     title = "";
     description = "";
     height = "240px";
+    legend: Array<{ label: string; color?: string; value?: string }> = [];
+    tooltip = "";
     render() {
         return html`<section class="chart" style=${`--aui-chart-height:${this.height}`}>
             <header class="header">
@@ -411,7 +450,11 @@ export class AdminChartContainerElement extends AdminElement {
                 </div>
                 <slot name="actions"></slot>
             </header>
-            <div class="body"><slot>CHART CONTENT / PROVIDE A RENDERER</slot></div>
+            <div class="body">
+                <slot>CHART CONTENT / PROVIDE A RENDERER</slot
+                >${this.tooltip ? html`<div class="tooltip" role="status">${this.tooltip}</div>` : null}
+            </div>
+            ${this.legend.length ? html`<div class="legend" aria-label="Chart legend">${this.legend.map((item) => html`<span class="legend-item"><i class="legend-swatch" style=${item.color ? `background:${item.color}` : ""}></i>${item.label}${item.value ? ` · ${item.value}` : ""}</span>`)}</div>` : null}
         </section>`;
     }
 }

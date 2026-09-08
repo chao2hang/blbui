@@ -24,4 +24,4 @@ it under the terms of the GNU Affero General Public License.
   }
 </script>
 
-<aui-progress-ring bind:this={element} />
+<aui-progress-ring bind:this={element}></aui-progress-ring>

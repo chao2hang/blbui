@@ -119,6 +119,12 @@ import {
 } from "./interaction";
 import { AdminFilePreviewElement, AdminUploadListElement } from "./file-components";
 import {
+    AdminFilterBuilderElement,
+    AdminListViewElement,
+    AdminQueryBuilderElement,
+    AdminTreeTableElement,
+} from "./data-complex";
+import {
     AdminColumnSettingsElement,
     AdminFormElement,
     AdminFormItemElement,
@@ -127,6 +133,113 @@ import {
     AdminSchemaFormElement,
     AdminTruncatedTextElement,
 } from "./composed";
+
+/** Core custom-element names used by the hydration helper and integration tests. */
+export const adminElementTags = [
+    "aui-button",
+    "aui-card",
+    "aui-table",
+    "aui-pagination",
+    "aui-tabs",
+    "aui-dialog",
+    "aui-confirm-dialog",
+    "aui-status-tag",
+    "aui-spinner",
+    "aui-empty-state",
+    "aui-error-state",
+    "aui-skeleton",
+    "aui-separator",
+    "aui-copyable-text",
+    "aui-input",
+    "aui-select",
+    "aui-textarea",
+    "aui-checkbox",
+    "aui-switch",
+    "aui-page",
+    "aui-page-header",
+    "aui-stat",
+    "aui-filter-bar",
+    "aui-shell",
+    "aui-nav",
+    "aui-breadcrumb",
+    "aui-badge",
+    "aui-avatar",
+    "aui-progress",
+    "aui-rating",
+    "aui-kbd",
+    "aui-result",
+    "aui-field",
+    "aui-input-group",
+    "aui-radio-group",
+    "aui-slider",
+    "aui-password-input",
+    "aui-file-upload",
+    "aui-accordion",
+    "aui-stepper",
+    "aui-segmented",
+    "aui-list",
+    "aui-tree",
+    "aui-timeline",
+    "aui-tooltip",
+    "aui-popover",
+    "aui-dropdown",
+    "aui-drawer",
+    "aui-toast",
+    "aui-data-list",
+    "aui-calendar",
+    "aui-search",
+    "aui-calendar-grid",
+    "aui-chart-container",
+    "aui-alert",
+    "aui-icon-button",
+    "aui-combobox",
+    "aui-multi-select",
+    "aui-command",
+    "aui-color-picker",
+    "aui-date-range",
+    "aui-tag-input",
+    "aui-container",
+    "aui-stack",
+    "aui-grid",
+    "aui-splitter",
+    "aui-json-viewer",
+    "aui-log-viewer",
+    "aui-data-grid",
+    "aui-kanban",
+    "aui-toggle",
+    "aui-toggle-group",
+    "aui-collapsible",
+    "aui-aspect-ratio",
+    "aui-scroll-area",
+    "aui-number-input",
+    "aui-code-block",
+    "aui-color-tag",
+    "aui-menu",
+    "aui-sidebar",
+    "aui-navbar",
+    "aui-date-picker",
+    "aui-time-picker",
+    "aui-pin-input",
+    "aui-descriptions",
+    "aui-cascader",
+    "aui-transfer",
+    "aui-context-menu",
+    "aui-hover-card",
+    "aui-notification-center",
+    "aui-upload-list",
+    "aui-file-preview",
+    "aui-form",
+    "aui-form-item",
+    "aui-schema-form",
+    "aui-truncated-text",
+    "aui-loading-overlay",
+    "aui-progress-ring",
+    "aui-column-settings",
+    "aui-tree-table",
+    "aui-list-view",
+    "aui-filter-builder",
+    "aui-query-builder",
+] as const;
 
 export function registerAdminElements(): void {
     if (typeof customElements === "undefined") return;
@@ -229,4 +342,23 @@ export function registerAdminElements(): void {
     defineOnce("aui-loading-overlay", AdminLoadingOverlayElement);
     defineOnce("aui-progress-ring", AdminProgressRingElement);
     defineOnce("aui-column-settings", AdminColumnSettingsElement);
+    defineOnce("aui-tree-table", AdminTreeTableElement);
+    defineOnce("aui-list-view", AdminListViewElement);
+    defineOnce("aui-filter-builder", AdminFilterBuilderElement);
+    defineOnce("aui-query-builder", AdminQueryBuilderElement);
+}
+
+/**
+ * Register core elements and wait until the browser has upgraded them.
+ *
+ * This is intentionally a no-op-resolving helper during SSR. Applications can
+ * call it from a client entry or hydration boundary without branching on the
+ * presence of `window`/`customElements` themselves.
+ */
+export async function whenAdminElementsDefined(
+    tags: readonly string[] = adminElementTags,
+): Promise<void> {
+    if (typeof customElements === "undefined") return;
+    registerAdminElements();
+    await Promise.all(tags.map((tag) => customElements.whenDefined(tag)));
 }

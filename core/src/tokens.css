@@ -93,6 +93,10 @@ it under the terms of the GNU Affero General Public License.
     --aui-table-state-min-height: 96px;
     --aui-table-state-padding: 16px;
     --aui-transition: 160ms ease-in-out;
+    --aui-chart-legend: var(--aui-text-secondary);
+    --aui-chart-tooltip-bg: var(--aui-surface-elevated);
+    --aui-chart-tooltip-text: var(--aui-text-primary);
+    --aui-chart-tooltip-border: var(--aui-border-hover);
 }
 
 .aui-root,

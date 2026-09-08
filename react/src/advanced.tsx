@@ -32,6 +32,11 @@ import type {
     AdminTransferOption,
     AdminUploadItem,
     AdminTreeNode,
+    AdminTreeTableNode,
+    AdminListViewItem,
+    AdminFilterField,
+    AdminFilterRule,
+    AdminQueryRule,
     AdminFormLayout,
     AdminSchemaFormField,
     AdminSchemaFormValue,
@@ -209,25 +214,42 @@ export interface AdminDateRangeProps extends ElementProps {
     end?: string;
     startLabel?: string;
     endLabel?: string;
+    min?: string;
+    max?: string;
+    required?: boolean;
     disabled?: boolean;
     onChange?: (range: { start: string; end: string }) => void;
+    onValidationChange?: (detail: { valid: boolean; error: string }) => void;
 }
 export function AdminDateRange(props: AdminDateRangeProps) {
-    const { start, end, startLabel, endLabel, disabled, onChange, ...rest } = props;
+    const {
+        start,
+        end,
+        startLabel,
+        endLabel,
+        min,
+        max,
+        required,
+        disabled,
+        onChange,
+        onValidationChange,
+        ...rest
+    } = props;
     const { setRef } = useBinding(
         undefined,
-        { start, end, startLabel, endLabel, disabled },
+        { start, end, startLabel, endLabel, min, max, required, disabled },
         {
             "aui-range-change": onChange
                 ? (detail: { start: string; end: string }) => onChange(detail)
                 : undefined,
+            "aui-range-validation": onValidationChange,
         },
     );
     return createElement("aui-date-range", {
         ...elementProps(
             props,
-            ["start", "end", "startLabel", "endLabel", "disabled"],
-            ["onChange"],
+            ["start", "end", "startLabel", "endLabel", "min", "max", "required", "disabled"],
+            ["onChange", "onValidationChange"],
         ),
         ...rest,
         ref: setRef,
@@ -1073,15 +1095,176 @@ export interface AdminChartContainerProps extends ElementProps {
     title?: string;
     description?: string;
     height?: string;
+    legend?: Array<{ label: string; color?: string; value?: string }>;
+    tooltip?: string;
 }
 export function AdminChartContainer(props: AdminChartContainerProps) {
-    const { title, description, height, ...rest } = props;
-    const { setRef } = useBinding(undefined, { title, description, height });
+    const { title, description, height, legend, tooltip, ...rest } = props;
+    const { setRef } = useBinding(undefined, { title, description, height, legend, tooltip });
     return createElement(
         "aui-chart-container",
-        { ...elementProps(props, ["title", "description", "height"]), ...rest, ref: setRef },
+        {
+            ...elementProps(props, ["title", "description", "height", "legend", "tooltip"]),
+            ...rest,
+            ref: setRef,
+        },
         props.children,
     );
+}
+
+export interface AdminTreeTableProps extends ElementProps {
+    columns?: AdminDataGridColumn[];
+    nodes?: AdminTreeTableNode[];
+    expanded?: Array<string | number>;
+    selected?: string | number | null;
+    selectable?: boolean;
+    emptyLabel?: string;
+    onToggle?: (detail: { id: string | number; expanded: boolean }) => void;
+    onSelect?: (detail: { id: string | number; node: AdminTreeTableNode }) => void;
+}
+export function AdminTreeTable(props: AdminTreeTableProps) {
+    const {
+        columns,
+        nodes,
+        expanded,
+        selected,
+        selectable,
+        emptyLabel,
+        onToggle,
+        onSelect,
+        ...rest
+    } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { columns, nodes, expanded, selected, selectable, emptyLabel },
+        { "aui-tree-table-toggle": onToggle, "aui-tree-table-select": onSelect },
+    );
+    return createElement("aui-tree-table", {
+        ...elementProps(
+            props,
+            ["columns", "nodes", "expanded", "selected", "selectable", "emptyLabel"],
+            ["onToggle", "onSelect"],
+        ),
+        ...rest,
+        ref: setRef,
+    });
+}
+
+export interface AdminListViewProps extends ElementProps {
+    items?: AdminListViewItem[];
+    loading?: boolean;
+    error?: boolean;
+    selectable?: boolean;
+    selectedKeys?: Array<string | number>;
+    loadingLabel?: string;
+    emptyLabel?: string;
+    errorLabel?: string;
+    onSelect?: (detail: {
+        id: string | number;
+        item: AdminListViewItem;
+        selectedKeys: Array<string | number>;
+    }) => void;
+}
+export function AdminListView(props: AdminListViewProps) {
+    const {
+        items,
+        loading,
+        error,
+        selectable,
+        selectedKeys,
+        loadingLabel,
+        emptyLabel,
+        errorLabel,
+        onSelect,
+        ...rest
+    } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { items, loading, error, selectable, selectedKeys, loadingLabel, emptyLabel, errorLabel },
+        { "aui-list-view-select": onSelect },
+    );
+    return createElement("aui-list-view", {
+        ...elementProps(
+            props,
+            [
+                "items",
+                "loading",
+                "error",
+                "selectable",
+                "selectedKeys",
+                "loadingLabel",
+                "emptyLabel",
+                "errorLabel",
+            ],
+            ["onSelect"],
+        ),
+        ...rest,
+        ref: setRef,
+    });
+}
+
+export interface AdminFilterBuilderProps extends ElementProps {
+    fields?: AdminFilterField[];
+    filters?: AdminFilterRule[];
+    maxRules?: number;
+    addLabel?: string;
+    clearLabel?: string;
+    applyLabel?: string;
+    onChange?: (detail: { filters: AdminFilterRule[] }) => void;
+    onSubmit?: (detail: { filters: AdminFilterRule[] }) => void;
+}
+export function AdminFilterBuilder(props: AdminFilterBuilderProps) {
+    const {
+        fields,
+        filters,
+        maxRules,
+        addLabel,
+        clearLabel,
+        applyLabel,
+        onChange,
+        onSubmit,
+        ...rest
+    } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { fields, filters, maxRules, addLabel, clearLabel, applyLabel },
+        { "aui-filter-builder-change": onChange, "aui-filter-builder-submit": onSubmit },
+    );
+    return createElement("aui-filter-builder", {
+        ...elementProps(
+            props,
+            ["fields", "filters", "maxRules", "addLabel", "clearLabel", "applyLabel"],
+            ["onChange", "onSubmit"],
+        ),
+        ...rest,
+        ref: setRef,
+    });
+}
+
+export interface AdminQueryBuilderProps extends ElementProps {
+    fields?: AdminFilterField[];
+    rules?: AdminQueryRule[];
+    logic?: "and" | "or";
+    applyLabel?: string;
+    onChange?: (detail: { logic: "and" | "or"; rules: AdminQueryRule[] }) => void;
+    onSubmit?: (detail: { logic: "and" | "or"; rules: AdminQueryRule[] }) => void;
+}
+export function AdminQueryBuilder(props: AdminQueryBuilderProps) {
+    const { fields, rules, logic, applyLabel, onChange, onSubmit, ...rest } = props;
+    const { setRef } = useBinding(
+        undefined,
+        { fields, rules, logic, applyLabel },
+        { "aui-query-change": onChange, "aui-query-submit": onSubmit },
+    );
+    return createElement("aui-query-builder", {
+        ...elementProps(
+            props,
+            ["fields", "rules", "logic", "applyLabel"],
+            ["onChange", "onSubmit"],
+        ),
+        ...rest,
+        ref: setRef,
+    });
 }
 
 export interface AdminJsonViewerProps extends ElementProps {

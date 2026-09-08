@@ -111,6 +111,7 @@ export class AdminButtonElement extends AdminElement {
         }
         @media (prefers-reduced-motion: reduce) {
             .spinner,
+            .spinner i,
             .spinner::before,
             .spinner::after {
                 animation: none;

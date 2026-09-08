@@ -1,6 +1,6 @@
 {
   "name": "@chaos_team/blbui",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "private": true,
   "description": "Obsidian Industrial Console component library for React, Vue and Svelte.",
   "workspaces": [
@@ -17,6 +17,7 @@
     "typecheck:core": "node_modules/.bin/tsc -p core/tsconfig.json",
     "typecheck:react": "node_modules/.bin/tsc -p react/tsconfig.json",
     "test": "vitest run",
+    "test:frameworks": "vitest run tests/frameworks.test.tsx tests/ssr.test.ts",
     "format:check": "oxfmt --check core/src react/src vue/src svelte/src",
     "format": "oxfmt --write core/src react/src vue/src svelte/src",
     "typecheck:vue": "node_modules/.bin/tsc -p vue/tsconfig.json",
@@ -31,17 +32,27 @@
     "typecheck:business-react": "node_modules/.bin/tsc -p business-react/tsconfig.json",
     "docs:check": "cd docs-site && bun run test:smoke",
     "e2e:check": "playwright test",
+    "examples:check": "node scripts/check-playgrounds.mjs",
+    "ssr:check": "node scripts/check-ssr.mjs",
     "build:packages": "bun scripts/build-packages.mjs",
     "pack:check": "bun run build:packages && npm pack --dry-run --workspaces --if-present",
     "typecheck:docs": "node_modules/.bin/tsc -p docs-site/tsconfig.json",
     "catalog:check": "node scripts/check-catalog.mjs && node scripts/check-examples.mjs",
-    "release:check": "bun run catalog:check && bun run theme:check && bun run token:check && bun run typecheck && bun run build:packages && bun run check:svelte && bun run docs:check && bun run test && bun run e2e:check"
+    "release:check": "bun run catalog:check && bun run theme:check && bun run token:check && bun run examples:check && bun run typecheck && bun run ssr:check && bun run build:packages && bun run check:svelte && bun run docs:check && bun run test && bun run test:frameworks && bun run e2e:check"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.63.0",
+    "@sveltejs/vite-plugin-svelte": "^7.3.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/svelte": "^5.4.2",
+    "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/test-utils": "^2.5.0",
     "axe-core": "^4.13.0",
     "jsdom": "^29.0.0",
     "lit": "^3.3.0",
@@ -50,9 +61,11 @@
     "pixelmatch": "^7.2.0",
     "pngjs": "^7.0.0",
     "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "svelte": "^5.0.0",
     "typescript": ">=5.7.0",
     "vitest": "^4.0.0",
+    "vite": "^8.0.0",
     "vue": "^3.5.0"
   }
 }

@@ -36,4 +36,4 @@ it under the terms of the GNU Affero General Public License.
   }
 </script>
 
-<aui-transfer bind:this={element} />
+<aui-transfer bind:this={element}></aui-transfer>

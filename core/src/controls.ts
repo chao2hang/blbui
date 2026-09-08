@@ -920,7 +920,12 @@ export class AdminDateRangeElement extends AdminElement {
         end: { type: String },
         startLabel: { type: String, attribute: "start-label" },
         endLabel: { type: String, attribute: "end-label" },
+        min: { type: String },
+        max: { type: String },
+        required: { type: Boolean, reflect: true },
         disabled: { type: Boolean, reflect: true },
+        invalid: { type: Boolean, reflect: true },
+        error: { type: String },
     };
     static styles = css`
         :host {
@@ -955,12 +960,54 @@ export class AdminDateRangeElement extends AdminElement {
             outline: 1px solid var(--aui-focus);
             outline-offset: 2px;
         }
+        :host([invalid]) input {
+            border-color: var(--aui-danger);
+        }
+        .error {
+            margin-top: 6px;
+            color: var(--aui-danger);
+            font: 10px/1.3 var(--aui-font-mono);
+        }
     `;
     start = "";
     end = "";
     startLabel = "From";
     endLabel = "To";
+    min = "";
+    max = "";
+    required = false;
     disabled = false;
+    invalid = false;
+    error = "";
+
+    private validationError(): string {
+        if (this.required && (!this.start || !this.end)) return "Both dates are required.";
+        if (this.start && this.end && this.start > this.end)
+            return "Start date must be before end date.";
+        if (
+            this.min &&
+            ((this.start && this.start < this.min) || (this.end && this.end < this.min))
+        )
+            return `Dates must be on or after ${this.min}.`;
+        if (
+            this.max &&
+            ((this.start && this.start > this.max) || (this.end && this.end > this.max))
+        )
+            return `Dates must be on or before ${this.max}.`;
+        return "";
+    }
+
+    protected updated(changed: Map<string, unknown>): void {
+        if (["start", "end", "min", "max", "required"].some((key) => changed.has(key))) {
+            const error = this.validationError();
+            if (error !== this.error || Boolean(error) !== this.invalid) {
+                this.error = error;
+                this.invalid = Boolean(error);
+                this.dispatchDetail("aui-range-validation", { valid: !error, error });
+            }
+        }
+    }
+
     private change(kind: "start" | "end", event: Event): void {
         this[kind] = (event.target as HTMLInputElement).value;
         this.dispatchDetail("aui-range-change", { start: this.start, end: this.end });
@@ -971,15 +1018,21 @@ export class AdminDateRangeElement extends AdminElement {
                 >${this.startLabel}<input
                     type="date"
                     .value=${this.start}
+                    min=${this.min || undefined}
+                    max=${this.max || undefined}
+                    ?required=${this.required}
                     ?disabled=${this.disabled}
                     @change=${(event: Event) => this.change("start", event)} /></label
             ><label
                 >${this.endLabel}<input
                     type="date"
                     .value=${this.end}
+                    min=${this.min || undefined}
+                    max=${this.max || undefined}
+                    ?required=${this.required}
                     ?disabled=${this.disabled}
-                    @change=${(event: Event) => this.change("end", event)}
-            /></label>
+                    @change=${(event: Event) => this.change("end", event)} /></label
+            >${this.error ? html`<div class="error" role="alert">${this.error}</div>` : null}
         </div>`;
     }
 }

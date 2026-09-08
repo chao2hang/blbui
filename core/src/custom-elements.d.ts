@@ -105,6 +105,10 @@ declare global {
         "aui-loading-overlay": import("./composed").AdminLoadingOverlayElement;
         "aui-progress-ring": import("./composed").AdminProgressRingElement;
         "aui-column-settings": import("./composed").AdminColumnSettingsElement;
+        "aui-tree-table": import("./data-complex").AdminTreeTableElement;
+        "aui-list-view": import("./data-complex").AdminListViewElement;
+        "aui-filter-builder": import("./data-complex").AdminFilterBuilderElement;
+        "aui-query-builder": import("./data-complex").AdminQueryBuilderElement;
     }
 }
 

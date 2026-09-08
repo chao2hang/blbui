@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.6 — 2026-09-08
+
+- 新增 TreeTable、ListView、FilterBuilder、QueryBuilder，并同步 React/Vue/Svelte 绑定、目录预览和跨框架事件契约。
+- 增强 DateRange 边界校验、ChartContainer legend/tooltip 主题 token，新增 HTTP 状态语义 helper。
+- 增加 React/Vue/Svelte 最小 Vite playground、Testing Library 挂载测试和 SSR/hydration 注册等待 API。
+- 发布门禁加入三框架 playground 构建、SSR 检查、跨平台 Chromium 配置及 pixelmatch 重复渲染稳定性检查；目录扩展至 112 个组件。
+
 ## 0.0.5 — 2026-09-08
 
 - 新增 Form、FormItem、SchemaForm、ProgressRing、TruncatedText、LoadingOverlay、ColumnSettings，并补齐 React/Vue/Svelte 适配与文档示例。

@@ -212,7 +212,7 @@ const svelteComponents = [
 ];
 if (!svelteComponents.length) throw new Error("No Svelte components found in src/components.ts");
 const svelteExports = svelteComponents
-  .map(([, name, path]) => `export { default as ${name} } from "${path}";`)
+  .map(([, name, path]) => `export { default as ${name} } from "./src/${path.slice(1)}";`)
   .join("\n") + "\n";
 await writeFile(join(svelteDist, "components.js"), svelteExports);
 await writeFile(join(svelteDist, "components.d.ts"), svelteExports);

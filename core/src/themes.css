@@ -28,6 +28,10 @@ it under the terms of the GNU Affero General Public License.
     --aui-code-bg: var(--aui-surface-subtle);
     --aui-code-text: var(--aui-text);
     --aui-backdrop-filter: none;
+    --aui-chart-legend: var(--aui-text-secondary);
+    --aui-chart-tooltip-bg: var(--aui-surface-elevated);
+    --aui-chart-tooltip-text: var(--aui-text-primary);
+    --aui-chart-tooltip-border: var(--aui-border-hover);
 }
 
 [data-aui-theme][data-aui-mode="dark"] {

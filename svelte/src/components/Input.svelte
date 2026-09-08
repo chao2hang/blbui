@@ -38,4 +38,4 @@ it under the terms of the GNU Affero General Public License.
   }
 </script>
 
-<aui-input bind:this={element} class={className} />
+<aui-input bind:this={element} class={className}></aui-input>

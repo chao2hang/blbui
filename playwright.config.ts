@@ -5,6 +5,13 @@ it under the terms of the GNU Affero General Public License.
 */
 
 import { defineConfig } from "@playwright/test";
+import { existsSync } from "node:fs";
+
+const windowsChrome = "C:/Program Files/Google/Chrome/Application/chrome.exe";
+const launchOptions =
+    process.platform === "win32" && existsSync(windowsChrome)
+        ? { executablePath: windowsChrome }
+        : undefined;
 
 export default defineConfig({
     testDir: "./tests/e2e",
@@ -16,9 +23,7 @@ export default defineConfig({
         baseURL: "http://127.0.0.1:4173",
         browserName: "chromium",
         headless: true,
-        launchOptions: {
-            executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
-        },
+        launchOptions,
         screenshot: "only-on-failure",
         trace: "retain-on-failure",
     },

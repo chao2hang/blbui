@@ -33,4 +33,4 @@ it under the terms of the GNU Affero General Public License.
   }
 </script>
 
-<aui-column-settings bind:this={element} />
+<aui-column-settings bind:this={element}></aui-column-settings>
