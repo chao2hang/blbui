@@ -4,6 +4,11 @@
 
 后续变更记录从这里开始。
 
+## 0.0.13 — 2026-09-08
+
+- 新增 CodeMirror 6、TipTap、Monaco 的 `AdminEditorAdapter` 接入示例，并补充 Web Components、React、Vue、Svelte 的订阅清理生命周期说明。
+- 将 docs playground 的 DOMContentLoaded、渲染节点数和目录卡片数量纳入 Playwright 性能预算门禁。
+
 ## 0.0.12 — 2026-09-08
 
 - 为 DateRange 增加快捷范围、清空操作、动态日期边界、严格格式校验和完整 validation/preset 事件；同步 React/Vue 绑定、目录与文档契约。

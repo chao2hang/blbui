@@ -158,15 +158,21 @@ test.describe("BLBUI documentation quality matrix", () => {
                         if (goldenRoot) {
                             const goldenPath = resolve(goldenRoot, `${filename}.png`);
                             if (!existsSync(goldenPath)) {
-                                if (goldenRequired) throw new Error(`Missing visual golden: ${goldenPath}`);
+                                if (goldenRequired)
+                                    throw new Error(`Missing visual golden: ${goldenPath}`);
                             } else {
                                 const actual = PNG.sync.read(
-                                    readFileSync(testInfo.outputPath("visual-matrix", `${filename}.png`)),
+                                    readFileSync(
+                                        testInfo.outputPath("visual-matrix", `${filename}.png`),
+                                    ),
                                 );
                                 const expected = PNG.sync.read(readFileSync(goldenPath));
                                 expect(actual.width).toBe(expected.width);
                                 expect(actual.height).toBe(expected.height);
-                                const diff = new PNG({ width: actual.width, height: actual.height });
+                                const diff = new PNG({
+                                    width: actual.width,
+                                    height: actual.height,
+                                });
                                 const differentPixels = pixelmatch(
                                     actual.data,
                                     expected.data,
@@ -254,8 +260,14 @@ test.describe("BLBUI documentation quality matrix", () => {
         const budget = await page.evaluate(() => ({
             nodes: document.querySelectorAll("*").length,
             cards: document.querySelectorAll("[data-catalog-id]").length,
+            navigation: performance.getEntriesByType(
+                "navigation",
+            )[0] as PerformanceNavigationTiming,
         }));
         expect(budget.cards).toBe(123);
         expect(budget.nodes).toBeLessThan(20_000);
+        expect(
+            budget.navigation.domContentLoadedEventEnd - budget.navigation.startTime,
+        ).toBeLessThan(5_000);
     });
 });

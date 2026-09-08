@@ -14,7 +14,7 @@
 
 ### P0：语义 Token 与主题合同
 
-0.0.12 已在 0.0.11 基础上继续收紧：
+0.0.13 已在 0.0.12 基础上继续收紧：
 
 - 固化 surface、text、border、focus、status、overlay、shadow、radius、motion、form color-scheme 等 token。
 - 9 套主题均维护 light/dark 两套值；新增主题必须提供同一份 token 清单。
@@ -26,13 +26,13 @@
 
 ### P1：常用组件补齐
 
-已补齐 Menu、Sidebar、Navbar、DatePicker、TimePicker、PinInput、Descriptions、Cascader、Transfer、ContextMenu、HoverCard、NotificationCenter、UploadList、FilePreview、Form、FormItem、SchemaForm、ProgressRing、TruncatedText、LoadingOverlay、ColumnSettings。DataGrid 已补齐排序、筛选、选择、批量操作、服务端分页、移动端卡片和轻量虚拟窗口；Business 增加轻量 LineChart，支持主题 token 与 null telemetry gap。下一批优先级：
+已补齐 Menu、Sidebar、Navbar、DatePicker、TimePicker、PinInput、Descriptions、Cascader、Transfer、ContextMenu、HoverCard、NotificationCenter、UploadList、FilePreview、Form、FormItem、SchemaForm、ProgressRing、TruncatedText、LoadingOverlay、ColumnSettings。DataGrid 已补齐排序、筛选、选择、批量操作、服务端分页、移动端卡片和轻量虚拟窗口；Business 已覆盖图表、workflow、权限、审计、导入导出和编辑器 adapter contract。下一阶段优先级：
 
-1. 交互基础：继续覆盖 Dialog/Drawer/Popover/Dropdown 的嵌套浮层焦点栈和触摸 outside-dismiss。
-2. 表单高级：DateRangePicker 增强、FormWizard、FilterBuilder、QueryBuilder。
-3. 数据展示：TreeTable、ListView，以及可选 TanStack Table / Virtual adapter。
-4. 系统布局：PageHeader responsive actions、SSR/hydration 下的注册时机。
-5. 反馈与状态：Result action slots、全局 toast manager、通知跨标签页同步。
+1. 固定 runner：收集两次当前 432 张/平台的矩阵证据后，将 profile-specific golden 从 evidence-only 提升为 active。
+2. 外部宿主：真实 `web` 业务仓库进入工作区后，按迁移指南逐页迁移 tokens、Page、Table、FilterBar 和状态标签。
+3. 表单体验：评估自定义 Date/Time picker，以解决原生弹出面板无法完全主题化的限制。
+4. 性能：在真实长列表宿主接入后增加 DataGrid 滚动 FPS、主题切换耗时和大数据集渲染预算。
+5. 治理：定期清理重复组件、过期 token、未使用 utility 和文档示例漂移。
 
 每新增一个组件，必须同步：
 
@@ -62,7 +62,7 @@
 - 覆盖 SSR/静态 HTML 注册顺序、hydration 和无 DOM 环境的 theme API。
 - [x] 用 Playwright 建立 keyboard、focus trap、escape、outside click、form validation 测试矩阵。
 - [x] 用 axe 做目录重点组件扫描，修复名称、描述、tab order 和 aria 状态问题。
-- 对 DataGrid、长列表和 docs playground 做性能预算：首屏、渲染节点数、主题切换耗时。
+- [x] 对 docs playground 建立首屏和渲染节点数预算（DOMContentLoaded < 5s、节点 < 20,000、目录卡片数固定）；DataGrid/长列表的滚动性能预算继续由真实业务宿主接入后补充。
 - 验证 prefers-reduced-motion、forced-colors、键盘-only 和移动端 320px 宽度。
 
 ### P5：视觉回归与发布治理
@@ -87,7 +87,7 @@
 | 框架 | Web Components、React、Vue、Svelte 的属性与事件行为一致                     |
 | 文档 | catalog 条目、预览、props/events、四框架 usage、截图和已知限制              |
 
-## 当前组件缺口（0.0.12 后）
+## 当前组件缺口（0.0.13 后）
 
 短期缺口集中在可复用的复杂交互，而不是继续堆叠展示型组件：
 
@@ -95,10 +95,10 @@
 - Toast manager、通知跨标签页同步、Result action slots 已落地。
 - TreeTable、ListView 已提供首版；TanStack-compatible adapter contract、分页/排序/选择映射和虚拟窗口边界测试已落地。
 - PermissionMatrix、AuditLog、ImportDialog、ExportButton、BulkActionsToolbar 和更完整的 workflow 业务组件已落地。
-- React/Vue/Svelte parity playground、SSR/hydration 验证和 `docs/migration.md` 外部宿主迁移示例已落地；跨平台截图矩阵与 profile-aware PNG golden 策略已版本化。
+- React/Vue/Svelte parity playground、SSR/hydration 验证、`docs/migration.md` 外部宿主迁移示例和 `docs/editor-adapters.md` 编辑器宿主示例已落地；跨平台截图矩阵与 profile-aware PNG golden 策略已版本化。
 - LineChart 已完成 SVG 命名空间人工验收；AreaChart、PieChart、Gauge 已按同一 adapter contract 落地，并覆盖 null/empty、donut/legend 与 meter 可访问语义。
 - 0.0.10 的图表视觉矩阵新增 AreaChart、PieChart、Gauge 场景；0.0.11 增加图表 tooltip 与键盘点位事件，`fromPieData` / `normalizeGaugeValue` 保持外部图表运行时可选。
-- Unreleased 增加 LineChart 与 AreaChart 多系列共享坐标域、图例和 series-aware 点位事件；AreaChart 多系列已补充文档站预览、React 类型、行为测试和主题/窄屏人工复核。
+- 0.0.12 增加 LineChart 与 AreaChart 多系列共享坐标域、图例和 series-aware 点位事件；AreaChart 多系列已补充文档站预览、React 类型、行为测试和主题/窄屏人工复核。编辑器 adapter 已补充 CodeMirror/TipTap/Monaco 和四种宿主生命周期示例。
 
 ## 每次迭代的完成定义
 

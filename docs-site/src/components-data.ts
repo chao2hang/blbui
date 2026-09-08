@@ -2451,7 +2451,7 @@ export function initComponentDemo(root: HTMLElement): void {
     setProp("#preview-descriptions", "items", [
         { label: "REGION", value: "us-east-1", description: "Primary" },
         { label: "STATUS", value: "ONLINE" },
-        { label: "VERSION", value: "v0.0.12" },
+        { label: "VERSION", value: "v0.0.13" },
         { label: "OWNER", value: "Platform Ops" },
     ]);
     setProp("#preview-accordion", "items", [

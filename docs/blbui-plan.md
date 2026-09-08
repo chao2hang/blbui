@@ -1,6 +1,6 @@
 # BLBUI 组件库实施计划
 
-> **状态（0.0.12 更新）**：Core 现有 **104 个组件**、Business 19 个、React/Vue 为 104:1 完整 Core 绑定、Svelte 提供注册入口、27 个常用封装（共 29 个公开导出）；9 套主题均支持 light/dark，并提供语义 CSS utilities。当前已接入 token lint、Vitest、Playwright/a11y/E2E、文档 smoke、SSR 检查、三框架 playground 构建、公共 API 文档检查、数据 adapter contract、chart adapter contract、Line/AreaChart 多系列、编辑器 adapter、外部宿主迁移示例、versioned parity fixture、visual matrix/golden 和人工视觉验收；文档站覆盖 123 个组件。
+> **状态（0.0.13 更新）**：Core 现有 **104 个组件**、Business 19 个、React/Vue 为 104:1 完整 Core 绑定、Svelte 提供注册入口、27 个常用封装（共 29 个公开导出）；9 套主题均支持 light/dark，并提供语义 CSS utilities。当前已接入 token lint、Vitest、Playwright/a11y/E2E、文档 smoke、SSR 检查、三框架 playground 构建、公共 API 文档检查、数据 adapter contract、chart adapter contract、Line/AreaChart 多系列、编辑器 adapter、外部宿主迁移示例、versioned parity fixture、docs 性能预算、visual matrix/golden 和人工视觉验收；文档站覆盖 123 个组件。
 > 下文历史路径说明：`docs/admin-style-guide.md` 位于 `chaos-ui` 风格规范仓库（本仓库不复制全文，tokens 已提取进 `core/src/tokens.css`）；`packages/blbui` 与 `web/` 是规划阶段的占位命名，实际落地为仓库顶层的 `core/ react/ vue/ svelte/ business/ business-react/ docs-site/` workspace。
 
 ## 目标
@@ -61,7 +61,7 @@
 
 ## Phase 5：React 应用迁移
 
-- [ ] 在外部 `web` 宿主中接入 core tokens（当前仓库不包含 `web/`，待宿主仓库进入工作区）。
+- [x] 在外部宿主迁移指南中提供 core tokens 接入、注册时机、属性传递和事件清理示例；真实 `web/` 业务宿主仍需进入工作区后继续迁移页面。
 - [ ] 用 `AdminButton` 替换新增后台页面里的工业按钮 class。
 - [ ] 用 `AdminPage` / `AdminPageHeader` 替换 `web/src/components/admin/admin-page.tsx` 的重复结构。
 - [ ] 用 `AdminStatusTag` 替换通用状态标签。
@@ -75,6 +75,7 @@
 - [x] 示例统一展示后台页面、筛选、表格、分页、dialog、tabs。
 - [x] 输出 ESM/CSS/types 构建产物。
 - [x] 通过统一 package version、CHANGELOG、tag 与 GitHub Actions 实现版本管理。
+- [x] 将 docs playground 的 DOM 节点数、目录卡片数和 DOMContentLoaded 性能预算纳入 Playwright 发布门禁。
 - [ ] 生成 API 文档和 Storybook/Ladle 文档站。
 - [x] 发布 0.0.6 小版本，三框架 playground 与绑定测试作为真实使用反馈入口。
 - [x] 发布 0.0.7 小版本，业务组件、复杂查询、公共 API 文档和完整 release gate 纳入稳定发布流程。
@@ -82,6 +83,7 @@
 - [x] 发布 0.0.9 小版本，LineChart、chart adapter contract、SVG 视觉修复和人工主题验收纳入稳定发布流程。
 - [x] 发布 0.0.10 小版本，AreaChart、PieChart、Gauge、图表视觉验收与 320px 窄屏证据纳入稳定发布流程。
 - [x] 发布 0.0.12 小版本，AreaChart 多系列、外部宿主迁移示例、profile-aware visual golden contract、编辑器 adapter 和浮层焦点收口纳入稳定发布流程。
+- [x] 发布 0.0.13 小版本，编辑器宿主示例和 docs playground 性能预算纳入稳定发布流程。
 
 ## 验收标准
 

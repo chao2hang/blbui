@@ -1,6 +1,6 @@
 {
   "name": "@chaos_team/blbui",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "private": true,
   "description": "Obsidian Industrial Console component library for React, Vue and Svelte.",
   "workspaces": [
@@ -36,13 +36,14 @@
     "e2e:check": "playwright test",
     "examples:check": "node scripts/check-playgrounds.mjs",
     "migration:check": "node scripts/check-migration-examples.mjs",
+    "editor:check": "node scripts/check-editor-adapter-examples.mjs",
     "ssr:check": "node scripts/check-ssr.mjs",
     "build:packages": "bun scripts/build-packages.mjs",
     "typecheck:docs": "node_modules/.bin/tsc -p docs-site/tsconfig.json",
     "catalog:check": "node scripts/check-catalog.mjs && node scripts/check-examples.mjs",
     "api:docs": "node scripts/generate-api-docs.mjs",
     "api:check": "node scripts/check-public-api.mjs && node scripts/generate-api-docs.mjs --check",
-    "release:check": "bun run catalog:check && bun run api:check && bun run theme:check && bun run token:check && bun run visual:check && bun run visual:golden:check && bun run examples:check && bun run migration:check && bun run typecheck && bun run ssr:check && bun run build:packages && bun run check:svelte && bun run docs:check && bun run test && bun run test:frameworks && bun run e2e:check && bun run pack:check",
+    "release:check": "bun run catalog:check && bun run api:check && bun run theme:check && bun run token:check && bun run visual:check && bun run visual:golden:check && bun run examples:check && bun run migration:check && bun run editor:check && bun run typecheck && bun run ssr:check && bun run build:packages && bun run check:svelte && bun run docs:check && bun run test && bun run test:frameworks && bun run e2e:check && bun run pack:check",
     "pack:check": "npm pack --dry-run --workspaces --if-present"
   },
   "devDependencies": {

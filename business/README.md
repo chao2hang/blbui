@@ -40,6 +40,8 @@ Editor integrations use `AdminEditorAdapter` with `readEditorState`,
 `writeEditorState` and `connectEditorAdapter`. The contract covers text,
 half-open selections, controlled updates and optional subscriptions while
 leaving CodeMirror, TipTap or Monaco as host-owned dependencies.
+See [`docs/editor-adapters.md`](../docs/editor-adapters.md) for concrete
+runtime mappings and cleanup patterns for all supported host lifecycles.
 
 They depend on `@chaos_team/blbui-core` and register on top of it.
 

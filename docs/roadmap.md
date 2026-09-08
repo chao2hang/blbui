@@ -16,7 +16,7 @@
 
 ### Business / Domain packages
 
-当前已落地单一 `@chaos_team/blbui-business`（16 组件：CrudPage、CrudToolbar、AdvancedTable、FormBuilder、ApprovalTimeline、MetricCard、MetricGrid、BarChart、LineChart、Sparkline、FormWizard、PermissionMatrix、AuditLog、ImportDialog、ExportButton、BulkActionsToolbar），并配 `@chaos_team/blbui-business-react` 适配。参考 `chaos-ui` 中的企业系统能力，后续可独立拆分为可选包，不让 Core 绑定大型业务依赖：
+当前已落地单一 `@chaos_team/blbui-business`（19 组件：CrudPage、CrudToolbar、AdvancedTable、FormBuilder、ApprovalTimeline、MetricCard、MetricGrid、BarChart、LineChart、AreaChart、PieChart、Gauge、Sparkline、FormWizard、PermissionMatrix、AuditLog、ImportDialog、ExportButton、BulkActionsToolbar），并配 `@chaos_team/blbui-business-react` 适配。参考 `chaos-ui` 中的企业系统能力，后续可独立拆分为可选包，不让 Core 绑定大型业务依赖：
 
 - `@chaos_team/blbui-business-crud`
     - CrudPage
