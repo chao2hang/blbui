@@ -25,11 +25,11 @@ export class AdminInputElement extends AdminElement {
         input {
             box-sizing: border-box;
             width: 100%;
-            min-height: var(--aui-control-height);
+            min-height: var(--aui-input-control-height, var(--aui-control-height));
             padding: 8px 10px;
-            border: 1px solid var(--aui-border);
-            border-radius: var(--aui-radius);
-            background: var(--aui-bg);
+            border: var(--aui-input-border, 1px solid var(--aui-border));
+            border-radius: var(--aui-input-radius, var(--aui-radius));
+            background: var(--aui-input-background, var(--aui-bg));
             color: var(--aui-text);
             font: var(--aui-input-font-size, 12px)/1.2 var(--aui-font-mono);
             transition:
@@ -111,16 +111,24 @@ export class AdminSelectElement extends AdminElement {
         :host {
             display: block;
         }
+        .control {
+            position: relative;
+        }
         select {
             box-sizing: border-box;
             width: 100%;
             min-height: var(--aui-control-height);
-            padding: 8px 30px 8px 10px;
+            padding: 8px 46px 8px 10px;
             border: 1px solid var(--aui-border);
             border-radius: var(--aui-radius);
             background: var(--aui-bg);
             color: var(--aui-text);
             font: var(--aui-input-font-size, 12px)/1.2 var(--aui-font-mono);
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        select::-ms-expand {
+            display: none;
         }
         select:hover:not(:disabled) {
             border-color: var(--aui-border-hover);
@@ -136,6 +144,34 @@ export class AdminSelectElement extends AdminElement {
         }
         :host([invalid]) select {
             border-color: var(--aui-danger);
+        }
+        .chevron {
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            bottom: 1px;
+            width: 34px;
+            display: grid;
+            place-items: center;
+            pointer-events: none;
+            color: var(--aui-text-muted);
+        }
+        .chevron::before {
+            width: 7px;
+            height: 7px;
+            border-right: 1px solid currentColor;
+            border-bottom: 1px solid currentColor;
+            content: "";
+            transform: translateY(-2px) rotate(45deg);
+        }
+        select:hover:not(:disabled) + .chevron {
+            color: var(--aui-text-secondary);
+        }
+        select:focus + .chevron {
+            color: var(--aui-text-primary);
+        }
+        select:disabled + .chevron {
+            opacity: 0.3;
         }
     `;
 
@@ -153,22 +189,25 @@ export class AdminSelectElement extends AdminElement {
     }
 
     render() {
-        return html`<select
-            .value=${this.value}
-            name=${this.name}
-            ?disabled=${this.disabled}
-            aria-label=${this.ariaLabel || undefined}
-            aria-invalid=${this.invalid ? "true" : "false"}
-            @change=${this.handleChange}
-        >
-            <slot></slot>
-            ${this.options.map(
-                (option) =>
-                    html`<option value=${option.value} ?disabled=${option.disabled}>
-                        ${option.label}
-                    </option>`,
-            )}
-        </select>`;
+        return html`<div class="control">
+            <select
+                .value=${this.value}
+                name=${this.name}
+                ?disabled=${this.disabled}
+                aria-label=${this.ariaLabel || undefined}
+                aria-invalid=${this.invalid ? "true" : "false"}
+                @change=${this.handleChange}
+            >
+                <slot></slot>
+                ${this.options.map(
+                    (option) =>
+                        html`<option value=${option.value} ?disabled=${option.disabled}>
+                            ${option.label}
+                        </option>`,
+                )}
+            </select>
+            <span class="chevron" aria-hidden="true"></span>
+        </div>`;
     }
 }
 
@@ -341,9 +380,10 @@ export class AdminSwitchElement extends AdminElement {
             width: 10px;
             height: 10px;
             position: absolute;
-            top: 2px;
+            top: 50%;
             left: 2px;
             background: var(--aui-text-muted);
+            transform: translateY(-50%);
             transition:
                 transform var(--aui-transition),
                 background-color var(--aui-transition);
@@ -352,7 +392,7 @@ export class AdminSwitchElement extends AdminElement {
             border-color: var(--aui-text-primary);
         }
         input:checked + .track .thumb {
-            transform: translateX(14px);
+            transform: translate(14px, -50%);
             background: var(--aui-text-primary);
         }
         input:focus-visible + .track {

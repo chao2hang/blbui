@@ -1,6 +1,6 @@
 # BLBUI 组件库实施计划
 
-> **状态（0.0.9 更新）**：Core 现有 **104 个组件**、Business 16 个、React/Vue 为 104:1 完整 Core 绑定、Svelte 提供注册入口、27 个常用封装（共 29 个公开导出）；9 套主题均支持 light/dark，并提供语义 CSS utilities。当前已接入 token lint、Vitest、Playwright/a11y/E2E、文档 smoke、SSR 检查、三框架 playground 构建、公共 API 文档检查、数据 adapter contract、chart adapter contract、versioned parity fixture、visual matrix 和人工视觉验收；文档站覆盖 120 个组件。
+> **状态（0.0.10 更新）**：Core 现有 **104 个组件**、Business 19 个、React/Vue 为 104:1 完整 Core 绑定、Svelte 提供注册入口、27 个常用封装（共 29 个公开导出）；9 套主题均支持 light/dark，并提供语义 CSS utilities。当前已接入 token lint、Vitest、Playwright/a11y/E2E、文档 smoke、SSR 检查、三框架 playground 构建、公共 API 文档检查、数据 adapter contract、chart adapter contract、versioned parity fixture、visual matrix 和人工视觉验收；文档站覆盖 123 个组件。
 > 下文历史路径说明：`docs/admin-style-guide.md` 位于 `chaos-ui` 风格规范仓库（本仓库不复制全文，tokens 已提取进 `core/src/tokens.css`）；`packages/blbui` 与 `web/` 是规划阶段的占位命名，实际落地为仓库顶层的 `core/ react/ vue/ svelte/ business/ business-react/ docs-site/` workspace。
 
 ## 目标
@@ -18,7 +18,7 @@
 - [x] 建立 `@chaos_team/blbui-react`（104 绑定）。
 - [x] 建立 `@chaos_team/blbui-vue`（104 绑定）。
 - [x] 建立 `@chaos_team/blbui-svelte` 注册/类型入口与 27 个常用封装（共 29 个公开导出）。
-- [x] 建立 `@chaos_team/blbui-business`（15 组件）与 `@chaos_team/blbui-business-react`。
+- [x] 建立 `@chaos_team/blbui-business`（19 组件）与 `@chaos_team/blbui-business-react`。
 - [x] 统一 `aui-*` 事件和跨框架 API 文档（README 完整事件表）。
 - [x] 完成架构说明、第三方交互设计借鉴边界和迁移策略。
 - [x] core 行为测试 + a11y 契约测试（抽屉焦点、popover、dropdown 键盘、tabs 漫游、field 关联、rating 键盘、file-upload 键盘、tooltip ARIA）。
@@ -80,6 +80,7 @@
 - [x] 发布 0.0.7 小版本，业务组件、复杂查询、公共 API 文档和完整 release gate 纳入稳定发布流程。
 - [x] 发布 0.0.8 小版本，数据 adapter contract、跨框架受控 parity 和跨平台视觉矩阵纳入稳定发布流程。
 - [x] 发布 0.0.9 小版本，LineChart、chart adapter contract、SVG 视觉修复和人工主题验收纳入稳定发布流程。
+- [x] 发布 0.0.10 小版本，AreaChart、PieChart、Gauge、图表视觉验收与 320px 窄屏证据纳入稳定发布流程。
 
 ## 验收标准
 

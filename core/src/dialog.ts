@@ -235,6 +235,7 @@ export class AdminConfirmDialogElement extends AdminElement {
         }
         button:hover:not(:disabled) {
             border-color: var(--aui-border-hover);
+            background: var(--aui-control-bg-hover);
             color: var(--aui-text-primary);
         }
         .confirm {

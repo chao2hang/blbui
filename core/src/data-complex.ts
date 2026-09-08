@@ -431,6 +431,22 @@ const builderStyles = css`
         color: var(--aui-text);
         font: 11px/1.2 var(--aui-font-mono);
     }
+    select {
+        padding-right: 34px;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image:
+            linear-gradient(45deg, transparent 50%, var(--aui-text-muted) 50%),
+            linear-gradient(135deg, var(--aui-text-muted) 50%, transparent 50%);
+        background-position:
+            calc(100% - 13px) 50%,
+            calc(100% - 9px) 50%;
+        background-repeat: no-repeat;
+        background-size: 4px 4px;
+    }
+    select::-ms-expand {
+        display: none;
+    }
     select:focus,
     input:focus,
     button:focus-visible {

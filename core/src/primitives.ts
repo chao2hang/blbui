@@ -289,15 +289,30 @@ export class AdminKbdElement extends AdminElement {
     static styles = css`
         :host {
             display: inline-flex;
+            vertical-align: middle;
         }
         kbd {
-            min-width: 20px;
-            padding: 3px 5px;
+            box-sizing: border-box;
+            width: 38px;
+            min-width: 38px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 8px;
             border: 1px solid var(--aui-border-hover);
-            background: var(--aui-header);
+            border-bottom-width: 2px;
+            border-radius: var(--aui-radius-sm);
+            background: linear-gradient(
+                to bottom,
+                color-mix(in srgb, var(--aui-header) 92%, var(--aui-text-primary)),
+                var(--aui-header)
+            );
             color: var(--aui-text-secondary);
-            font: 10px/1 var(--aui-font-mono);
+            font: 11px/1 var(--aui-font-mono);
+            letter-spacing: 0.02em;
             text-align: center;
+            white-space: nowrap;
         }
     `;
     render() {

@@ -61,6 +61,52 @@ describe("industrial admin core", () => {
         expect(innerButton?.querySelector(".spinner")).not.toBeNull();
     });
 
+    it("keeps the select arrow in a stable, non-intercepting control area", async () => {
+        const select = document.createElement("aui-select") as HTMLElement & {
+            options: Array<{ value: string; label: string }>;
+            updateComplete: Promise<boolean>;
+        };
+        select.options = [{ value: "openai", label: "OpenAI" }];
+        document.body.append(select);
+        await select.updateComplete;
+
+        const nativeSelect = select.shadowRoot?.querySelector("select");
+        const chevron = select.shadowRoot?.querySelector(".chevron");
+        expect(nativeSelect).not.toBeNull();
+        expect(chevron?.getAttribute("aria-hidden")).toBe("true");
+        expect(select.shadowRoot?.querySelector(".control")).not.toBeNull();
+    });
+
+    it("renders a dedicated chevron area for multi-select controls", async () => {
+        const multiSelect = document.createElement("aui-multi-select") as HTMLElement & {
+            options: Array<{ value: string; label: string }>;
+            values: string[];
+            updateComplete: Promise<boolean>;
+        };
+        multiSelect.options = [{ value: "ops", label: "Cluster Operator" }];
+        multiSelect.values = ["ops"];
+        document.body.append(multiSelect);
+        await multiSelect.updateComplete;
+
+        const chevron = multiSelect.shadowRoot?.querySelector(".chevron");
+        expect(chevron?.getAttribute("aria-hidden")).toBe("true");
+        expect(multiSelect.shadowRoot?.querySelector(".chips")).not.toBeNull();
+    });
+
+    it("renders a dedicated chevron area for cascader controls", async () => {
+        const cascader = document.createElement("aui-cascader") as HTMLElement & {
+            options: Array<{ value: string; label: string }>;
+            updateComplete: Promise<boolean>;
+        };
+        cascader.options = [{ value: "region", label: "Region" }];
+        document.body.append(cascader);
+        await cascader.updateComplete;
+
+        const chevron = cascader.shadowRoot?.querySelector(".chevron");
+        expect(chevron?.getAttribute("aria-hidden")).toBe("true");
+        expect(cascader.shadowRoot?.querySelector(".trigger")).not.toBeNull();
+    });
+
     it("emits the next page while disabling PREV on the first page", async () => {
         const pagination = document.createElement(
             "aui-pagination",
@@ -813,6 +859,9 @@ describe("composed form and data contracts", () => {
         ];
         document.body.append(form);
         await form.updateComplete;
+
+        expect(form.shadowRoot?.querySelector(".select-control select")).not.toBeNull();
+        expect(form.shadowRoot?.querySelector(".select-chevron")?.getAttribute("aria-hidden")).toBe("true");
 
         let change: { name: string; value: unknown } | undefined;
         let submit: { valid: boolean } | undefined;

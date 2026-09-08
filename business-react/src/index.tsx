@@ -18,7 +18,14 @@ import type {
     AdminImportRow,
 } from "@chaos_team/blbui-business";
 export { fromTable, getAdapterSelection, virtualizeRows } from "@chaos_team/blbui-business";
-export { fromChartData, getChartDomain, normalizeChartSeries } from "@chaos_team/blbui-business";
+export {
+    fromChartData,
+    fromPieData,
+    getChartDomain,
+    normalizeChartSeries,
+    normalizeGaugeValue,
+    normalizePieData,
+} from "@chaos_team/blbui-business";
 export type {
     AdminAdapterSelection,
     AdminDataGridAdapter,
@@ -31,6 +38,9 @@ export type {
     AdminChartDomain,
     AdminChartSeries,
     AdminChartSeriesInput,
+    AdminGaugeValue,
+    AdminPieAdapter,
+    AdminPieDatum,
     NormalizeChartOptions,
 } from "@chaos_team/blbui-business";
 import "@chaos_team/blbui-business/styles.css";
@@ -306,6 +316,72 @@ export function AdminLineChart(props: AdminLineChartProps) {
     });
     const rest = restProps(props, ["data", "height", "label", "color", "showPoints"]);
     return createElement("aui-line-chart", { ...rest, ref, className: props.className });
+}
+
+export interface AdminAreaChartProps extends CommonProps {
+    data?: Array<{ label: string; value: number | null }>;
+    height?: string;
+    label?: string;
+    color?: string;
+    showPoints?: boolean;
+}
+export function AdminAreaChart(props: AdminAreaChartProps) {
+    const { ref } = useBusinessElement({
+        data: props.data,
+        height: props.height,
+        label: props.label,
+        color: props.color,
+        showPoints: props.showPoints,
+    });
+    const rest = restProps(props, ["data", "height", "label", "color", "showPoints"]);
+    return createElement("aui-area-chart", { ...rest, ref, className: props.className });
+}
+
+export interface AdminPieChartItem {
+    label: string;
+    value: number;
+    color?: string;
+}
+export interface AdminPieChartProps extends CommonProps {
+    data?: AdminPieChartItem[];
+    height?: string;
+    label?: string;
+    donut?: boolean;
+    showLegend?: boolean;
+}
+export function AdminPieChart(props: AdminPieChartProps) {
+    const { ref } = useBusinessElement({
+        data: props.data,
+        height: props.height,
+        label: props.label,
+        donut: props.donut,
+        showLegend: props.showLegend,
+    });
+    const rest = restProps(props, ["data", "height", "label", "donut", "showLegend"]);
+    return createElement("aui-pie-chart", { ...rest, ref, className: props.className });
+}
+
+export interface AdminGaugeProps extends CommonProps {
+    value?: number;
+    min?: number;
+    max?: number;
+    height?: string;
+    label?: string;
+    unit?: string;
+    color?: string;
+}
+export function AdminGauge(props: AdminGaugeProps) {
+    const { ref } = useBusinessElement({
+        value: props.value,
+        min: props.min,
+        max: props.max,
+        height: props.height,
+        label: props.label,
+        unit: props.unit,
+        color: props.color,
+    });
+    const rest = restProps(props, ["value", "min", "max", "height", "label", "unit", "color"]);
+    return createElement("aui-gauge", { ...rest, ref, className: props.className });
 }
 
 export function AdminSparkline(props: AdminSparklineProps) {

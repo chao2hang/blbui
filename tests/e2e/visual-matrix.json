@@ -26,6 +26,9 @@
     { "id": "data-grid", "selector": "#preview-data-grid" },
     { "id": "schema-form", "selector": "#preview-schema-form" },
     { "id": "business-workflows", "selector": "#preview-form-wizard" },
-    { "id": "business-permissions", "selector": "#preview-permission-matrix" }
+    { "id": "business-permissions", "selector": "#preview-permission-matrix" },
+    { "id": "business-area-chart", "selector": "#area-chart .playground" },
+    { "id": "business-pie-chart", "selector": "#pie-chart .playground" },
+    { "id": "business-gauge", "selector": "#gauge .playground" }
   ]
 }

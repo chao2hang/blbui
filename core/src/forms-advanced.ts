@@ -94,6 +94,10 @@ export class AdminInputGroupElement extends AdminElement {
             background: var(--aui-header);
             font: 11px/1 var(--aui-font-mono);
         }
+        .prefix[hidden],
+        .suffix[hidden] {
+            display: none;
+        }
         .prefix {
             border-right: 1px solid var(--aui-border);
         }
@@ -107,7 +111,9 @@ export class AdminInputGroupElement extends AdminElement {
             align-items: center;
         }
         ::slotted(input),
-        ::slotted(textarea) {
+        ::slotted(textarea),
+        ::slotted(select) {
+            box-sizing: border-box;
             width: 100%;
             min-height: 34px;
             padding: 8px 10px;
@@ -117,12 +123,63 @@ export class AdminInputGroupElement extends AdminElement {
             color: var(--aui-text);
             font: 12px/1.2 var(--aui-font-mono);
         }
+        ::slotted(select) {
+            padding: 8px 40px 8px 10px;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image:
+                linear-gradient(45deg, transparent 50%, var(--aui-text-muted) 50%),
+                linear-gradient(135deg, var(--aui-text-muted) 50%, transparent 50%);
+            background-position:
+                calc(100% - 15px) 50%,
+                calc(100% - 11px) 50%;
+            background-repeat: no-repeat;
+            background-size: 4px 4px;
+        }
+        ::slotted(aui-input) {
+            display: block;
+            width: 100%;
+            --aui-input-border: 0;
+            --aui-input-radius: 0;
+            --aui-input-background: transparent;
+        }
     `;
+
+    private hasPrefix = false;
+    private hasSuffix = false;
+
+    private handleSlotChange(event: Event, side: "prefix" | "suffix"): void {
+        const slot = event.target as HTMLSlotElement;
+        const hasContent = slot.assignedNodes({ flatten: true }).some((node) => {
+            return node.nodeType === Node.ELEMENT_NODE || Boolean(node.textContent?.trim());
+        });
+
+        const previous = side === "prefix" ? this.hasPrefix : this.hasSuffix;
+        if (previous === hasContent) return;
+
+        if (side === "prefix") {
+            this.hasPrefix = hasContent;
+        } else {
+            this.hasSuffix = hasContent;
+        }
+        this.requestUpdate();
+    }
+
     render() {
         return html`<div class="group">
-            <span class="prefix"><slot name="prefix"></slot></span>
+            <span class="prefix" ?hidden=${!this.hasPrefix}
+                ><slot
+                    name="prefix"
+                    @slotchange=${(event: Event) => this.handleSlotChange(event, "prefix")}
+                ></slot
+            ></span>
             <div class="control"><slot></slot></div>
-            <span class="suffix"><slot name="suffix"></slot></span>
+            <span class="suffix" ?hidden=${!this.hasSuffix}
+                ><slot
+                    name="suffix"
+                    @slotchange=${(event: Event) => this.handleSlotChange(event, "suffix")}
+                ></slot
+            ></span>
         </div>`;
     }
 }

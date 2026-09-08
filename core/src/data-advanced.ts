@@ -153,9 +153,35 @@ export class AdminSearchElement extends AdminElement {
             background: var(--aui-bg);
         }
         .icon {
-            padding: 0 9px;
+            position: relative;
+            width: 17px;
+            height: 17px;
+            flex: 0 0 17px;
+            margin: 0 8px;
             color: var(--aui-text-muted);
-            font: 13px/1 var(--aui-font-mono);
+            font-size: 0;
+        }
+        .icon::before {
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            width: 10px;
+            height: 10px;
+            border: 1.5px solid currentColor;
+            border-radius: var(--aui-radius-full);
+            content: "";
+        }
+        .icon::after {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            width: 6px;
+            height: 1.5px;
+            border-radius: var(--aui-radius-full);
+            background: currentColor;
+            content: "";
+            transform: rotate(45deg);
+            transform-origin: left center;
         }
         input {
             min-width: 0;

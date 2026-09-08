@@ -28,7 +28,7 @@ const viewport = (id: string) => {
 test.describe("BLBUI documentation quality matrix", () => {
     test("renders every catalog card without page-level overflow", async ({ page }) => {
         await page.goto("/");
-        await expect(page.locator("[data-catalog-id]")).toHaveCount(120);
+        await expect(page.locator("[data-catalog-id]")).toHaveCount(123);
         await expect
             .poll(() =>
                 page.evaluate(
@@ -208,7 +208,7 @@ test.describe("BLBUI documentation quality matrix", () => {
                 ),
             )
             .toBe(true);
-        expect(await page.locator("[data-catalog-id]").count()).toBe(120);
+        expect(await page.locator("[data-catalog-id]").count()).toBe(123);
         for (const scene of visualMatrix.scenes.filter((item) => item.id !== "catalog")) {
             await expect(page.locator(scene.selector).first()).toBeVisible();
         }
@@ -220,7 +220,7 @@ test.describe("BLBUI documentation quality matrix", () => {
             nodes: document.querySelectorAll("*").length,
             cards: document.querySelectorAll("[data-catalog-id]").length,
         }));
-        expect(budget.cards).toBe(120);
+        expect(budget.cards).toBe(123);
         expect(budget.nodes).toBeLessThan(20_000);
     });
 });

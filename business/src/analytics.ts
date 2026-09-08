@@ -6,6 +6,7 @@ it under the terms of the GNU Affero General Public License.
 
 import { css, html, svg } from "lit";
 import { AdminElement } from "@chaos_team/blbui-core";
+import { normalizeGaugeValue, normalizePieData } from "./chart-adapters";
 
 export interface AdminMetricItem {
     label: string;
@@ -322,6 +323,377 @@ export class AdminLineChartElement extends AdminElement {
                 ${this.showPoints ? this.data.map((point, index) => (point.value === null || !Number.isFinite(point.value) ? null : svg`<circle cx=${x(index)} cy=${y(point.value)} r="2.2"></circle>`)) : null}
             </svg>`}
             <div class="labels">${labels.map((point) => html`<span>${point.label}</span>`)}</div>
+        </div>`;
+    }
+}
+
+export interface AdminAreaChartPoint extends AdminLineChartPoint {}
+
+function chartScale(data: AdminLineChartPoint[]): {
+    min: number;
+    max: number;
+    range: number;
+    x: (index: number) => number;
+    y: (value: number) => number;
+} | null {
+    const values = data
+        .map((point) => point.value)
+        .filter((value): value is number => typeof value === "number" && Number.isFinite(value));
+    if (!values.length) return null;
+    let min = Math.min(...values, 0);
+    let max = Math.max(...values, 0);
+    if (min === max) {
+        const padding = Math.max(Math.abs(min) * 0.1, 1);
+        min -= padding;
+        max += padding;
+    }
+    const range = max - min;
+    return {
+        min,
+        max,
+        range,
+        x: (index) => (data.length > 1 ? (index / (data.length - 1)) * 100 : 50),
+        y: (value) => 10 + ((max - value) / range) * 74,
+    };
+}
+
+function chartSegments(data: AdminLineChartPoint[], scale: NonNullable<ReturnType<typeof chartScale>>) {
+    const segments: string[][] = [];
+    let segment: string[] = [];
+    data.forEach((point, index) => {
+        if (point.value === null || !Number.isFinite(point.value)) {
+            if (segment.length) segments.push(segment);
+            segment = [];
+            return;
+        }
+        segment.push(`${scale.x(index)},${scale.y(point.value)}`);
+    });
+    if (segment.length) segments.push(segment);
+    return segments;
+}
+
+function chartLabels(data: AdminLineChartPoint[]) {
+    return data.filter((_, index) => index === 0 || index === data.length - 1);
+}
+
+const chartGrid = () => [20, 40, 60, 80].map(
+    (line) => svg`<line class="grid-line" x1="0" y1=${line} x2="100" y2=${line}></line>`,
+);
+
+const chartScales = css`
+    .grid-line {
+        stroke: var(--aui-grid-line-strong);
+        stroke-width: 0.5;
+        vector-effect: non-scaling-stroke;
+    }
+    .labels {
+        position: absolute;
+        right: 10px;
+        bottom: 7px;
+        left: 10px;
+        display: flex;
+        justify-content: space-between;
+        color: var(--aui-text-muted);
+        font: 9px/1 var(--aui-font-mono);
+    }
+    .empty {
+        display: grid;
+        min-height: inherit;
+        place-items: center;
+        color: var(--aui-text-muted);
+        font: 10px/1 var(--aui-font-mono);
+        text-transform: uppercase;
+    }
+`;
+
+export class AdminAreaChartElement extends AdminElement {
+    static properties = {
+        data: { attribute: false },
+        height: { type: String },
+        label: { type: String },
+        color: { type: String },
+        showPoints: { type: Boolean, attribute: "show-points" },
+    };
+    static styles = [
+        css`
+            :host {
+                display: block;
+            }
+            .chart {
+                position: relative;
+                min-height: var(--aui-area-height, 220px);
+                overflow: hidden;
+                border: 1px solid var(--aui-border);
+                background: var(--aui-surface);
+            }
+            svg {
+                display: block;
+                width: 100%;
+                height: 100%;
+                min-height: inherit;
+            }
+            polyline {
+                fill: none;
+                stroke: var(--aui-area-color, var(--aui-primary));
+                stroke-width: 2.5;
+                vector-effect: non-scaling-stroke;
+            }
+            polygon {
+                fill: color-mix(in srgb, var(--aui-area-color, var(--aui-primary)) 18%, transparent);
+                stroke: none;
+            }
+            circle {
+                fill: var(--aui-area-color, var(--aui-primary));
+                stroke: var(--aui-surface);
+                stroke-width: 1.5;
+                vector-effect: non-scaling-stroke;
+            }
+        `,
+        chartScales,
+    ];
+    data: AdminAreaChartPoint[] = [];
+    height = "220px";
+    label = "Area chart";
+    color = "var(--aui-primary)";
+    showPoints = true;
+
+    render() {
+        const scale = chartScale(this.data);
+        if (!scale)
+            return html`<div class="chart" style=${`--aui-area-height:${this.height}`} role="img" aria-label=${this.label}>
+                <div class="empty">No chart data</div>
+            </div>`;
+        const segments = chartSegments(this.data, scale);
+        return html`<div class="chart" style=${`--aui-area-height:${this.height};--aui-area-color:${this.color}`} role="img" aria-label=${this.label}>
+            ${svg`<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                ${chartGrid()}
+                ${segments.map((points) => {
+                    const first = points[0]?.split(",");
+                    const last = points.at(-1)?.split(",");
+                    if (!first || !last) return null;
+                    return svg`<polygon points=${`${first[0]},88 ${points.join(" ")} ${last[0]},88`}></polygon><polyline points=${points.join(" ")}></polyline>`;
+                })}
+                ${this.showPoints ? this.data.map((point, index) => point.value === null || !Number.isFinite(point.value) ? null : svg`<circle cx=${scale.x(index)} cy=${scale.y(point.value)} r="2.2"></circle>`) : null}
+            </svg>`}
+            <div class="labels">${chartLabels(this.data).map((point) => html`<span>${point.label}</span>`)}</div>
+        </div>`;
+    }
+}
+
+export interface AdminPieChartItem {
+    label: string;
+    value: number;
+    color?: string;
+}
+
+function polarPoint(cx: number, cy: number, radius: number, angle: number): [number, number] {
+    const radians = ((angle - 90) * Math.PI) / 180;
+    return [cx + radius * Math.cos(radians), cy + radius * Math.sin(radians)];
+}
+
+function piePath(start: number, end: number, innerRadius: number): string {
+    const outerStart = polarPoint(50, 50, 38, start);
+    const outerEnd = polarPoint(50, 50, 38, end);
+    const largeArc = end - start > 180 ? 1 : 0;
+    if (innerRadius <= 0) {
+        return `M 50 50 L ${outerStart[0]} ${outerStart[1]} A 38 38 0 ${largeArc} 1 ${outerEnd[0]} ${outerEnd[1]} Z`;
+    }
+    const innerEnd = polarPoint(50, 50, innerRadius, end);
+    const innerStart = polarPoint(50, 50, innerRadius, start);
+    return `M ${outerStart[0]} ${outerStart[1]} A 38 38 0 ${largeArc} 1 ${outerEnd[0]} ${outerEnd[1]} L ${innerEnd[0]} ${innerEnd[1]} A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${innerStart[0]} ${innerStart[1]} Z`;
+}
+
+export class AdminPieChartElement extends AdminElement {
+    static properties = {
+        data: { attribute: false },
+        height: { type: String },
+        label: { type: String },
+        donut: { type: Boolean },
+        showLegend: { type: Boolean, attribute: "show-legend" },
+    };
+    static styles = css`
+        :host {
+            display: block;
+        }
+        .chart {
+            display: grid;
+            grid-template-columns: minmax(120px, 1fr) minmax(120px, 1fr);
+            align-items: center;
+            gap: 12px;
+            min-height: var(--aui-pie-height, 220px);
+            padding: 12px;
+            border: 1px solid var(--aui-border);
+            background: var(--aui-surface);
+        }
+        svg {
+            display: block;
+            width: 100%;
+            max-height: 190px;
+        }
+        path {
+            stroke: var(--aui-surface);
+            stroke-width: 1;
+            vector-effect: non-scaling-stroke;
+        }
+        .legend {
+            display: grid;
+            gap: 7px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            color: var(--aui-chart-legend);
+            font: 10px/1.3 var(--aui-font-mono);
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .legend-label {
+            display: flex;
+            align-items: center;
+            min-width: 0;
+            gap: 6px;
+        }
+        .swatch {
+            width: 8px;
+            height: 8px;
+            flex: 0 0 auto;
+        }
+        .empty {
+            display: grid;
+            grid-column: 1 / -1;
+            min-height: inherit;
+            place-items: center;
+            color: var(--aui-text-muted);
+            font: 10px/1 var(--aui-font-mono);
+            text-transform: uppercase;
+        }
+        @media (max-width: 420px) {
+            .chart {
+                grid-template-columns: 1fr;
+            }
+            svg {
+                max-height: 150px;
+            }
+        }
+    `;
+    data: AdminPieChartItem[] = [];
+    height = "220px";
+    label = "Pie chart";
+    donut = false;
+    showLegend = true;
+
+    render() {
+        const entries = normalizePieData(this.data);
+        const total = entries.reduce((sum, item) => sum + item.value, 0);
+        if (!total)
+            return html`<div class="chart" style=${`--aui-pie-height:${this.height}`} role="img" aria-label=${this.label}>
+                <div class="empty">No chart data</div>
+            </div>`;
+        let angle = 0;
+        const slices = entries.map((item, index) => {
+            const start = angle;
+            angle += (item.value / total) * 360;
+            return { item, index, start, end: angle };
+        });
+        return html`<div class="chart" style=${`--aui-pie-height:${this.height}`} role="img" aria-label=${this.label}>
+            ${svg`<svg viewBox="0 0 100 100" aria-hidden="true">
+                ${slices.map(({ item, index, start, end }) => svg`<path d=${piePath(start, end, this.donut ? 20 : 0)} fill=${item.color ?? `var(--aui-chart-series-${(index % 4) + 1}, var(--aui-primary))`}></path>`)}
+            </svg>`}
+            ${this.showLegend ? html`<ul class="legend" aria-label="${this.label} legend">
+                ${slices.map(({ item }) => html`<li class="legend-item"><span class="legend-label"><i class="swatch" style=${`background:${item.color ?? "var(--aui-primary)"}`}></i><span>${item.label}</span></span><strong>${Math.round((item.value / total) * 100)}%</strong></li>`)}
+            </ul>` : null}
+        </div>`;
+    }
+}
+
+function gaugeArc(start: number, end: number): string {
+    const startPoint = polarPoint(50, 53, 36, start);
+    const endPoint = polarPoint(50, 53, 36, end);
+    const largeArc = end - start > 180 ? 1 : 0;
+    return `M ${startPoint[0]} ${startPoint[1]} A 36 36 0 ${largeArc} 1 ${endPoint[0]} ${endPoint[1]}`;
+}
+
+export class AdminGaugeElement extends AdminElement {
+    static properties = {
+        value: { type: Number },
+        min: { type: Number },
+        max: { type: Number },
+        height: { type: String },
+        label: { type: String },
+        unit: { type: String },
+        color: { type: String },
+    };
+    static styles = css`
+        :host {
+            display: block;
+        }
+        .chart {
+            position: relative;
+            min-height: var(--aui-gauge-height, 220px);
+            border: 1px solid var(--aui-border);
+            background: var(--aui-surface);
+        }
+        svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            min-height: inherit;
+        }
+        path {
+            fill: none;
+            stroke-linecap: round;
+            stroke-width: 7;
+            vector-effect: non-scaling-stroke;
+        }
+        .track {
+            stroke: var(--aui-border);
+        }
+        .value {
+            fill: var(--aui-text-primary);
+            font: 500 16px var(--aui-font-mono);
+            text-anchor: middle;
+        }
+        .label {
+            fill: var(--aui-text-secondary);
+            font: 7px var(--aui-font-mono);
+            letter-spacing: 0.08em;
+            text-anchor: middle;
+            text-transform: uppercase;
+        }
+        .range {
+            position: absolute;
+            right: 12px;
+            bottom: 8px;
+            left: 12px;
+            display: flex;
+            justify-content: space-between;
+            color: var(--aui-text-muted);
+            font: 9px var(--aui-font-mono);
+        }
+    `;
+    value = 0;
+    min = 0;
+    max = 100;
+    height = "220px";
+    label = "Gauge";
+    unit = "%";
+    color = "var(--aui-primary)";
+
+    render() {
+        const normalized = normalizeGaugeValue(this.value, this.min, this.max);
+        const { value: current, min: low, max: high, ratio: progress } = normalized;
+        const display = `${Number.isInteger(current) ? current : current.toFixed(1)}${this.unit}`;
+        return html`<div class="chart" style=${`--aui-gauge-height:${this.height}`} role="meter" aria-label=${this.label} aria-valuemin=${low} aria-valuemax=${high} aria-valuenow=${current}>
+            ${svg`<svg viewBox="0 0 100 88" aria-hidden="true">
+                <path class="track" d=${gaugeArc(-135, 135)}></path>
+                <path d=${gaugeArc(-135, -135 + progress * 270)} stroke=${this.color}></path>
+                <text class="value" x="50" y="54">${display}</text>
+                <text class="label" x="50" y="65">${this.label}</text>
+            </svg>`}
+            <div class="range"><span>${low}</span><span>${high}</span></div>
         </div>`;
     }
 }

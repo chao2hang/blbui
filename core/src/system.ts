@@ -497,6 +497,9 @@ export class AdminDataGridElement extends AdminElement {
             font: 10px/1.1 var(--aui-font-mono);
             text-transform: uppercase;
         }
+        .page-actions select {
+            padding-right: 30px;
+        }
         .batch-actions button:hover:not(:disabled),
         .page-actions button:hover:not(:disabled),
         .page-actions select:hover {
@@ -566,13 +569,28 @@ export class AdminDataGridElement extends AdminElement {
             width: 100%;
             min-height: 26px;
             margin-top: 6px;
-            padding: 4px 6px;
+            padding: 4px 30px 4px 6px;
             border: 1px solid var(--aui-border);
             border-radius: var(--aui-radius-sm);
             outline: 0;
             background: var(--aui-control-bg);
             color: var(--aui-text);
             font: 10px/1.2 var(--aui-font-mono);
+        }
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image:
+                linear-gradient(45deg, transparent 50%, var(--aui-text-muted) 50%),
+                linear-gradient(135deg, var(--aui-text-muted) 50%, transparent 50%);
+            background-position:
+                calc(100% - 11px) 50%,
+                calc(100% - 7px) 50%;
+            background-repeat: no-repeat;
+            background-size: 4px 4px;
+        }
+        select::-ms-expand {
+            display: none;
         }
         .filter:focus {
             border-color: var(--aui-focus);

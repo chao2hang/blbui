@@ -1,6 +1,6 @@
 # @chaos_team/blbui-business
 
-Optional framework-neutral business components for enterprise systems (16 components).
+Optional framework-neutral business components for enterprise systems (19 components).
 
 Sixteen composable building blocks:
 
@@ -10,7 +10,8 @@ Sixteen composable building blocks:
 - `aui-form-builder` — schema-driven forms with submit/change events
 - `aui-approval-timeline` — step-by-step approval flow
 - `aui-metric-card` / `aui-metric-grid` — KPI cards with trend tone
-- `aui-bar-chart` / `aui-line-chart` / `aui-sparkline` — lightweight data visualization
+- `aui-bar-chart` / `aui-line-chart` / `aui-area-chart` — lightweight trend visualization
+- `aui-pie-chart` / `aui-gauge` / `aui-sparkline` — breakdown, range and inline visualization
 - `aui-form-wizard` — linear or non-linear multi-step workflow with slotted steps
 - `aui-permission-matrix` — editable role/resource permission grid
 - `aui-audit-log` — filterable audit stream with loading/error/pagination contracts

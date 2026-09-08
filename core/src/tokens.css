@@ -97,6 +97,11 @@ it under the terms of the GNU Affero General Public License.
     --aui-chart-tooltip-bg: var(--aui-surface-elevated);
     --aui-chart-tooltip-text: var(--aui-text-primary);
     --aui-chart-tooltip-border: var(--aui-border-hover);
+    --aui-chart-series-1: var(--aui-primary);
+    --aui-chart-series-2: var(--aui-info);
+    --aui-chart-series-3: var(--aui-success);
+    --aui-chart-series-4: var(--aui-warning);
+    --aui-chart-series-5: var(--aui-danger);
 }
 
 .aui-root,

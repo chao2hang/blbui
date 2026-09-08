@@ -7,8 +7,11 @@ it under the terms of the GNU Affero General Public License.
 import { describe, expect, it } from "vitest";
 import {
     fromChartData,
+    fromPieData,
     getChartDomain,
     normalizeChartSeries,
+    normalizeGaugeValue,
+    normalizePieData,
 } from "../business/src/chart-adapters";
 
 describe("business chart adapter contract", () => {
@@ -73,5 +76,31 @@ describe("business chart adapter contract", () => {
         });
         expect(flat.domain.y).toEqual([0, 100]);
         expect(flat.series[0]?.id).toBe("latency");
+    });
+
+    it("normalizes pie data and gauge ranges without a chart runtime", () => {
+        expect(
+            normalizePieData([
+                { label: " API ", value: 3 },
+                { label: "Empty", value: 0 },
+                { label: "Invalid", value: Number.NaN },
+            ]),
+        ).toEqual([{ label: "API", value: 3 }]);
+        expect(fromPieData([{ label: "API", value: 3 }, { label: "Worker", value: 1 }])).toEqual({
+            data: [{ label: "API", value: 3 }, { label: "Worker", value: 1 }],
+            total: 4,
+        });
+        expect(normalizeGaugeValue(120, 0, 100)).toEqual({
+            value: 100,
+            min: 0,
+            max: 100,
+            ratio: 1,
+        });
+        expect(normalizeGaugeValue(Number.NaN, 10, 10)).toEqual({
+            value: 10,
+            min: 10,
+            max: 11,
+            ratio: 0,
+        });
     });
 });

@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-当前版本为 `0.0.9`，已经提供 104 个已注册的无框架 Web Components，以及 React/Vue/Svelte 适配入口；连同 16 个 Business 组件，文档站共覆盖 120 个组件：
+当前版本为 `0.0.10`，已经提供 104 个已注册的无框架 Web Components，以及 React/Vue/Svelte 适配入口；连同 19 个 Business 组件，文档站共覆盖 123 个组件：
 
 | 包                         | 用途                                              |
 | -------------------------- | ------------------------------------------------- |
@@ -27,9 +27,9 @@ Core（104 个 Web Components，`@chaos_team/blbui-core`）：
 
 **高级查询/筛选**（2）：`FilterBuilder`、`QueryBuilder`
 
-Business（16 个，`@chaos_team/blbui-business`）：
+Business（19 个，`@chaos_team/blbui-business`）：
 
-- **业务套件**（16）：`CrudPage`、`CrudToolbar`、`AdvancedTable`、`FormBuilder`、`ApprovalTimeline`、`MetricCard`、`MetricGrid`、`BarChart`、`LineChart`、`Sparkline`、`FormWizard`、`PermissionMatrix`、`AuditLog`、`ImportDialog`、`ExportButton`、`BulkActionsToolbar`
+- **业务套件**（19）：`CrudPage`、`CrudToolbar`、`AdvancedTable`、`FormBuilder`、`ApprovalTimeline`、`MetricCard`、`MetricGrid`、`BarChart`、`LineChart`、`AreaChart`、`PieChart`、`Gauge`、`Sparkline`、`FormWizard`、`PermissionMatrix`、`AuditLog`、`ImportDialog`、`ExportButton`、`BulkActionsToolbar`
 
 React / Vue 提供全部 104 个 Core 组件的 1:1 绑定（`Admin*` 命名）；Business 当前提供 React 绑定，Vue/Svelte 可直接注册并消费对应 Custom Elements；Svelte 提供核心注册入口、27 个常用组件封装，共 29 个公开导出。
 

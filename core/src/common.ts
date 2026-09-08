@@ -30,6 +30,7 @@ export class AdminToggleElement extends AdminElement {
         }
         button:hover:not(:disabled) {
             border-color: var(--aui-border-hover);
+            background: var(--aui-control-bg-hover);
             color: var(--aui-text-primary);
         }
         button[aria-pressed="true"] {
@@ -97,6 +98,7 @@ export class AdminToggleGroupElement extends AdminElement {
             border-right: 0;
         }
         button:hover:not(:disabled) {
+            background: var(--aui-control-bg-hover);
             color: var(--aui-text-primary);
         }
         button[aria-pressed="true"] {
@@ -178,9 +180,14 @@ export class AdminCollapsibleElement extends AdminElement {
             display: none;
         }
         summary::after {
+            width: 24px;
+            flex: 0 0 24px;
+            display: grid;
+            place-items: center;
             content: "+";
             color: var(--aui-text-muted);
             font-size: 15px;
+            line-height: 1;
         }
         details[open] summary::after {
             content: "−";

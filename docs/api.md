@@ -2,7 +2,7 @@
 
 > Generated from `docs-site/src/catalog.ts`. Run `bun run api:docs` after changing a component contract.
 
-The catalog currently describes **120 components** across Core and Business packages.
+The catalog currently describes **123 components** across Core and Business packages.
 
 | Component | Custom Element | Category | Properties | Events |
 | --- | --- | --- | --- | --- |
@@ -119,6 +119,9 @@ The catalog currently describes **120 components** across Core and Business pack
 | Metric Grid | `aui-metric-grid` | business | `items`, `columns` | — |
 | Bar Chart | `aui-bar-chart` | business | `data`, `height`, `label` | — |
 | Line Chart | `aui-line-chart` | business | `data`, `height`, `label`, `color`, `show-points` | — |
+| Area Chart | `aui-area-chart` | business | `data`, `height`, `label`, `color`, `show-points` | — |
+| Pie Chart | `aui-pie-chart` | business | `data`, `height`, `label`, `donut`, `show-legend` | — |
+| Gauge | `aui-gauge` | business | `value`, `min`, `max`, `height`, `label`, `unit`, `color` | — |
 | Sparkline | `aui-sparkline` | business | `values`, `label`, `color` | — |
 | Form Wizard | `aui-form-wizard` | business | `steps`, `active`, `completed`, `linear`, `next-label`, `previous-label`, `finish-label` | `aui-wizard-before-change`, `aui-wizard-change`, `aui-wizard-complete` |
 | Permission Matrix | `aui-permission-matrix` | business | `roles`, `resources`, `permissions`, `read-only`, `empty-label` | `aui-permission-change` |
@@ -142,4 +145,5 @@ The catalog currently describes **120 components** across Core and Business pack
 - `virtualizeRows(rows, scrollTop, viewportHeight, rowHeight, overscan)` returns bounded rows plus `start`, `end`, `top`, and `bottom` spacer values.
 - TanStack Table / Virtual remain optional integrations; no large table dependency is bundled into Core or Business.
 - `normalizeChartSeries` accepts `{label, value}` or `{x, y}` points, preserving null telemetry gaps; `fromChartData` returns normalized series and stable rendering domains.
+- `fromPieData` / `normalizePieData` drop non-positive slices and calculate a stable total; `normalizeGaugeValue` clamps a meter value to its host domain.
 - Recharts, VChart and other chart engines remain optional integrations; chart adapters do not add a runtime dependency.

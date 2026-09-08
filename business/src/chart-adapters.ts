@@ -40,6 +40,24 @@ export interface AdminChartAdapter {
     domain: AdminChartDomain;
 }
 
+export interface AdminPieDatum {
+    label: string;
+    value: number;
+    color?: string;
+}
+
+export interface AdminPieAdapter {
+    data: AdminPieDatum[];
+    total: number;
+}
+
+export interface AdminGaugeValue {
+    value: number;
+    min: number;
+    max: number;
+    ratio: number;
+}
+
 export interface NormalizeChartOptions {
     /** Include a zero baseline in the Y domain. Defaults to true. */
     includeZero?: boolean;
@@ -120,4 +138,35 @@ export function fromChartData(
 ): AdminChartAdapter {
     const series = normalizeChartSeries(input, options);
     return { series, domain: getChartDomain(series, options) };
+}
+
+/** Normalize positive slices for pie/donut charts and drop empty categories. */
+export function normalizePieData(input: AdminPieDatum[]): AdminPieDatum[] {
+    return input
+        .filter((item) => Number.isFinite(item.value) && item.value > 0)
+        .map((item) => ({
+            label: item.label.trim(),
+            value: item.value,
+            ...(item.color?.trim() ? { color: item.color.trim() } : {}),
+        }));
+}
+
+/** Normalize pie data and calculate its stable total in one adapter call. */
+export function fromPieData(input: AdminPieDatum[]): AdminPieAdapter {
+    const data = normalizePieData(input);
+    return { data, total: data.reduce((sum, item) => sum + item.value, 0) };
+}
+
+/** Clamp a gauge value while retaining the domain used by the host dashboard. */
+export function normalizeGaugeValue(value: number, min = 0, max = 100): AdminGaugeValue {
+    const safeMin = Number.isFinite(min) ? min : 0;
+    const safeMax = Number.isFinite(max) && max > safeMin ? max : safeMin + 1;
+    const safeValue = Number.isFinite(value) ? value : safeMin;
+    const bounded = Math.min(Math.max(safeValue, safeMin), safeMax);
+    return {
+        value: bounded,
+        min: safeMin,
+        max: safeMax,
+        ratio: (bounded - safeMin) / (safeMax - safeMin),
+    };
 }

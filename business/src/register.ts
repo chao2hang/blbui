@@ -9,9 +9,12 @@ import { AdminApprovalTimelineElement, AdminFormBuilderElement } from "./workflo
 import { AdminAdvancedTableElement, AdminCrudPageElement, AdminCrudToolbarElement } from "./crud";
 import {
     AdminBarChartElement,
+    AdminAreaChartElement,
+    AdminGaugeElement,
     AdminLineChartElement,
     AdminMetricCardElement,
     AdminMetricGridElement,
+    AdminPieChartElement,
     AdminSparklineElement,
 } from "./analytics";
 import {
@@ -35,6 +38,9 @@ export function registerBusinessElements(): void {
     defineOnce("aui-metric-card", AdminMetricCardElement);
     defineOnce("aui-metric-grid", AdminMetricGridElement);
     defineOnce("aui-bar-chart", AdminBarChartElement);
+    defineOnce("aui-area-chart", AdminAreaChartElement);
+    defineOnce("aui-pie-chart", AdminPieChartElement);
+    defineOnce("aui-gauge", AdminGaugeElement);
     defineOnce("aui-line-chart", AdminLineChartElement);
     defineOnce("aui-sparkline", AdminSparklineElement);
     defineOnce("aui-form-wizard", AdminFormWizardElement);

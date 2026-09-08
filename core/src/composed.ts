@@ -287,6 +287,10 @@ export class AdminSchemaFormElement extends AdminElement {
         :host([layout="horizontal"]) .fields {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
+        .select-control {
+            position: relative;
+            width: 100%;
+        }
         .control,
         input,
         textarea,
@@ -301,6 +305,42 @@ export class AdminSchemaFormElement extends AdminElement {
             background: var(--aui-control-bg);
             color: var(--aui-text);
             font: var(--aui-input-font-size, 12px) / 1.3 var(--aui-font-mono);
+        }
+        .select-control select {
+            padding-right: 46px;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        .select-control select::-ms-expand {
+            display: none;
+        }
+        .select-chevron {
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            bottom: 1px;
+            width: 34px;
+            display: grid;
+            place-items: center;
+            pointer-events: none;
+            color: var(--aui-text-muted);
+        }
+        .select-chevron::before {
+            width: 7px;
+            height: 7px;
+            border-right: 1px solid currentColor;
+            border-bottom: 1px solid currentColor;
+            content: "";
+            transform: translateY(-2px) rotate(45deg);
+        }
+        .select-control select:hover:not(:disabled) + .select-chevron {
+            color: var(--aui-text-secondary);
+        }
+        .select-control select:focus + .select-chevron {
+            color: var(--aui-text-primary);
+        }
+        .select-control select:disabled + .select-chevron {
+            opacity: 0.35;
         }
         textarea {
             min-height: 92px;
@@ -442,17 +482,20 @@ export class AdminSchemaFormElement extends AdminElement {
             ></textarea>`;
         }
         if (field.type === "select") {
-            return html`<select
-                id=${field.name}
-                name=${field.name}
-                aria-label=${field.label}
-                ?disabled=${common.disabled}
-                ?required=${field.required}
-                .value=${String(value)}
-                @change=${(event: Event) => this.change(field, event)}
-            >
-                ${field.options?.map((option) => html`<option value=${option.value}>${option.label}</option>`)}
-            </select>`;
+            return html`<div class="select-control">
+                <select
+                    id=${field.name}
+                    name=${field.name}
+                    aria-label=${field.label}
+                    ?disabled=${common.disabled}
+                    ?required=${field.required}
+                    .value=${String(value)}
+                    @change=${(event: Event) => this.change(field, event)}
+                >
+                    ${field.options?.map((option) => html`<option value=${option.value}>${option.label}</option>`)}
+                </select>
+                <span class="select-chevron" aria-hidden="true"></span>
+            </div>`;
         }
         return html`<input
             id=${field.name}

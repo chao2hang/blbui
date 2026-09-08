@@ -367,13 +367,28 @@ it under the terms of the GNU Affero General Public License.
 }
 
 .aui-root :where(.aui-kbd) {
-    padding: 3px 6px;
+    box-sizing: border-box;
+    width: 38px;
+    min-width: 38px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px;
     border: 1px solid var(--aui-border);
     border-bottom-width: 2px;
     border-radius: var(--aui-radius-sm);
-    background: var(--aui-header);
+    background: linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--aui-header) 92%, var(--aui-text-primary)),
+        var(--aui-header)
+    );
     color: var(--aui-text-secondary);
     font: 11px/1 var(--aui-font-mono);
+    letter-spacing: 0.02em;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
 }
 
 .aui-root :where(.aui-code) {

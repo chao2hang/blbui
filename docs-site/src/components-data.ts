@@ -408,7 +408,7 @@ export const components: ComponentItem[] = [
         status: "stable",
         props: [],
         events: [],
-        previewHtml: `<div style="width:100%;max-width:280px;"><aui-input-group><span style="padding:0 8px;background:var(--aui-header);border:1px solid var(--aui-border);border-right:none;font-size:11px;color:var(--aui-text-secondary);display:inline-flex;align-items:center;">https://</span><aui-input placeholder="api.service.io" style="flex:1;"></aui-input></aui-input-group></div>`,
+        previewHtml: `<div style="width:100%;max-width:280px;"><aui-input-group><span slot="prefix">https://</span><aui-input placeholder="api.service.io"></aui-input></aui-input-group></div>`,
         usage: {
             wc: `<aui-input-group>\n  <span slot="prefix">https://</span>\n  <aui-input placeholder="gateway.internal"></aui-input>\n</aui-input-group>`,
             react: `import { AdminInputGroup, AdminInput } from '@chaos_team/blbui-react'\n\n<AdminInputGroup>\n  <span>https://</span>\n  <AdminInput placeholder="gateway.internal" />\n</AdminInputGroup>`,
@@ -2008,6 +2008,60 @@ export const components: ComponentItem[] = [
         },
     },
     {
+        id: "area-chart",
+        tag: "aui-area-chart",
+        name: "Area Chart",
+        category: "business",
+        description: "Theme-aware filled trend chart with null-gap handling and accessible labeling.",
+        status: "stable",
+        props: ["data", "height", "label", "color", "show-points"],
+        events: [],
+        initKey: "area-chart",
+        previewHtml: `<div style="width:100%;max-width:340px;"><aui-area-chart id="preview-area-chart" height="90px" label="CAPACITY TREND"></aui-area-chart></div>`,
+        usage: {
+            wc: `<aui-area-chart id="capacity-area" height="160px" label="Capacity"></aui-area-chart>`,
+            react: `import { AdminAreaChart } from '@chaos_team/blbui-business-react'\n\n<AdminAreaChart data={areaData} height="160px" label="Capacity" />`,
+            vue: `<aui-area-chart :data="areaData" height="160px" label="Capacity" />`,
+            svelte: `<aui-area-chart data={areaData} height="160px" label="Capacity"></aui-area-chart>`,
+        },
+    },
+    {
+        id: "pie-chart",
+        tag: "aui-pie-chart",
+        name: "Pie Chart",
+        category: "business",
+        description: "Dependency-free proportional breakdown with optional donut mode and legend.",
+        status: "stable",
+        props: ["data", "height", "label", "donut", "show-legend"],
+        events: [],
+        initKey: "pie-chart",
+        previewHtml: `<div style="width:100%;max-width:340px;"><aui-pie-chart id="preview-pie-chart" height="120px" label="TRAFFIC MIX" donut></aui-pie-chart></div>`,
+        usage: {
+            wc: `<aui-pie-chart id="traffic-mix" data={segments} donut label="Traffic mix"></aui-pie-chart>`,
+            react: `import { AdminPieChart } from '@chaos_team/blbui-business-react'\n\n<AdminPieChart data={segments} donut label="Traffic mix" />`,
+            vue: `<AdminPieChart :data="segments" :donut="true" label="Traffic mix" />`,
+            svelte: `<aui-pie-chart data={segments} donut label="Traffic mix"></aui-pie-chart>`,
+        },
+    },
+    {
+        id: "gauge",
+        tag: "aui-gauge",
+        name: "Gauge",
+        category: "business",
+        description: "Accessible semicircular range meter for health, capacity and service objectives.",
+        status: "stable",
+        props: ["value", "min", "max", "height", "label", "unit", "color"],
+        events: [],
+        initKey: "gauge",
+        previewHtml: `<div style="width:100%;max-width:340px;"><aui-gauge id="preview-gauge" height="120px" value="78" label="SLO" unit="%"></aui-gauge></div>`,
+        usage: {
+            wc: `<aui-gauge value="78" max="100" label="SLO" unit="%"></aui-gauge>`,
+            react: `import { AdminGauge } from '@chaos_team/blbui-business-react'\n\n<AdminGauge value={78} max={100} label="SLO" unit="%" />`,
+            vue: `<AdminGauge :value="78" :max="100" label="SLO" unit="%" />`,
+            svelte: `<aui-gauge value={78} max={100} label="SLO" unit="%"></aui-gauge>`,
+        },
+    },
+    {
         id: "tree-table",
         tag: "aui-tree-table",
         name: "Tree Table",
@@ -2338,14 +2392,14 @@ export function initComponentDemo(root: HTMLElement): void {
 
     // Navigation
     setProp("#preview-toggle-group", "items", [
-        { value: "day", label: "24H" },
-        { value: "week", label: "7D" },
-        { value: "month", label: "30D" },
+        { id: "day", label: "24H" },
+        { id: "week", label: "7D" },
+        { id: "month", label: "30D" },
     ]);
     setProp("#preview-segmented", "items", [
-        { value: "overview", label: "Overview" },
-        { value: "api", label: "API Keys" },
-        { value: "logs", label: "Audit Logs" },
+        { id: "overview", label: "Overview" },
+        { id: "api", label: "API Keys" },
+        { id: "logs", label: "Audit Logs" },
     ]);
     setProp("#preview-tabs", "items", [
         { id: "general", label: "General" },
@@ -2381,7 +2435,7 @@ export function initComponentDemo(root: HTMLElement): void {
     setProp("#preview-descriptions", "items", [
         { label: "REGION", value: "us-east-1", description: "Primary" },
         { label: "STATUS", value: "ONLINE" },
-                        { label: "VERSION", value: "v0.0.9" },
+                        { label: "VERSION", value: "v0.0.10" },
         { label: "OWNER", value: "Platform Ops" },
     ]);
     setProp("#preview-accordion", "items", [
@@ -2646,6 +2700,21 @@ export function initComponentDemo(root: HTMLElement): void {
         { label: "16:00", value: 36 },
         { label: "20:00", value: 48 },
     ]);
+    setProp("#preview-area-chart", "data", [
+        { label: "00:00", value: 22 },
+        { label: "04:00", value: 29 },
+        { label: "08:00", value: null },
+        { label: "12:00", value: 44 },
+        { label: "16:00", value: 39 },
+        { label: "20:00", value: 52 },
+    ]);
+    setProp("#preview-pie-chart", "data", [
+        { label: "EDGE", value: 42 },
+        { label: "API", value: 31 },
+        { label: "WORKER", value: 18 },
+        { label: "OTHER", value: 9 },
+    ]);
+    setProp("#preview-gauge", "value", 78);
     setProp("#preview-sparkline", "values", [18, 22, 29, 25, 20, 17, 24, 18]);
     setProp("#preview-form-wizard", "steps", [
         { id: "account", label: "ACCOUNT", description: "Identity" },

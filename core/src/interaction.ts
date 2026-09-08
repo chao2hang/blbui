@@ -71,8 +71,29 @@ export class AdminCascaderElement extends AdminElement {
             color: var(--aui-text-muted);
         }
         .chevron {
-            flex: 0 0 auto;
+            width: 34px;
+            height: 34px;
+            display: grid;
+            flex: 0 0 34px;
+            place-items: center;
+            margin-right: -10px;
             color: var(--aui-text-muted);
+        }
+        .chevron::before {
+            width: 7px;
+            height: 7px;
+            border-right: 1px solid currentColor;
+            border-bottom: 1px solid currentColor;
+            content: "";
+            transform: translateY(-2px) rotate(45deg);
+            transition: transform 120ms ease;
+        }
+        :host([open]) .chevron::before {
+            transform: translateY(2px) rotate(225deg);
+        }
+        .trigger:hover:not(:disabled) .chevron,
+        .trigger:focus-visible .chevron {
+            color: var(--aui-text-secondary);
         }
         .panel {
             position: absolute;
@@ -298,7 +319,7 @@ export class AdminCascaderElement extends AdminElement {
                 <span class=${label ? "value" : "value placeholder"}
                     >${label || this.placeholder}</span
                 >
-                <span class="chevron" aria-hidden="true">⌄</span>
+                <span class="chevron" aria-hidden="true"></span>
             </button>
             <div class="panel" id=${this.panelId} role="listbox" aria-label="Cascader options">
                 ${

@@ -49,6 +49,7 @@ export class AdminButtonElement extends AdminElement {
         }
         button:hover:not(:disabled) {
             border-color: var(--aui-border-hover);
+            background: var(--aui-control-bg-hover);
             color: var(--aui-text-primary);
         }
         button:active:not(:disabled) {

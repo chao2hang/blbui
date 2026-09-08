@@ -240,12 +240,28 @@ export class AdminComboboxElement extends AdminElement {
             color: var(--aui-text-muted);
         }
         .chevron {
-            width: 32px;
+            width: 34px;
+            display: grid;
+            flex: 0 0 34px;
+            place-items: center;
+            padding: 0;
             border: 0;
             border-left: 1px solid var(--aui-border);
             background: var(--aui-header);
             color: var(--aui-text-muted);
             cursor: pointer;
+        }
+        .chevron::before {
+            width: 6px;
+            height: 6px;
+            border-right: 1px solid currentColor;
+            border-bottom: 1px solid currentColor;
+            content: "";
+            transform: translateY(-2px) rotate(45deg);
+            transition: transform 120ms ease;
+        }
+        :host([open]) .chevron::before {
+            transform: translateY(2px) rotate(225deg);
         }
         .list {
             position: absolute;
@@ -393,9 +409,7 @@ export class AdminComboboxElement extends AdminElement {
                         this.open = !this.open;
                         this.requestUpdate();
                     }}
-                >
-                    ⌄
-                </button>
+                ></button>
             </div>
             <div class="list" id=${this.listId} role="listbox">
                 ${
@@ -463,12 +477,14 @@ export class AdminMultiSelectElement extends AdminElement {
         }
         .chip {
             display: inline-flex;
+            flex: 0 0 auto;
             align-items: center;
             gap: 4px;
             padding: 3px 5px;
             border: 1px solid var(--aui-border-hover);
             color: var(--aui-text);
             font: 10px/1 var(--aui-font-mono);
+            white-space: nowrap;
         }
         .chip button {
             padding: 0;
@@ -489,6 +505,30 @@ export class AdminMultiSelectElement extends AdminElement {
         }
         input::placeholder {
             color: var(--aui-text-muted);
+        }
+        .chevron {
+            width: 34px;
+            height: 34px;
+            display: grid;
+            flex: 0 0 34px;
+            place-items: center;
+            margin-right: -6px;
+            color: var(--aui-text-muted);
+        }
+        .chevron::before {
+            width: 7px;
+            height: 7px;
+            border-right: 1px solid currentColor;
+            border-bottom: 1px solid currentColor;
+            content: "";
+            transform: translateY(-2px) rotate(45deg);
+            transition: transform 120ms ease;
+        }
+        :host([open]) .chevron::before {
+            transform: translateY(2px) rotate(225deg);
+        }
+        .control:hover .chevron {
+            color: var(--aui-text-secondary);
         }
         .list {
             position: absolute;
@@ -657,7 +697,7 @@ export class AdminMultiSelectElement extends AdminElement {
                         @keydown=${this.keydown}
                     />
                 </div>
-                <span aria-hidden="true">⌄</span>
+                <span class="chevron" aria-hidden="true"></span>
             </div>
             <div class="list" id=${this.listId} role="listbox" aria-multiselectable="true">
                 ${filtered.map(

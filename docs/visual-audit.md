@@ -6,22 +6,22 @@
 - 入口：http://127.0.0.1:4176/
 - 浏览器：Codex In-app Browser
 - 视口：桌面约 1280 × 720（页面有效宽度 1265px）；窄屏 390 × 844（页面有效宽度 375px）
-- 组件目录：119 个组件卡片，8 个分类
+- 组件目录：123 个组件卡片，8 个分类
 - 主题矩阵：9 套主题 × light/dark = 18 个组合
 
 ## 结果
 
 | 检查项 | 结果 | 说明 |
 | --- | --- | --- |
-| 组件目录完整渲染 | 通过 | 119/119 卡片存在并渲染；分类计数与可见数量一致；逐卡尺寸检查无 0 尺寸 |
+| 组件目录完整渲染 | 通过 | 123/123 卡片存在并渲染；分类计数与可见数量一致；逐卡尺寸检查无 0 尺寸 |
 | 页面级横向溢出 | 通过 | 桌面与 390px 窄屏均复核 `scrollWidth === clientWidth`；窄屏标题字号已收敛，水平滚动条已消除 |
-| 主题覆盖 | 通过 | 9 套主题 × light/dark 共 18 个组合均逐一切换目视；组件数量保持 119 个；新增组件只使用 AUI token |
+| 主题覆盖 | 通过 | 9 套主题 × light/dark 共 18 个组合均逐一切换目视；组件数量保持 123 个；新增组件只使用 AUI token |
 | 日夜切换 | 通过 | 根节点 `data-aui-mode` 正确在 light/dark 间切换 |
-| 分类筛选 | 通过 | Business 筛选准确显示 15 个业务组件，恢复 All 后显示 119 个 |
+| 分类筛选 | 通过 | Business 筛选准确显示 19 个业务组件，恢复 All 后显示 123 个 |
 | Dialog | 通过 | 打开、遮罩、焦点进入、ESC 关闭和焦点恢复均正常 |
 | Drawer | 通过 | 右侧抽屉打开、遮罩和 ESC 关闭均正常 |
 | Usage tabs | 通过 | Button 的 Web Components/React/Vue/Svelte 标签切换会更新代码片段 |
-| 代表组件视觉 | 通过 | 表单、导航、反馈、覆盖层、数据、布局、业务组件均有人工目视检查；0.0.9 LineChart SVG 命名空间修复、parity playground、adapter 文档和视觉矩阵变更已复核 |
+| 代表组件视觉 | 通过 | 表单、导航、反馈、覆盖层、数据、布局、业务组件均有人工目视检查；Area/Pie/Gauge 在 Obsidian light/dark、Rounded、Glass 与 320px 窄屏下已人工复核 |
 | 代码区与卡片窄屏布局 | 通过 | 代码区可横向滚动；窄屏页面无级联横向溢出，卡片内部代码区保留局部滚动；浮层预览不再被 playground 纵向裁切 |
 
 ## 人工目视范围
@@ -33,7 +33,7 @@
 - DatePicker、TimePicker、PinInput、Descriptions。
 - Cascader、Transfer、ContextMenu、HoverCard、NotificationCenter。
 - UploadList、FilePreview（空态、文件状态、PDF 元信息、打开/关闭）。
-- Bar Chart、Sparkline、DataGrid、Kanban、Table。
+- Bar Chart、Line Chart、Area Chart、Pie Chart、Gauge、Sparkline、DataGrid、Kanban、Table。
 - Dialog、Drawer、Popover、Dropdown、Accordion、Collapsible。
 - 主题展示区、组件分类区、代码示例区、框架切换区和无障碍说明区。
 
@@ -62,6 +62,7 @@
 - 关闭状态的 Dialog 内部关闭按钮不会被绘制，这是隐藏组件的预期结果，不作为视觉缺陷。
 - 当前 Playwright 会生成桌面/移动截图冒烟产物，并通过 pixelmatch 检查重复渲染稳定性；`tests/e2e/visual-matrix.json` 已固定 Windows/Ubuntu Chromium、desktop/mobile/narrow、9 × 2 主题与代表组件场景。`.github/workflows/visual-regression.yml` 会在两个固定 runner 上生成 9 × 2 × 3 × 5 的 PNG 证据并保留 14 天；首批证据确认后再提升为 platform-specific golden 比较，避免字体和系统控件差异造成误报。
 - ContextMenu 的打开位置来自浏览器右键坐标；在极窄视口边缘的智能翻转仍列入下一轮定位增强。
+- Area/Pie/Gauge 已完成首次人工验收；下一轮视觉矩阵继续覆盖 9 套主题、日夜模式、320px 窄屏、空数据和 Gauge 极值。
 
 ## 后续验收规则
 

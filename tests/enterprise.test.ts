@@ -18,7 +18,12 @@ import type {
     AdminExportButtonElement,
     AdminImportDialogElement,
 } from "../business/src/operations";
-import type { AdminLineChartElement } from "../business/src/analytics";
+import type {
+    AdminAreaChartElement,
+    AdminGaugeElement,
+    AdminLineChartElement,
+    AdminPieChartElement,
+} from "../business/src/analytics";
 
 type ElementWithUpdate = HTMLElement & { updateComplete: Promise<unknown> };
 
@@ -93,6 +98,38 @@ describe("enterprise workflow components", () => {
         expect(chart.shadowRoot?.querySelectorAll("polyline")).toHaveLength(2);
         expect(chart.shadowRoot?.querySelector("svg")?.namespaceURI).toBe("http://www.w3.org/2000/svg");
         expect(chart.shadowRoot?.querySelector('[role="img"]')).not.toBeNull();
+    });
+
+    it("renders area chart gaps, pie slices and an accessible gauge", async () => {
+        const area = await element<AdminAreaChartElement>("aui-area-chart");
+        area.data = [
+            { label: "A", value: 10 },
+            { label: "B", value: null },
+            { label: "C", value: 30 },
+        ];
+        await area.updateComplete;
+        expect(area.shadowRoot?.querySelectorAll("polygon")).toHaveLength(2);
+        expect(area.shadowRoot?.querySelector("svg")?.namespaceURI).toBe("http://www.w3.org/2000/svg");
+
+        const pie = await element<AdminPieChartElement>("aui-pie-chart");
+        pie.data = [
+            { label: "API", value: 3 },
+            { label: "Worker", value: 1 },
+            { label: "Empty", value: 0 },
+        ];
+        pie.donut = true;
+        await pie.updateComplete;
+        expect(pie.shadowRoot?.querySelectorAll("path")).toHaveLength(2);
+        expect(pie.shadowRoot?.querySelectorAll(".legend-item")).toHaveLength(2);
+
+        const gauge = await element<AdminGaugeElement>("aui-gauge");
+        gauge.value = 125;
+        gauge.max = 100;
+        gauge.label = "SLO";
+        await gauge.updateComplete;
+        const meter = gauge.shadowRoot?.querySelector('[role="meter"]');
+        expect(meter?.getAttribute("aria-valuenow")).toBe("100");
+        expect(meter?.getAttribute("aria-valuemax")).toBe("100");
     });
 
     it("moves through a linear wizard and emits completion", async () => {

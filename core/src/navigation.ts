@@ -43,6 +43,7 @@ export class AdminNavElement extends AdminElement {
         }
         a:hover,
         button:hover:not(:disabled) {
+            background: var(--aui-control-bg-hover);
             color: var(--aui-text-primary);
         }
         [aria-current="page"] {

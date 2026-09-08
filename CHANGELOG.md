@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.10 — 2026-09-08
+
+- 新增 Business `AreaChart`、`PieChart`、`Gauge`，并补齐 React 绑定、主题 token、API/目录文档与 adapter contract。
+- AreaChart 支持 null telemetry gap，PieChart 支持 donut/legend，Gauge 提供可访问 meter 语义与范围钳制。
+- 完成新增图表在 Obsidian、Rounded、Glass、light/dark 与 320px 窄屏下的人工视觉验收，并将场景纳入跨平台视觉矩阵。
+
 ## 0.0.9 — 2026-09-08
 
 - 新增 Business `LineChart` 与无依赖 chart adapter contract，统一 `{label, value}` / `{x, y}` 数据、稳定 domain 计算和 null telemetry gap 语义。

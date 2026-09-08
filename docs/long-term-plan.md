@@ -14,7 +14,7 @@
 
 ### P0：语义 Token 与主题合同
 
-0.0.9 已在 0.0.8 基础上继续收紧：
+0.0.10 已在 0.0.9 基础上继续收紧：
 
 - 固化 surface、text、border、focus、status、overlay、shadow、radius、motion、form color-scheme 等 token。
 - 9 套主题均维护 light/dark 两套值；新增主题必须提供同一份 token 清单。
@@ -86,7 +86,7 @@
 | 框架 | Web Components、React、Vue、Svelte 的属性与事件行为一致                     |
 | 文档 | catalog 条目、预览、props/events、四框架 usage、截图和已知限制              |
 
-## 当前组件缺口（0.0.9 后）
+## 当前组件缺口（0.0.10 后）
 
 短期缺口集中在可复用的复杂交互，而不是继续堆叠展示型组件：
 
@@ -95,7 +95,8 @@
 - TreeTable、ListView 已提供首版；TanStack-compatible adapter contract、分页/排序/选择映射和虚拟窗口边界测试已落地。
 - PermissionMatrix、AuditLog、ImportDialog、ExportButton、BulkActionsToolbar 和更完整的 workflow 业务组件已落地。
 - React/Vue/Svelte parity playground 与 SSR/hydration 验证已落地；跨平台截图矩阵范围已版本化，后续在固定 runner 上积累 PNG golden 产物。
-- LineChart 已完成 SVG 命名空间人工验收；下一批图表按同一 adapter contract 推进 AreaChart、PieChart、Gauge，并补齐 null/empty/tooltip 可访问语义。
+- LineChart 已完成 SVG 命名空间人工验收；AreaChart、PieChart、Gauge 已按同一 adapter contract 落地，并覆盖 null/empty、donut/legend 与 meter 可访问语义。
+- 0.0.10 的图表视觉矩阵新增 AreaChart、PieChart、Gauge 场景；`fromPieData` / `normalizeGaugeValue` 保持外部图表运行时可选。
 
 ## 每次迭代的完成定义
 
