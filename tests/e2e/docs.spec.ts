@@ -151,8 +151,16 @@ test.describe("BLBUI documentation quality matrix", () => {
                         const filename = [platform, viewportValue.id, theme, mode, scene.id].join(
                             "-",
                         );
-                        await target.screenshot({
+                        const box = await target.boundingBox();
+                        if (!box) throw new Error(`Unable to resolve visual scene bounds: ${scene.id}`);
+                        await page.screenshot({
                             path: testInfo.outputPath("visual-matrix", `${filename}.png`),
+                            clip: {
+                                x: Math.floor(box.x),
+                                y: Math.floor(box.y),
+                                width: Math.ceil(box.width),
+                                height: Math.ceil(box.height),
+                            },
                             animations: "disabled",
                         });
                         if (goldenRoot) {
