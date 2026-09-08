@@ -4,7 +4,7 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License.
 */
 
-import { expect, test, type Locator } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { AxeBuilder } from "@axe-core/playwright";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
@@ -57,29 +57,29 @@ const settleVisualTarget = async (target: Locator) => {
     });
 };
 
-const captureVisualTarget = async (target: Locator, path: string) => {
+const captureVisualTarget = async (
+    page: Page,
+    target: Locator,
+    path: string,
+    goldenPath: string,
+) => {
+    if (!existsSync(goldenPath)) {
+        await target.screenshot({ path, animations: "disabled" });
+        return;
+    }
     const box = await target.boundingBox();
     if (!box) throw new Error("Visual target has no bounding box");
-    const translate = {
-        x: Math.round(box.x) - box.x,
-        y: Math.round(box.y) - box.y,
-    };
-    const previous = await target.evaluate((element) => element.style.getPropertyValue("translate"));
-    await target.evaluate(
-        (element, value) => element.style.setProperty("translate", `${value.x}px ${value.y}px`),
-        translate,
-    );
-    try {
-        await target.screenshot({ path, animations: "disabled" });
-    } finally {
-        await target.evaluate(
-            (element, value) => {
-                if (value) element.style.setProperty("translate", value);
-                else element.style.removeProperty("translate");
-            },
-            previous,
-        );
-    }
+    const expected = PNG.sync.read(readFileSync(goldenPath));
+    await page.screenshot({
+        path,
+        animations: "disabled",
+        clip: {
+            x: Math.floor(box.x),
+            y: Math.floor(box.y),
+            width: expected.width,
+            height: expected.height,
+        },
+    });
 };
 
 test.describe("BLBUI documentation quality matrix", () => {
@@ -204,12 +204,15 @@ test.describe("BLBUI documentation quality matrix", () => {
                         const filename = [platform, viewportValue.id, theme, mode, scene.id].join(
                             "-",
                         );
-                        await captureVisualTarget(
-                            target,
-                            testInfo.outputPath("visual-matrix", `${filename}.png`),
+                        const screenshotPath = testInfo.outputPath(
+                            "visual-matrix",
+                            `${filename}.png`,
                         );
+                        const goldenPath = goldenRoot
+                            ? resolve(goldenRoot, `${filename}.png`)
+                            : "";
+                        await captureVisualTarget(page, target, screenshotPath, goldenPath);
                         if (goldenRoot) {
-                            const goldenPath = resolve(goldenRoot, `${filename}.png`);
                             if (!existsSync(goldenPath)) {
                                 if (goldenRequired)
                                     throw new Error(`Missing visual golden: ${goldenPath}`);
