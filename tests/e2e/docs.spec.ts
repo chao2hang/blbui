@@ -158,8 +158,8 @@ test.describe("BLBUI documentation quality matrix", () => {
                             clip: {
                                 x: Math.floor(box.x),
                                 y: Math.floor(box.y),
-                                width: Math.ceil(box.width),
-                                height: Math.ceil(box.height),
+                                width: Math.ceil(box.x + box.width) - Math.floor(box.x),
+                                height: Math.ceil(box.y + box.height) - Math.floor(box.y),
                             },
                             animations: "disabled",
                         });
