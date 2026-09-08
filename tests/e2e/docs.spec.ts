@@ -105,6 +105,58 @@ test.describe("BLBUI documentation quality matrix", () => {
         await page.screenshot({ path: testInfo.outputPath("docs-mobile-390.png"), fullPage: true });
     });
 
+    test("captures the versioned visual matrix artifacts", async ({ page }, testInfo) => {
+        test.skip(
+            process.env.VISUAL_MATRIX_ARTIFACTS !== "1",
+            "The full matrix is collected by the fixed-runner visual workflow.",
+        );
+        test.setTimeout(300_000);
+        await page.emulateMedia({ reducedMotion: "reduce" });
+        await page.goto("/");
+        await page.addStyleTag({
+            content: "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}",
+        });
+        await page.evaluate(() => document.fonts?.ready);
+
+        const platform =
+            process.env.VISUAL_MATRIX_PROFILE ??
+            (process.platform === "win32" ? "windows-chromium" : "ubuntu-chromium");
+        for (const viewportValue of visualMatrix.viewports) {
+            await page.setViewportSize({
+                width: viewportValue.width,
+                height: viewportValue.height,
+            });
+            for (const theme of themes) {
+                await page.locator("#theme-select").selectOption(theme);
+                for (const mode of visualMatrix.modes) {
+                    const currentMode = await page.evaluate(
+                        () => document.documentElement.dataset.auiMode,
+                    );
+                    if (currentMode !== mode) await page.locator("#mode-toggle").click();
+                    await expect(page.locator("#theme-select")).toHaveValue(theme);
+                    await page.evaluate(() => document.fonts?.ready);
+
+                    for (const scene of visualMatrix.scenes) {
+                        const target = page.locator(scene.selector).first();
+                        await target.scrollIntoViewIfNeeded();
+                        await expect(target).toBeVisible();
+                        const filename = [
+                            platform,
+                            viewportValue.id,
+                            theme,
+                            mode,
+                            scene.id,
+                        ].join("-");
+                        await target.screenshot({
+                            path: testInfo.outputPath("visual-matrix", `${filename}.png`),
+                            animations: "disabled",
+                        });
+                    }
+                }
+            }
+        }
+    });
+
     test("keeps a deterministic visual render for pixel-level gating", async ({ page }, testInfo) => {
         await page.emulateMedia({ reducedMotion: "reduce" });
         await page.goto("/");

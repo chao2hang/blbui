@@ -54,7 +54,7 @@
 
 - 原生 date/time 控件的弹出日历和时间面板由操作系统/浏览器绘制，主题只能控制字段本身；跨平台弹出面板需后续自定义 picker 方案。
 - 关闭状态的 Dialog 内部关闭按钮不会被绘制，这是隐藏组件的预期结果，不作为视觉缺陷。
-- 当前 Playwright 会生成桌面/移动截图冒烟产物，并通过 pixelmatch 检查重复渲染稳定性；`tests/e2e/visual-matrix.json` 已固定 Windows/Ubuntu Chromium、desktop/mobile/narrow、9 × 2 主题与代表组件场景。真实 PNG golden 需在对应固定 runner 上持续积累，避免字体和系统控件差异造成误报。
+- 当前 Playwright 会生成桌面/移动截图冒烟产物，并通过 pixelmatch 检查重复渲染稳定性；`tests/e2e/visual-matrix.json` 已固定 Windows/Ubuntu Chromium、desktop/mobile/narrow、9 × 2 主题与代表组件场景。`.github/workflows/visual-regression.yml` 会在两个固定 runner 上生成 9 × 2 × 3 × 5 的 PNG 证据并保留 14 天；首批证据确认后再提升为 platform-specific golden 比较，避免字体和系统控件差异造成误报。
 - ContextMenu 的打开位置来自浏览器右键坐标；在极窄视口边缘的智能翻转仍列入下一轮定位增强。
 
 ## 后续验收规则

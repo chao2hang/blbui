@@ -69,6 +69,7 @@
 - 主题矩阵按 9 × 2 运行，重点组件再覆盖 hover、focus、disabled、loading、empty、error。
 - [x] 发布前执行 catalog、public API/docs、typecheck、build、Svelte、docs smoke、unit、a11y、320px/forced-colors 和视觉冒烟；新增 `tests/e2e/visual-matrix.json` 作为跨平台 golden screenshot 的版本化范围合同。
 - 0.0.8 保留 0.0.7 的 pixelmatch 重复渲染门禁，并将 Windows/Ubuntu Chromium、视口、9 × 2 主题和代表场景写入可检查 manifest；真实截图按 CI runner 分平台保存，避免字体和系统控件差异造成误报。
+- [x] 增加 `.github/workflows/visual-regression.yml`，在 Windows/Ubuntu 固定 runner 上生成 9 × 2 × 3 × 5 的 PNG 视觉证据并保留 14 天；首批证据确认后再提升为提交到仓库的 platform-specific golden 比较。
 - 组件状态发生变化时更新 changelog、migration note 和截图基准。
 - 每季度清理一次重复组件、过期 token、未使用 utility 和文档示例漂移。
 

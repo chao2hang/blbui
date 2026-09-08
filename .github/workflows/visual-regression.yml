@@ -1,0 +1,67 @@
+name: BLBUI visual matrix
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: visual-matrix-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    name: Capture ${{ matrix.profile }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - profile: windows-chromium
+            os: windows-latest
+          - profile: ubuntu-chromium
+            os: ubuntu-latest
+    env:
+      VISUAL_MATRIX_ARTIFACTS: "1"
+      VISUAL_MATRIX_PROFILE: ${{ matrix.profile }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.0"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install package workspace
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Validate visual matrix contract
+        run: bun run visual:check
+
+      - name: Capture visual matrix
+        run: bunx playwright test --grep "captures the versioned visual matrix artifacts"
+
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blbui-visual-${{ matrix.profile }}-${{ github.sha }}
+          path: |
+            test-results/**
+            playwright-report/**
+          if-no-files-found: warn
+          retention-days: 14
