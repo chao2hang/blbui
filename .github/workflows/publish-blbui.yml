@@ -59,13 +59,13 @@ jobs:
         working-directory: .
         run: bun run format:check
 
-      - name: Check SSR and framework bindings
-        working-directory: .
-        run: bun run ssr:check && bun run test:frameworks
-
       - name: Build publish artifacts
         working-directory: .
         run: bun run build:packages
+
+      - name: Check SSR and framework bindings
+        working-directory: .
+        run: bun run ssr:check && bun run test:frameworks
 
       - name: Check Svelte components
         # Runs after the build: the dist/src export-sync verification in
