@@ -4,7 +4,7 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License.
 */
 
-import { expect, test, type Locator, type Page } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 import { AxeBuilder } from "@axe-core/playwright";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
@@ -68,29 +68,8 @@ const isUniformPngRow = (data: Uint8Array, width: number, row: number) => {
     return true;
 };
 
-const captureVisualTarget = async (
-    page: Page,
-    target: Locator,
-    path: string,
-    goldenPath: string,
-) => {
-    if (!existsSync(goldenPath)) {
-        await target.screenshot({ path, animations: "disabled" });
-        return;
-    }
-    const box = await target.boundingBox();
-    if (!box) throw new Error("Visual target has no bounding box");
-    const expected = PNG.sync.read(readFileSync(goldenPath));
-    await page.screenshot({
-        path,
-        animations: "disabled",
-        clip: {
-            x: Math.floor(box.x),
-            y: Math.floor(box.y),
-            width: expected.width,
-            height: expected.height,
-        },
-    });
+const captureVisualTarget = async (target: Locator, path: string) => {
+    await target.screenshot({ path, animations: "disabled" });
 };
 
 test.describe("BLBUI documentation quality matrix", () => {
@@ -219,10 +198,8 @@ test.describe("BLBUI documentation quality matrix", () => {
                             ? resolve(goldenRoot, `${filename}.png`)
                             : "";
                         await captureVisualTarget(
-                            page,
                             target,
                             testInfo.outputPath("visual-matrix", `${filename}.png`),
-                            goldenPath,
                         );
                         if (goldenRoot) {
                             if (!existsSync(goldenPath)) {
