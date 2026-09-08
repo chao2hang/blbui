@@ -50,6 +50,12 @@
 - Forms / Data 筛选：分别显示 26 / 14 个卡片，页面级横向溢出为 false。
 - 390px 窄屏：主题展示区与组件目录可滚动浏览，修复标题造成的 2px 页面级横向溢出。
 
+## 固定 runner 视觉证据
+
+- GitHub Actions run [34186435788](https://github.com/chao2hang/blbui/actions/runs/34186435788) 已在 Windows Chromium 与 Ubuntu Chromium 均通过完整视觉矩阵；每个平台上传了 270 张 PNG（9 themes × 2 modes × 3 viewports × 5 scenes）。
+- 已人工抽查 Ubuntu 产物的默认 Button、Rounded 移动端 DataGrid、Glass 表单、Chinese workflow 和窄屏 Permission Matrix；布局、主题 token、圆角和业务状态均正常。
+- 当前产物作为首批跨平台证据保留 14 天；确认字体、系统控件和浏览器版本稳定后，再从证据产物中提取 platform-specific golden 并启用差异比较。
+
 ## 已知限制
 
 - 原生 date/time 控件的弹出日历和时间面板由操作系统/浏览器绘制，主题只能控制字段本身；跨平台弹出面板需后续自定义 picker 方案。
