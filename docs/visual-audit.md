@@ -55,13 +55,13 @@
 
 - GitHub Actions run [34186435788](https://github.com/chao2hang/blbui/actions/runs/34186435788) 已在 Windows Chromium 与 Ubuntu Chromium 均通过完整视觉矩阵；当前矩阵每个平台应上传 432 张 PNG（9 themes × 2 modes × 3 viewports × 8 scenes）。
 - 已人工抽查 Ubuntu 产物的默认 Button、Rounded 移动端 DataGrid、Glass 表单、Chinese workflow 和窄屏 Permission Matrix；布局、主题 token、圆角和业务状态均正常。
-- 当前产物作为首批跨平台证据保留 14 天；确认字体、系统控件和浏览器版本稳定后，再从证据产物中提取每个平台 432 张 platform-specific golden，并启用同 profile 差异比较。
+- `0.0.13` 在同一 commit 上完成第二次固定 runner 复核；Windows/Ubuntu 各 432 张 PNG 逐张 SHA-256 一致，已提取为 profile-specific golden 并启用同 profile 差异比较。
 
 ## 已知限制
 
 - 原生 date/time 控件的弹出日历和时间面板由操作系统/浏览器绘制，主题只能控制字段本身；跨平台弹出面板需后续自定义 picker 方案。
 - 关闭状态的 Dialog 内部关闭按钮不会被绘制，这是隐藏组件的预期结果，不作为视觉缺陷。
-- 当前 Playwright 会生成桌面/移动截图冒烟产物，并通过 pixelmatch 检查重复渲染稳定性；`tests/e2e/visual-matrix.json` 已固定 Windows/Ubuntu Chromium、desktop/mobile/narrow、9 × 2 主题与 8 个代表场景。`.github/workflows/visual-regression.yml` 会在两个固定 runner 上生成 9 × 2 × 3 × 8 的 PNG 证据并保留 14 天；`tests/e2e/visual-golden.json` 与 `VISUAL_MATRIX_GOLDEN_DIR` 已固定 profile-aware 文件名和像素比较策略，首轮证据确认后再将 status 切为 active，避免字体和系统控件差异造成误报。
+- 当前 Playwright 会生成桌面/移动截图冒烟产物，并通过 pixelmatch 检查重复渲染稳定性；`tests/e2e/visual-matrix.json` 已固定 Windows/Ubuntu Chromium、desktop/mobile/narrow、9 × 2 主题与 8 个代表场景。`.github/workflows/visual-regression.yml` 会在两个固定 runner 上生成 9 × 2 × 3 × 8 的 PNG 证据并保留 14 天；`tests/e2e/visual-golden.json` 与 `VISUAL_MATRIX_GOLDEN_DIR` 已固定 profile-aware 文件名和像素比较策略，active golden 仅比较相同 profile，避免字体和系统控件差异造成误报。
 - ContextMenu 的打开位置来自浏览器右键坐标；在极窄视口边缘的智能翻转仍列入下一轮定位增强。
 - Area/Pie/Gauge 已完成首次人工验收；下一轮视觉矩阵继续覆盖 9 套主题、日夜模式、320px 窄屏、空数据和 Gauge 极值。
 
@@ -85,6 +85,13 @@
 - 主题与窄屏：Rounded、Glass 的 light/dark 组合再次抽查表单、图表、浮层；320px 下 DateRange 快捷操作、Line Chart legend 和编辑器状态示例未产生页面级横向溢出。
 - SSR/hydration：无 DOM 注册、`whenAdminElementsDefined`、theme API fallback 和 React/Vue/Svelte 最小挂载均通过自动化验证；自定义元素定义前不会读取浏览器专有状态。
 
+## 0.0.13 固定 runner golden promotion
+
+- 在同一 `0.0.13` commit `fcd7d73` 上完成两次固定 runner 矩阵运行：Windows Chromium 与 Ubuntu Chromium 均成功。
+- 两次产物按 profile、viewport、theme、mode、scene 逐张比较，Windows `432/432`、Ubuntu `432/432` 均 SHA-256 一致，差异为 0。
+- 已提交 `tests/e2e/golden/windows-chromium/` 与 `tests/e2e/golden/ubuntu-chromium/` 各 432 张 PNG，并将 `visual-golden.json` 状态切换为 `active`。
+- CI 现在为每个平台设置 `VISUAL_MATRIX_GOLDEN_DIR` 和 `VISUAL_MATRIX_GOLDEN_REQUIRED=1`，仅比较相同 profile；本机未固定 runner 的截图不作为 golden 验收依据。
+
 本轮实际截图抽查补充：
 
 - Glass light：AreaChart 两条填充曲线、null gap、系列颜色和 legend 均可辨识，卡片背景、边框和 tooltip 维持玻璃主题层级。
@@ -93,5 +100,5 @@
 ## 下一轮验收重点
 
 - Area Chart 多系列需要在 9 套主题 × light/dark、null gap、legend、键盘点位和 320px 窄屏下复核。
-- 固定 runner PNG golden 先按 Windows/Ubuntu profile 独立保存并只比较同 profile；首轮基线确认后再启用 PR 差异门禁。
+- 固定 runner PNG golden 已按 Windows/Ubuntu profile 独立保存并启用同 profile PR 差异门禁；后续 runner 或浏览器升级必须重新完成双次稳定性复核。
 - 外部宿主迁移示例需覆盖原生 Web Components、React、Vue、Svelte 的注册时机和事件清理。

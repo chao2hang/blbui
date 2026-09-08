@@ -28,11 +28,10 @@
 
 已补齐 Menu、Sidebar、Navbar、DatePicker、TimePicker、PinInput、Descriptions、Cascader、Transfer、ContextMenu、HoverCard、NotificationCenter、UploadList、FilePreview、Form、FormItem、SchemaForm、ProgressRing、TruncatedText、LoadingOverlay、ColumnSettings。DataGrid 已补齐排序、筛选、选择、批量操作、服务端分页、移动端卡片和轻量虚拟窗口；Business 已覆盖图表、workflow、权限、审计、导入导出和编辑器 adapter contract。下一阶段优先级：
 
-1. 固定 runner：收集两次当前 432 张/平台的矩阵证据后，将 profile-specific golden 从 evidence-only 提升为 active。
-2. 外部宿主：真实 `web` 业务仓库进入工作区后，按迁移指南逐页迁移 tokens、Page、Table、FilterBar 和状态标签。
-3. 表单体验：评估自定义 Date/Time picker，以解决原生弹出面板无法完全主题化的限制。
-4. 性能：在真实长列表宿主接入后增加 DataGrid 滚动 FPS、主题切换耗时和大数据集渲染预算。
-5. 治理：定期清理重复组件、过期 token、未使用 utility 和文档示例漂移。
+1. 外部宿主：真实 `web` 业务仓库进入工作区后，按迁移指南逐页迁移 tokens、Page、Table、FilterBar 和状态标签。
+2. 表单体验：评估自定义 Date/Time picker，以解决原生弹出面板无法完全主题化的限制。
+3. 性能：在真实长列表宿主接入后增加 DataGrid 滚动 FPS、主题切换耗时和大数据集渲染预算。
+4. 治理：定期清理重复组件、过期 token、未使用 utility 和文档示例漂移。
 
 每新增一个组件，必须同步：
 
@@ -71,7 +70,7 @@
 - 主题矩阵按 9 × 2 运行，重点组件再覆盖 hover、focus、disabled、loading、empty、error。
 - [x] 发布前执行 catalog、public API/docs、typecheck、build、Svelte、docs smoke、unit、a11y、320px/forced-colors 和视觉冒烟；新增 `tests/e2e/visual-matrix.json` 作为跨平台 golden screenshot 的版本化范围合同。
 - 0.0.9 保留 0.0.7 的 pixelmatch 重复渲染门禁，并将 Windows/Ubuntu Chromium、视口、9 × 2 主题和代表场景写入可检查 manifest；真实截图按 CI runner 分平台保存，避免字体和系统控件差异造成误报。
-- [x] 增加 `.github/workflows/visual-regression.yml`，在 Windows/Ubuntu 固定 runner 上生成 9 × 2 × 3 × 8 的 PNG 视觉证据并保留 14 天；`visual-golden.json`、同 profile 文件命名和 pixelmatch 比较入口已固定，首批证据确认后即可将 status 切为 active。
+- [x] 增加 `.github/workflows/visual-regression.yml`，在 Windows/Ubuntu 固定 runner 上生成 9 × 2 × 3 × 8 的 PNG 视觉证据并保留 14 天；两次同 commit、同 profile 的 432 张证据逐张一致后，已将 profile-specific golden 切换为 active，并在 CI 启用 pixelmatch 比较。
 - 组件状态发生变化时更新 changelog、migration note 和截图基准。
 - 每季度清理一次重复组件、过期 token、未使用 utility 和文档示例漂移。
 

@@ -8,6 +8,7 @@
 
 - 新增 CodeMirror 6、TipTap、Monaco 的 `AdminEditorAdapter` 接入示例，并补充 Web Components、React、Vue、Svelte 的订阅清理生命周期说明。
 - 将 docs playground 的 DOMContentLoaded、渲染节点数和目录卡片数量纳入 Playwright 性能预算门禁。
+- 在同一 `0.0.13` commit 上完成两次 Windows/Ubuntu 固定 runner 视觉证据复核，启用 864 张 profile-specific PNG golden 的同 profile pixelmatch 门禁。
 
 ## 0.0.12 — 2026-09-08
 
