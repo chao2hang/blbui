@@ -4,6 +4,12 @@
 
 后续变更记录从这里开始。
 
+## 0.0.16 — 2026-09-08
+
+- 固定移动端 SchemaForm 的输入和 Select 控件尺寸、字段间距与文本行高，降低跨浏览器布局漂移。
+- 完成人工复核并更新 Windows/Ubuntu fixed-runner 对应的 mobile SchemaForm visual golden；其余视觉基线保持不变。
+- 同步六个可发布包、peer dependency、文档站和示例版本，延续治理、主题、跨框架 parity 与全量 release gate。
+
 ## 0.0.15 — 2026-09-08
 
 - 新增治理审计脚本与季度 workflow，持续校验注册表/catalog、主题 token、utility 作用域、版本和文档状态。

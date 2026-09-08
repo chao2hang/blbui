@@ -3,7 +3,7 @@
 ## 本次验收
 
 - 日期：2026-09-08
-- 版本：0.0.15
+- 版本：0.0.16
 - 入口：http://127.0.0.1:4176/
 - 浏览器：Codex In-app Browser
 - 视口：桌面约 1280 × 720（页面有效宽度 1265px）；窄屏 390 × 844（页面有效宽度 375px）
@@ -81,6 +81,12 @@
 ## 后续验收规则
 
 每次新增或修改组件必须更新本记录对应矩阵，并至少复核：默认 light/dark、圆角主题、Glass/Atmospheric、窄屏、键盘焦点、禁用/加载/空/错误状态。发布前运行 `bun run release:check`，并将新的视觉差异和已知限制写入本文件。
+
+## 0.0.16 移动端 SchemaForm golden 复核
+
+- 对 commit `2d5477d` 的固定 runner 产物进行了人工逐图检查；Ubuntu 与 Windows 的 `mobile / obsidian-light / schema-form` 均确认组件内容、主题 token、边框、字段间距、控件尺寸、按钮和底部裁切正常。
+- 本轮差异只来自移动端输入文字与原生控件的跨 runner 基线变化：Ubuntu 产物为 `324 × 263`，Windows 产物为 `324 × 262`；未发现功能、布局或主题回归。
+- 仅更新 `tests/e2e/golden/ubuntu-chromium/` 与 `tests/e2e/golden/windows-chromium/` 中对应的两个 profile-specific PNG，未重录其余 862 张 golden；后续 runner/浏览器升级仍需按同样流程重新人工复核。
 
 ## 0.0.11 图表 tooltip/focus 复核
 
