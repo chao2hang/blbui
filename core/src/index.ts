@@ -19,6 +19,7 @@ export * from "./data-advanced";
 export * from "./data-complex";
 export * from "./http";
 export * from "./overlays-advanced";
+export * from "./overlay-stack";
 export * from "./notifications";
 export * from "./navigation-advanced";
 export * from "./forms-advanced";

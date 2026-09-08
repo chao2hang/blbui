@@ -8,7 +8,8 @@ import { expect, test } from "@playwright/test";
 import { AxeBuilder } from "@axe-core/playwright";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 const visualMatrix = JSON.parse(
     readFileSync(new URL("./visual-matrix.json", import.meta.url), "utf8"),
@@ -19,6 +20,10 @@ const visualMatrix = JSON.parse(
     scenes: Array<{ id: string; selector: string }>;
 };
 const themes = visualMatrix.themes;
+const goldenRoot = process.env.VISUAL_MATRIX_GOLDEN_DIR
+    ? resolve(process.env.VISUAL_MATRIX_GOLDEN_DIR)
+    : undefined;
+const goldenRequired = process.env.VISUAL_MATRIX_GOLDEN_REQUIRED === "1";
 const viewport = (id: string) => {
     const value = visualMatrix.viewports.find((item) => item.id === id);
     if (!value) throw new Error(`Visual matrix is missing viewport ${id}`);
@@ -150,6 +155,36 @@ test.describe("BLBUI documentation quality matrix", () => {
                             path: testInfo.outputPath("visual-matrix", `${filename}.png`),
                             animations: "disabled",
                         });
+                        if (goldenRoot) {
+                            const goldenPath = resolve(goldenRoot, `${filename}.png`);
+                            if (!existsSync(goldenPath)) {
+                                if (goldenRequired) throw new Error(`Missing visual golden: ${goldenPath}`);
+                            } else {
+                                const actual = PNG.sync.read(
+                                    readFileSync(testInfo.outputPath("visual-matrix", `${filename}.png`)),
+                                );
+                                const expected = PNG.sync.read(readFileSync(goldenPath));
+                                expect(actual.width).toBe(expected.width);
+                                expect(actual.height).toBe(expected.height);
+                                const diff = new PNG({ width: actual.width, height: actual.height });
+                                const differentPixels = pixelmatch(
+                                    actual.data,
+                                    expected.data,
+                                    diff.data,
+                                    actual.width,
+                                    actual.height,
+                                    { threshold: 0.1 },
+                                );
+                                await testInfo.attach(`${filename}-golden-diff.png`, {
+                                    body: PNG.sync.write(diff),
+                                    contentType: "image/png",
+                                });
+                                expect(
+                                    differentPixels,
+                                    `visual golden mismatch for ${filename}`,
+                                ).toBe(0);
+                            }
+                        }
                     }
                 }
             }

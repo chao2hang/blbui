@@ -1100,15 +1100,28 @@ export const components: ComponentItem[] = [
         tag: "aui-date-range",
         name: "Date Range",
         category: "data",
-        description: "Paired start and end date selector for reporting time windows.",
+        description:
+            "Paired start and end date selector with validation, quick ranges and clear action.",
         status: "stable",
-        props: ["start", "end", "start-label", "end-label", "min", "max", "required"],
-        events: ["aui-change"],
+        props: [
+            "presets",
+            "start",
+            "end",
+            "start-label",
+            "end-label",
+            "min",
+            "max",
+            "preset-label",
+            "clearable",
+            "required",
+            "disabled",
+        ],
+        events: ["aui-range-change", "aui-range-validation", "aui-range-preset"],
         previewHtml: `<div style="width:100%;max-width:340px;"><aui-date-range id="preview-date-range" start="2026-09-01" end="2026-09-05" min="2026-01-01" max="2026-12-31" required></aui-date-range></div>`,
         usage: {
-            wc: `<aui-date-range start="2026-09-01" end="2026-09-05"></aui-date-range>`,
-            react: `import { AdminDateRange } from '@chaos_team/blbui-react'\n\n<AdminDateRange start="2026-09-01" end="2026-09-05" onChange={setRange} />`,
-            vue: `<AdminDateRange start="2026-09-01" end="2026-09-05" />`,
+            wc: `<aui-date-range start="2026-09-01" end="2026-09-05" clearable></aui-date-range>`,
+            react: `import { AdminDateRange } from '@chaos_team/blbui-react'\n\n<AdminDateRange start="2026-09-01" end="2026-09-05" clearable onChange={setRange} />`,
+            vue: `<AdminDateRange start="2026-09-01" end="2026-09-05" clearable @range-change="setRange" />`,
             svelte: `<aui-date-range start="2026-09-01" end="2026-09-05"></aui-date-range>`,
         },
     },
@@ -1994,9 +2007,9 @@ export const components: ComponentItem[] = [
         name: "Line Chart",
         category: "business",
         description:
-            "Theme-aware lightweight line chart with null-gap handling and keyboard tooltips.",
+            "Theme-aware lightweight line chart with null-gap handling, multi-series legends and keyboard tooltips.",
         status: "stable",
-        props: ["data", "height", "label", "color", "show-points", "show-tooltip"],
+        props: ["data", "series", "height", "label", "color", "show-points", "show-tooltip"],
         events: ["aui-chart-point"],
         initKey: "line-chart",
         previewHtml: `<div style="width:100%;max-width:340px;"><aui-line-chart id="preview-line-chart" height="90px" label="REQUESTS TREND"></aui-line-chart></div>`,
@@ -2012,17 +2025,18 @@ export const components: ComponentItem[] = [
         tag: "aui-area-chart",
         name: "Area Chart",
         category: "business",
-        description: "Theme-aware filled trend chart with null-gap handling and keyboard tooltips.",
+        description:
+            "Theme-aware filled trend chart with shared multi-series domains, null-gap handling and keyboard tooltips.",
         status: "stable",
-        props: ["data", "height", "label", "color", "show-points", "show-tooltip"],
+        props: ["data", "series", "height", "label", "color", "show-points", "show-tooltip"],
         events: ["aui-chart-point"],
         initKey: "area-chart",
         previewHtml: `<div style="width:100%;max-width:340px;"><aui-area-chart id="preview-area-chart" height="90px" label="CAPACITY TREND"></aui-area-chart></div>`,
         usage: {
-            wc: `<aui-area-chart id="capacity-area" height="160px" label="Capacity"></aui-area-chart>`,
-            react: `import { AdminAreaChart } from '@chaos_team/blbui-business-react'\n\n<AdminAreaChart data={areaData} height="160px" label="Capacity" onPoint={(detail) => console.log(detail)} />`,
-            vue: `<aui-area-chart :data="areaData" height="160px" label="Capacity" />`,
-            svelte: `<aui-area-chart data={areaData} height="160px" label="Capacity"></aui-area-chart>`,
+            wc: `<aui-area-chart id="capacity-area" series={areaSeries} height="160px" label="Capacity"></aui-area-chart>`,
+            react: `import { AdminAreaChart } from '@chaos_team/blbui-business-react'\n\n<AdminAreaChart series={areaSeries} height="160px" label="Capacity" onPoint={(detail) => console.log(detail)} />`,
+            vue: `<aui-area-chart :series="areaSeries" height="160px" label="Capacity" />`,
+            svelte: `<aui-area-chart series={areaSeries} height="160px" label="Capacity"></aui-area-chart>`,
         },
     },
     {
@@ -2030,7 +2044,8 @@ export const components: ComponentItem[] = [
         tag: "aui-pie-chart",
         name: "Pie Chart",
         category: "business",
-        description: "Dependency-free proportional breakdown with donut, legend and keyboard tooltips.",
+        description:
+            "Dependency-free proportional breakdown with donut, legend and keyboard tooltips.",
         status: "stable",
         props: ["data", "height", "label", "donut", "show-legend", "show-tooltip"],
         events: ["aui-chart-point"],
@@ -2048,7 +2063,8 @@ export const components: ComponentItem[] = [
         tag: "aui-gauge",
         name: "Gauge",
         category: "business",
-        description: "Accessible semicircular range meter for health, capacity and service objectives.",
+        description:
+            "Accessible semicircular range meter for health, capacity and service objectives.",
         status: "stable",
         props: ["value", "min", "max", "height", "label", "unit", "color"],
         events: [],
@@ -2435,7 +2451,7 @@ export function initComponentDemo(root: HTMLElement): void {
     setProp("#preview-descriptions", "items", [
         { label: "REGION", value: "us-east-1", description: "Primary" },
         { label: "STATUS", value: "ONLINE" },
-                        { label: "VERSION", value: "v0.0.11" },
+        { label: "VERSION", value: "v0.0.12" },
         { label: "OWNER", value: "Platform Ops" },
     ]);
     setProp("#preview-accordion", "items", [
@@ -2700,13 +2716,33 @@ export function initComponentDemo(root: HTMLElement): void {
         { label: "16:00", value: 36 },
         { label: "20:00", value: 48 },
     ]);
-    setProp("#preview-area-chart", "data", [
-        { label: "00:00", value: 22 },
-        { label: "04:00", value: 29 },
-        { label: "08:00", value: null },
-        { label: "12:00", value: 44 },
-        { label: "16:00", value: 39 },
-        { label: "20:00", value: 52 },
+    setProp("#preview-area-chart", "series", [
+        {
+            id: "capacity",
+            label: "Capacity",
+            color: "var(--aui-primary)",
+            data: [
+                { label: "00:00", value: 22 },
+                { label: "04:00", value: 29 },
+                { label: "08:00", value: null },
+                { label: "12:00", value: 44 },
+                { label: "16:00", value: 39 },
+                { label: "20:00", value: 52 },
+            ],
+        },
+        {
+            id: "reserved",
+            label: "Reserved",
+            color: "var(--aui-info)",
+            data: [
+                { label: "00:00", value: 12 },
+                { label: "04:00", value: 18 },
+                { label: "08:00", value: 24 },
+                { label: "12:00", value: null },
+                { label: "16:00", value: 28 },
+                { label: "20:00", value: 31 },
+            ],
+        },
     ]);
     setProp("#preview-pie-chart", "data", [
         { label: "EDGE", value: 42 },

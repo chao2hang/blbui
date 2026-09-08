@@ -5,7 +5,8 @@ it under the terms of the GNU Affero General Public License.
 */
 
 import { css, html } from "lit";
-import { AdminElement, focusableElements, nextUid } from "./base";
+import { AdminElement, deepActiveElement, focusableElements, nextUid } from "./base";
+import { isTopOverlay, registerOverlay, unregisterOverlay } from "./overlay-stack";
 
 export interface AdminMenuItem {
     id: string;
@@ -137,13 +138,7 @@ export class AdminPopoverElement extends AdminElement {
     private titleId = nextUid("popover-title");
     private lastFocused: HTMLElement | null = null;
     private readonly onDocumentClick = (event: Event) => {
-        if (!this.contains(event.target as Node)) this.close();
-    };
-    private readonly onDocumentKeydown = (event: KeyboardEvent) => {
-        if (event.key === "Escape") {
-            event.preventDefault();
-            this.close();
-        }
+        if (isTopOverlay(this) && !this.contains(event.target as Node)) this.close();
     };
     private triggerElement(): HTMLElement | null {
         return (
@@ -180,18 +175,18 @@ export class AdminPopoverElement extends AdminElement {
         if (changed.has("open")) {
             if (this.open) {
                 document.addEventListener("click", this.onDocumentClick, true);
-                document.addEventListener("keydown", this.onDocumentKeydown);
+                registerOverlay(this, () => this.close());
                 this.shadowRoot?.querySelector<HTMLElement>(".content")?.focus();
             } else {
                 document.removeEventListener("click", this.onDocumentClick, true);
-                document.removeEventListener("keydown", this.onDocumentKeydown);
+                unregisterOverlay(this);
             }
         }
     }
     disconnectedCallback(): void {
         super.disconnectedCallback();
         document.removeEventListener("click", this.onDocumentClick, true);
-        document.removeEventListener("keydown", this.onDocumentKeydown);
+        unregisterOverlay(this);
         this.lastFocused = null;
     }
     render() {
@@ -263,13 +258,7 @@ export class AdminDropdownElement extends AdminElement {
     open = false;
     private lastFocused: HTMLElement | null = null;
     private readonly onDocumentClick = (event: Event) => {
-        if (!this.contains(event.target as Node)) this.close();
-    };
-    private readonly onDocumentKeydown = (event: KeyboardEvent) => {
-        if (event.key === "Escape" && this.open) {
-            event.preventDefault();
-            this.close();
-        }
+        if (isTopOverlay(this) && !this.contains(event.target as Node)) this.close();
     };
     private triggerElement(): HTMLElement | null {
         return (
@@ -341,13 +330,13 @@ export class AdminDropdownElement extends AdminElement {
         if (changed.has("open")) {
             if (this.open) {
                 document.addEventListener("click", this.onDocumentClick, true);
-                document.addEventListener("keydown", this.onDocumentKeydown);
+                registerOverlay(this, () => this.close());
                 this.shadowRoot
                     ?.querySelector<HTMLElement>(".menu button[role='menuitem']")
                     ?.focus();
             } else {
                 document.removeEventListener("click", this.onDocumentClick, true);
-                document.removeEventListener("keydown", this.onDocumentKeydown);
+                unregisterOverlay(this);
             }
             this.syncTriggerAria();
         }
@@ -355,7 +344,7 @@ export class AdminDropdownElement extends AdminElement {
     disconnectedCallback(): void {
         super.disconnectedCallback();
         document.removeEventListener("click", this.onDocumentClick, true);
-        document.removeEventListener("keydown", this.onDocumentKeydown);
+        unregisterOverlay(this);
         this.lastFocused = null;
     }
     render() {
@@ -494,8 +483,7 @@ export class AdminDrawerElement extends AdminElement {
     mobileMode: "overlay" | "full" = "overlay";
     private lastFocused: HTMLElement | null = null;
     private readonly onDocumentKeydown = (event: KeyboardEvent) => {
-        if (event.key === "Escape") this.close();
-        else if (event.key === "Tab") this.trapFocus(event);
+        if (event.key === "Tab") this.trapFocus(event);
     };
     private trapFocus(event: KeyboardEvent): void {
         const panel = this.shadowRoot?.querySelector<HTMLElement>(".panel");
@@ -507,8 +495,8 @@ export class AdminDrawerElement extends AdminElement {
         }
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
-        const active = document.activeElement;
-        const inside = active instanceof HTMLElement && this.contains(active);
+        const active = deepActiveElement(document);
+        const inside = active instanceof HTMLElement && focusable.includes(active);
         if (event.shiftKey && (active === first || !inside)) {
             event.preventDefault();
             last.focus();
@@ -528,14 +516,15 @@ export class AdminDrawerElement extends AdminElement {
     protected updated(changed: Map<string, unknown>): void {
         if (!changed.has("open")) return;
         if (this.open) {
-            this.lastFocused =
-                document.activeElement instanceof HTMLElement ? document.activeElement : null;
+            this.lastFocused = deepActiveElement(document) as HTMLElement | null;
             document.addEventListener("keydown", this.onDocumentKeydown);
+            registerOverlay(this, () => this.close());
             const panel = this.shadowRoot?.querySelector<HTMLElement>(".panel");
             const first = panel ? focusableElements(panel)[0] : undefined;
             (first ?? panel)?.focus();
         } else {
             document.removeEventListener("keydown", this.onDocumentKeydown);
+            unregisterOverlay(this);
             this.lastFocused?.focus();
             this.lastFocused = null;
         }
@@ -543,6 +532,7 @@ export class AdminDrawerElement extends AdminElement {
     disconnectedCallback(): void {
         super.disconnectedCallback();
         document.removeEventListener("keydown", this.onDocumentKeydown);
+        unregisterOverlay(this);
     }
     render() {
         return html`<div class="backdrop" @click=${this.close}></div>

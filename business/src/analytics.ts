@@ -252,9 +252,17 @@ export interface AdminLineChartPoint {
     value: number | null;
 }
 
+export interface AdminLineChartSeries {
+    id: string;
+    label: string;
+    color?: string;
+    data: AdminLineChartPoint[];
+}
+
 export class AdminLineChartElement extends AdminElement {
     static properties = {
         data: { attribute: false },
+        series: { attribute: false },
         height: { type: String },
         label: { type: String },
         color: { type: String },
@@ -338,35 +346,69 @@ export class AdminLineChartElement extends AdminElement {
             font: 10px/1 var(--aui-font-mono);
             text-transform: uppercase;
         }
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 14px;
+            padding: 7px 10px 0;
+            color: var(--aui-text-secondary);
+            font: 9px/1 var(--aui-font-mono);
+        }
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .legend-swatch {
+            width: 8px;
+            height: 8px;
+            background: var(--aui-series-color);
+        }
     `;
     data: AdminLineChartPoint[] = [];
+    series: AdminLineChartSeries[] = [];
     height = "220px";
     label = "Line chart";
     color = "var(--aui-primary)";
     showPoints = true;
     showTooltip = true;
-    private activeIndex: number | null = null;
+    private activePoint: { seriesId: string; index: number } | null = null;
 
-    private activate(index: number): void {
-        const point = this.data[index];
-        if (!this.showTooltip || !point || point.value === null || !Number.isFinite(point.value)) return;
-        this.activeIndex = index;
-        this.requestUpdate();
-        this.dispatchDetail("aui-chart-point", { index, point });
+    private chartSeries(): AdminLineChartSeries[] {
+        return this.series.length
+            ? this.series
+            : [{ id: "default", label: this.label, color: this.color, data: this.data }];
     }
 
-    private clear(index: number): void {
-        if (this.activeIndex !== index) return;
-        this.activeIndex = null;
+    private activate(seriesId: string, index: number): void {
+        const series = this.chartSeries().find((entry) => entry.id === seriesId);
+        const point = series?.data[index];
+        if (!this.showTooltip || !point || point.value === null || !Number.isFinite(point.value))
+            return;
+        this.activePoint = { seriesId, index };
+        this.requestUpdate();
+        this.dispatchDetail("aui-chart-point", {
+            ...(this.series.length ? { seriesId, seriesLabel: series.label } : {}),
+            index,
+            point,
+        });
+    }
+
+    private clear(seriesId: string, index: number): void {
+        if (this.activePoint?.seriesId !== seriesId || this.activePoint.index !== index) return;
+        this.activePoint = null;
         this.requestUpdate();
     }
 
     render() {
-        const values = this.data
-            .map((point) => point.value)
-            .filter(
-                (value): value is number => typeof value === "number" && Number.isFinite(value),
-            );
+        const series = this.chartSeries();
+        const values = series.flatMap((entry) =>
+            entry.data
+                .map((point) => point.value)
+                .filter(
+                    (value): value is number => typeof value === "number" && Number.isFinite(value),
+                ),
+        );
         if (!values.length)
             return html`<div
                 class="chart"
@@ -384,23 +426,16 @@ export class AdminLineChartElement extends AdminElement {
             max += padding;
         }
         const range = max - min;
-        const x = (index: number) =>
-            this.data.length > 1 ? (index / (this.data.length - 1)) * 100 : 50;
+        const pointCount = Math.max(...series.map((entry) => entry.data.length), 1);
+        const x = (index: number) => (pointCount > 1 ? (index / (pointCount - 1)) * 100 : 50);
         const y = (value: number) => 10 + ((max - value) / range) * 74;
-        const segments: string[][] = [];
-        let segment: string[] = [];
-        this.data.forEach((point, index) => {
-            if (point.value === null || !Number.isFinite(point.value)) {
-                if (segment.length) segments.push(segment);
-                segment = [];
-                return;
-            }
-            segment.push(`${x(index)},${y(point.value)}`);
-        });
-        if (segment.length) segments.push(segment);
-        const labels = this.data.filter(
-            (_, index) => index === 0 || index === this.data.length - 1,
+        const labels = (series[0]?.data ?? []).filter(
+            (_, index) => index === 0 || index === pointCount - 1,
         );
+        const activeSeries = this.activePoint
+            ? series.find((entry) => entry.id === this.activePoint?.seriesId)
+            : undefined;
+        const active = activeSeries?.data[this.activePoint?.index ?? -1];
         return html`<div
             class="chart"
             style=${`--aui-line-height:${this.height};--aui-line-color:${this.color}`}
@@ -409,16 +444,30 @@ export class AdminLineChartElement extends AdminElement {
         >
             ${svg`<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden=${this.showTooltip ? "false" : "true"}>
                 ${[20, 40, 60, 80].map((line) => svg`<line class="grid-line" x1="0" y1=${line} x2="100" y2=${line}></line>`)}
-                ${segments.map((points) => svg`<polyline points=${points.join(" ")}></polyline>`)}
-                ${this.data.map((point, index) => (point.value === null || !Number.isFinite(point.value) ? null : svg`<circle class=${this.showPoints ? "" : "hit-only"} cx=${x(index)} cy=${y(point.value)} r=${this.showPoints ? "2.2" : "4"} tabindex=${this.showTooltip ? "0" : "-1"} role="img" aria-label=${`${point.label}: ${point.value}`} @pointerenter=${() => this.activate(index)} @pointerleave=${() => this.clear(index)} @focus=${() => this.activate(index)} @blur=${() => this.clear(index)} @click=${() => this.activate(index)}></circle>`))}
+                ${series.map((entry) => {
+                    const segments = chartSegments(entry.data, { x, y });
+                    return segments.map(
+                        (points) =>
+                            svg`<polyline points=${points.join(" ")} stroke=${entry.color ?? "var(--aui-primary)"}></polyline>`,
+                    );
+                })}
+                ${series.map((entry) => entry.data.map((point, index) => (point.value === null || !Number.isFinite(point.value) ? null : svg`<circle fill=${entry.color ?? "var(--aui-primary)"} class=${this.showPoints ? "" : "hit-only"} cx=${x(index)} cy=${y(point.value)} r=${this.showPoints ? "2.2" : "4"} tabindex=${this.showTooltip ? "0" : "-1"} role="img" aria-label=${`${entry.label} · ${point.label}: ${point.value}`} @pointerenter=${() => this.activate(entry.id, index)} @pointerleave=${() => this.clear(entry.id, index)} @focus=${() => this.activate(entry.id, index)} @blur=${() => this.clear(entry.id, index)} @click=${() => this.activate(entry.id, index)}></circle>`)))}
             </svg>`}
             <div class="labels">${labels.map((point) => html`<span>${point.label}</span>`)}</div>
-            ${this.activeIndex !== null && this.data[this.activeIndex]?.value !== null ? html`<div class="tooltip" role="tooltip">${this.data[this.activeIndex].label}: ${this.data[this.activeIndex].value}</div>` : null}
+            ${
+                series.length > 1
+                    ? html`<div class="legend" aria-label="Chart series legend">
+                          ${series.map((entry) => html`<span class="legend-item"><i class="legend-swatch" style=${`--aui-series-color:${entry.color ?? "var(--aui-primary)"}`}></i>${entry.label}</span>`)}
+                      </div>`
+                    : null
+            }
+            ${active ? html`<div class="tooltip" role="tooltip">${activeSeries?.label ?? this.label} · ${active.label}: ${active.value}</div>` : null}
         </div>`;
     }
 }
 
 export interface AdminAreaChartPoint extends AdminLineChartPoint {}
+export type AdminAreaChartSeries = AdminLineChartSeries;
 
 function chartScale(data: AdminLineChartPoint[]): {
     min: number;
@@ -448,7 +497,10 @@ function chartScale(data: AdminLineChartPoint[]): {
     };
 }
 
-function chartSegments(data: AdminLineChartPoint[], scale: NonNullable<ReturnType<typeof chartScale>>) {
+function chartSegments(
+    data: AdminLineChartPoint[],
+    scale: Pick<NonNullable<ReturnType<typeof chartScale>>, "x" | "y">,
+) {
     const segments: string[][] = [];
     let segment: string[] = [];
     data.forEach((point, index) => {
@@ -463,13 +515,10 @@ function chartSegments(data: AdminLineChartPoint[], scale: NonNullable<ReturnTyp
     return segments;
 }
 
-function chartLabels(data: AdminLineChartPoint[]) {
-    return data.filter((_, index) => index === 0 || index === data.length - 1);
-}
-
-const chartGrid = () => [20, 40, 60, 80].map(
-    (line) => svg`<line class="grid-line" x1="0" y1=${line} x2="100" y2=${line}></line>`,
-);
+const chartGrid = () =>
+    [20, 40, 60, 80].map(
+        (line) => svg`<line class="grid-line" x1="0" y1=${line} x2="100" y2=${line}></line>`,
+    );
 
 const chartScales = css`
     .grid-line {
@@ -500,6 +549,7 @@ const chartScales = css`
 export class AdminAreaChartElement extends AdminElement {
     static properties = {
         data: { attribute: false },
+        series: { attribute: false },
         height: { type: String },
         label: { type: String },
         color: { type: String },
@@ -531,7 +581,11 @@ export class AdminAreaChartElement extends AdminElement {
                 vector-effect: non-scaling-stroke;
             }
             polygon {
-                fill: color-mix(in srgb, var(--aui-area-color, var(--aui-primary)) 18%, transparent);
+                fill: color-mix(
+                    in srgb,
+                    var(--aui-series-color, var(--aui-area-color, var(--aui-primary))) 18%,
+                    transparent
+                );
                 stroke: none;
             }
             circle {
@@ -565,51 +619,117 @@ export class AdminAreaChartElement extends AdminElement {
                 pointer-events: none;
                 transform: translateX(-50%);
             }
+            .legend {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px 14px;
+                padding: 7px 10px 0;
+                color: var(--aui-text-secondary);
+                font: 9px/1 var(--aui-font-mono);
+            }
+            .legend-item {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+            }
+            .legend-swatch {
+                width: 8px;
+                height: 8px;
+                background: var(--aui-series-color);
+            }
         `,
         chartScales,
     ];
     data: AdminAreaChartPoint[] = [];
+    series: AdminAreaChartSeries[] = [];
     height = "220px";
     label = "Area chart";
     color = "var(--aui-primary)";
     showPoints = true;
     showTooltip = true;
-    private activeIndex: number | null = null;
+    private activePoint: { seriesId: string; index: number } | null = null;
 
-    private activate(index: number): void {
-        const point = this.data[index];
-        if (!this.showTooltip || !point || point.value === null || !Number.isFinite(point.value)) return;
-        this.activeIndex = index;
-        this.requestUpdate();
-        this.dispatchDetail("aui-chart-point", { index, point });
+    private chartSeries(): AdminAreaChartSeries[] {
+        return this.series.length
+            ? this.series
+            : [{ id: "default", label: this.label, color: this.color, data: this.data }];
     }
 
-    private clear(index: number): void {
-        if (this.activeIndex !== index) return;
-        this.activeIndex = null;
+    private activate(seriesId: string, index: number): void {
+        const entry = this.chartSeries().find((item) => item.id === seriesId);
+        const point = entry?.data[index];
+        if (!this.showTooltip || !point || point.value === null || !Number.isFinite(point.value))
+            return;
+        this.activePoint = { seriesId, index };
+        this.requestUpdate();
+        this.dispatchDetail("aui-chart-point", {
+            ...(this.series.length ? { seriesId, seriesLabel: entry?.label ?? this.label } : {}),
+            index,
+            point,
+        });
+    }
+
+    private clear(seriesId: string, index: number): void {
+        if (this.activePoint?.seriesId !== seriesId || this.activePoint.index !== index) return;
+        this.activePoint = null;
         this.requestUpdate();
     }
 
     render() {
-        const scale = chartScale(this.data);
+        const series = this.chartSeries();
+        const scale = chartScale(series.flatMap((entry) => entry.data));
         if (!scale)
-            return html`<div class="chart" style=${`--aui-area-height:${this.height}`} role="img" aria-label=${this.label}>
+            return html`<div
+                class="chart"
+                style=${`--aui-area-height:${this.height}`}
+                role="img"
+                aria-label=${this.label}
+            >
                 <div class="empty">No chart data</div>
             </div>`;
-        const segments = chartSegments(this.data, scale);
-        return html`<div class="chart" style=${`--aui-area-height:${this.height};--aui-area-color:${this.color}`} role="group" aria-label=${this.label}>
+        const pointCount = Math.max(...series.map((entry) => entry.data.length), 1);
+        const sharedScale = {
+            ...scale,
+            x: (index: number) => (pointCount > 1 ? (index / (pointCount - 1)) * 100 : 50),
+        };
+        const labels = (series[0]?.data ?? []).filter(
+            (_, index) => index === 0 || index === pointCount - 1,
+        );
+        const activeSeries = this.activePoint
+            ? series.find((entry) => entry.id === this.activePoint?.seriesId)
+            : undefined;
+        const active = activeSeries?.data[this.activePoint?.index ?? -1];
+        return html`<div
+            class="chart"
+            style=${`--aui-area-height:${this.height};--aui-area-color:${this.color}`}
+            role="group"
+            aria-label=${this.label}
+        >
             ${svg`<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden=${this.showTooltip ? "false" : "true"}>
                 ${chartGrid()}
-                ${segments.map((points) => {
-                    const first = points[0]?.split(",");
-                    const last = points.at(-1)?.split(",");
-                    if (!first || !last) return null;
-                    return svg`<polygon points=${`${first[0]},88 ${points.join(" ")} ${last[0]},88`}></polygon><polyline points=${points.join(" ")}></polyline>`;
+                ${series.map((entry) => {
+                    const segments = chartSegments(entry.data, sharedScale);
+                    return segments.map((points) => {
+                        const first = points[0]?.split(",");
+                        const last = points.at(-1)?.split(",");
+                        if (!first || !last) return null;
+                        const color = entry.color ?? this.color;
+                        return svg`<polygon style=${`--aui-series-color:${color}`} points=${`${first[0]},88 ${points.join(" ")} ${last[0]},88`}></polygon><polyline stroke=${color} points=${points.join(" ")}></polyline>`;
+                    });
                 })}
-                ${this.data.map((point, index) => point.value === null || !Number.isFinite(point.value) ? null : svg`<circle class=${this.showPoints ? "" : "hit-only"} cx=${scale.x(index)} cy=${scale.y(point.value)} r=${this.showPoints ? "2.2" : "4"} tabindex=${this.showTooltip ? "0" : "-1"} role="img" aria-label=${`${point.label}: ${point.value}`} @pointerenter=${() => this.activate(index)} @pointerleave=${() => this.clear(index)} @focus=${() => this.activate(index)} @blur=${() => this.clear(index)} @click=${() => this.activate(index)}></circle>`)}
+                ${series.map((entry) => entry.data.map((point, index) => (point.value === null || !Number.isFinite(point.value) ? null : svg`<circle fill=${entry.color ?? this.color} class=${this.showPoints ? "" : "hit-only"} cx=${sharedScale.x(index)} cy=${sharedScale.y(point.value)} r=${this.showPoints ? "2.2" : "4"} tabindex=${this.showTooltip ? "0" : "-1"} role="img" aria-label=${`${entry.label} · ${point.label}: ${point.value}`} @pointerenter=${() => this.activate(entry.id, index)} @pointerleave=${() => this.clear(entry.id, index)} @focus=${() => this.activate(entry.id, index)} @blur=${() => this.clear(entry.id, index)} @click=${() => this.activate(entry.id, index)}></circle>`)))}
             </svg>`}
-            <div class="labels">${chartLabels(this.data).map((point) => html`<span>${point.label}</span>`)}</div>
-            ${this.activeIndex !== null && this.data[this.activeIndex]?.value !== null ? html`<div class="tooltip" role="tooltip">${this.data[this.activeIndex].label}: ${this.data[this.activeIndex].value}</div>` : null}
+            <div class="labels">
+                ${labels.map((point) => html`<span>${point.label}</span>`)}
+            </div>
+            ${
+                series.length > 1
+                    ? html`<div class="legend" aria-label="Chart series legend">
+                          ${series.map((entry) => html`<span class="legend-item"><i class="legend-swatch" style=${`--aui-series-color:${entry.color ?? this.color}`}></i>${entry.label}</span>`)}
+                      </div>`
+                    : null
+            }
+            ${active ? html`<div class="tooltip" role="tooltip">${activeSeries?.label ?? this.label} · ${active.label}: ${active.value}</div>` : null}
         </div>`;
     }
 }
@@ -761,7 +881,12 @@ export class AdminPieChartElement extends AdminElement {
         const entries = normalizePieData(this.data);
         const total = entries.reduce((sum, item) => sum + item.value, 0);
         if (!total)
-            return html`<div class="chart" style=${`--aui-pie-height:${this.height}`} role="img" aria-label=${this.label}>
+            return html`<div
+                class="chart"
+                style=${`--aui-pie-height:${this.height}`}
+                role="img"
+                aria-label=${this.label}
+            >
                 <div class="empty">No chart data</div>
             </div>`;
         let angle = 0;
@@ -770,13 +895,33 @@ export class AdminPieChartElement extends AdminElement {
             angle += (item.value / total) * 360;
             return { item, index, start, end: angle };
         });
-        return html`<div class="chart" style=${`--aui-pie-height:${this.height}`} role="group" aria-label=${this.label}>
+        return html`<div
+            class="chart"
+            style=${`--aui-pie-height:${this.height}`}
+            role="group"
+            aria-label=${this.label}
+        >
             ${svg`<svg viewBox="0 0 100 100" aria-hidden=${this.showTooltip ? "false" : "true"}>
                 ${slices.map(({ item, index, start, end }) => svg`<path d=${piePath(start, end, this.donut ? 20 : 0)} fill=${item.color ?? `var(--aui-chart-series-${(index % 4) + 1}, var(--aui-primary))`} tabindex=${this.showTooltip ? "0" : "-1"} role="img" aria-label=${`${item.label}: ${Math.round((item.value / total) * 100)}%`} @pointerenter=${() => this.activate(index)} @pointerleave=${() => this.clear(index)} @focus=${() => this.activate(index)} @blur=${() => this.clear(index)} @click=${() => this.activate(index)}></path>`)}
             </svg>`}
-            ${this.showLegend ? html`<ul class="legend" aria-label="${this.label} legend">
-                ${slices.map(({ item }) => html`<li class="legend-item"><span class="legend-label"><i class="swatch" style=${`background:${item.color ?? "var(--aui-primary)"}`}></i><span>${item.label}</span></span><strong>${Math.round((item.value / total) * 100)}%</strong></li>`)}
-            </ul>` : null}
+            ${
+                this.showLegend
+                    ? html`<ul class="legend" aria-label="${this.label} legend">
+                          ${slices.map(
+                              ({ item }) =>
+                                  html`<li class="legend-item">
+                                      <span class="legend-label"
+                                          ><i
+                                              class="swatch"
+                                              style=${`background:${item.color ?? "var(--aui-primary)"}`}
+                                          ></i
+                                          ><span>${item.label}</span></span
+                                      ><strong>${Math.round((item.value / total) * 100)}%</strong>
+                                  </li>`,
+                          )}
+                      </ul>`
+                    : null
+            }
             ${this.activeIndex !== null && slices[this.activeIndex] ? html`<div class="tooltip" role="tooltip">${slices[this.activeIndex].item.label}: ${slices[this.activeIndex].item.value} (${Math.round((slices[this.activeIndex].item.value / total) * 100)}%)</div>` : null}
         </div>`;
     }
@@ -859,7 +1004,15 @@ export class AdminGaugeElement extends AdminElement {
         const normalized = normalizeGaugeValue(this.value, this.min, this.max);
         const { value: current, min: low, max: high, ratio: progress } = normalized;
         const display = `${Number.isInteger(current) ? current : current.toFixed(1)}${this.unit}`;
-        return html`<div class="chart" style=${`--aui-gauge-height:${this.height}`} role="meter" aria-label=${this.label} aria-valuemin=${low} aria-valuemax=${high} aria-valuenow=${current}>
+        return html`<div
+            class="chart"
+            style=${`--aui-gauge-height:${this.height}`}
+            role="meter"
+            aria-label=${this.label}
+            aria-valuemin=${low}
+            aria-valuemax=${high}
+            aria-valuenow=${current}
+        >
             ${svg`<svg viewBox="0 0 100 88" aria-hidden="true">
                 <path class="track" d=${gaugeArc(-135, 135)}></path>
                 <path d=${gaugeArc(-135, -135 + progress * 270)} stroke=${this.color}></path>

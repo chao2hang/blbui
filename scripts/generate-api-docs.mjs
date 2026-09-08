@@ -48,6 +48,7 @@ const lines = [
   "- `normalizeChartSeries` accepts `{label, value}` or `{x, y}` points, preserving null telemetry gaps; `fromChartData` returns normalized series and stable rendering domains.",
   "- `fromPieData` / `normalizePieData` drop non-positive slices and calculate a stable total; `normalizeGaugeValue` clamps a meter value to its host domain.",
   "- Recharts, VChart and other chart engines remain optional integrations; chart adapters do not add a runtime dependency.",
+  "- `readEditorState`, `writeEditorState` and `connectEditorAdapter` provide a small editor bridge for CodeMirror, TipTap, Monaco and compatible runtimes without bundling an editor dependency.",
   "",
 ];
 const output = lines.join("\n");

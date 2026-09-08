@@ -52,6 +52,9 @@ jobs:
       - name: Validate visual matrix contract
         run: bun run visual:check
 
+      - name: Validate visual golden contract
+        run: bun run visual:golden:check
+
       - name: Capture visual matrix
         run: bunx playwright test --grep "captures the versioned visual matrix artifacts"
 

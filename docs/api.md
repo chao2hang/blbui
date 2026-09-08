@@ -66,7 +66,7 @@ The catalog currently describes **123 components** across Core and Business pack
 | Data Grid | `aui-data-grid` | data | `columns`, `rows`, `loading`, `empty-label` | — |
 | Date Input | `aui-calendar` | data | `value`, `min`, `max`, `label` | `aui-date-change` |
 | Calendar Grid | `aui-calendar-grid` | data | `month`, `year`, `selected` | `aui-date-change` |
-| Date Range | `aui-date-range` | data | `start`, `end`, `start-label`, `end-label`, `min`, `max`, `required` | `aui-range-change` |
+| Date Range | `aui-date-range` | data | `presets`, `start`, `end`, `start-label`, `end-label`, `min`, `max`, `preset-label`, `clearable`, `required`, `disabled` | `aui-range-change`, `aui-range-validation`, `aui-range-preset` |
 | Color Picker | `aui-color-picker` | forms | `value`, `label` | `aui-color-change` |
 | Chart Container | `aui-chart-container` | data | `title`, `description`, `height`, `legend`, `tooltip` | — |
 | JSON Viewer | `aui-json-viewer` | data | `value`, `title`, `expanded` | — |
@@ -118,8 +118,8 @@ The catalog currently describes **123 components** across Core and Business pack
 | Metric Card | `aui-metric-card` | business | `label`, `value`, `unit`, `trend`, `tone` | — |
 | Metric Grid | `aui-metric-grid` | business | `items`, `columns` | — |
 | Bar Chart | `aui-bar-chart` | business | `data`, `height`, `label`, `show-tooltip` | `aui-chart-point` |
-| Line Chart | `aui-line-chart` | business | `data`, `height`, `label`, `color`, `show-points`, `show-tooltip` | `aui-chart-point` |
-| Area Chart | `aui-area-chart` | business | `data`, `height`, `label`, `color`, `show-points`, `show-tooltip` | `aui-chart-point` |
+| Line Chart | `aui-line-chart` | business | `data`, `series`, `height`, `label`, `color`, `show-points`, `show-tooltip` | `aui-chart-point` |
+| Area Chart | `aui-area-chart` | business | `data`, `series`, `height`, `label`, `color`, `show-points`, `show-tooltip` | `aui-chart-point` |
 | Pie Chart | `aui-pie-chart` | business | `data`, `height`, `label`, `donut`, `show-legend`, `show-tooltip` | `aui-chart-point` |
 | Gauge | `aui-gauge` | business | `value`, `min`, `max`, `height`, `label`, `unit`, `color` | — |
 | Sparkline | `aui-sparkline` | business | `values`, `label`, `color` | — |
@@ -147,3 +147,4 @@ The catalog currently describes **123 components** across Core and Business pack
 - `normalizeChartSeries` accepts `{label, value}` or `{x, y}` points, preserving null telemetry gaps; `fromChartData` returns normalized series and stable rendering domains.
 - `fromPieData` / `normalizePieData` drop non-positive slices and calculate a stable total; `normalizeGaugeValue` clamps a meter value to its host domain.
 - Recharts, VChart and other chart engines remain optional integrations; chart adapters do not add a runtime dependency.
+- `readEditorState`, `writeEditorState` and `connectEditorAdapter` provide a small editor bridge for CodeMirror, TipTap, Monaco and compatible runtimes without bundling an editor dependency.

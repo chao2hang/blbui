@@ -213,46 +213,83 @@ export function AdminCommand(props: AdminCommandProps) {
 }
 
 export interface AdminDateRangeProps extends ElementProps {
+    presets?: Array<{ id: string; label: string; start: string; end: string }>;
     start?: string;
     end?: string;
     startLabel?: string;
     endLabel?: string;
     min?: string;
     max?: string;
+    presetLabel?: string;
+    clearable?: boolean;
     required?: boolean;
     disabled?: boolean;
     onChange?: (range: { start: string; end: string }) => void;
+    onPreset?: (detail: {
+        preset: { id: string; label: string; start: string; end: string };
+        start: string;
+        end: string;
+    }) => void;
     onValidationChange?: (detail: { valid: boolean; error: string }) => void;
 }
 export function AdminDateRange(props: AdminDateRangeProps) {
     const {
+        presets,
         start,
         end,
         startLabel,
         endLabel,
         min,
         max,
+        presetLabel,
+        clearable,
         required,
         disabled,
         onChange,
+        onPreset,
         onValidationChange,
         ...rest
     } = props;
     const { setRef } = useBinding(
         undefined,
-        { start, end, startLabel, endLabel, min, max, required, disabled },
+        {
+            presets,
+            start,
+            end,
+            startLabel,
+            endLabel,
+            min,
+            max,
+            presetLabel,
+            clearable,
+            required,
+            disabled,
+        },
         {
             "aui-range-change": onChange
                 ? (detail: { start: string; end: string }) => onChange(detail)
                 : undefined,
             "aui-range-validation": onValidationChange,
+            "aui-range-preset": onPreset,
         },
     );
     return createElement("aui-date-range", {
         ...elementProps(
             props,
-            ["start", "end", "startLabel", "endLabel", "min", "max", "required", "disabled"],
-            ["onChange", "onValidationChange"],
+            [
+                "presets",
+                "start",
+                "end",
+                "startLabel",
+                "endLabel",
+                "min",
+                "max",
+                "presetLabel",
+                "clearable",
+                "required",
+                "disabled",
+            ],
+            ["onChange", "onPreset", "onValidationChange"],
         ),
         ...rest,
         ref: setRef,

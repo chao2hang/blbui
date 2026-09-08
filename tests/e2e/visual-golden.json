@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "status": "evidence-only",
+  "profiles": ["windows-chromium", "ubuntu-chromium"],
+  "directoryPattern": "tests/e2e/golden/{profile}",
+  "filePattern": "{profile}-{viewport}-{theme}-{mode}-{scene}.png",
+  "expectedFilesPerProfile": 432,
+  "diff": {
+    "threshold": 0.1,
+    "maxDifferentPixels": 0
+  },
+  "promotion": "After two stable fixed-runner captures, copy artifacts into the matching profile directory and change status to active. PR comparison must only compare the same profile."
+}

@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-当前版本为 `0.0.11`，已经提供 104 个已注册的无框架 Web Components，以及 React/Vue/Svelte 适配入口；连同 19 个 Business 组件，文档站共覆盖 123 个组件：
+当前版本为 `0.0.12`，已经提供 104 个已注册的无框架 Web Components，以及 React/Vue/Svelte 适配入口；连同 19 个 Business 组件，文档站共覆盖 123 个组件：
 
 | 包                         | 用途                                              |
 | -------------------------- | ------------------------------------------------- |
@@ -218,6 +218,8 @@ Core 事件使用 `aui-*` 前缀并通过 `CustomEvent.detail` 传递结构化�
 2. 现有 React 页面先迁移 Button、StatusTag、Page、FilterBar、Table、Pagination。
 3. 保留 `web/src/components/ui` 作为现有业务兼容层，不在本阶段一次性删除。
 4. Vue/Svelte 应用接入时只安装对应 bindings 和 core，不需要 React runtime。
+
+完整的原生 Web Components、React、Vue、Svelte 注册时机、事件清理和 SSR 迁移示例见 [`docs/migration.md`](docs/migration.md)。
 
 ## 校验
 

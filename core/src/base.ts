@@ -25,7 +25,29 @@ const FOCUSABLE_SELECTOR = [
 ].join(",");
 
 export function focusableElements(root: ParentNode): HTMLElement[] {
-    return [...root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)];
+    const result: HTMLElement[] = [];
+    const seen = new Set<Node>();
+    const collect = (node: Node): void => {
+        if (seen.has(node)) return;
+        seen.add(node);
+        if (node instanceof HTMLElement && node.matches(FOCUSABLE_SELECTOR)) result.push(node);
+        if (node instanceof HTMLSlotElement) {
+            const assigned = node.assignedNodes({ flatten: true });
+            if (assigned.length) assigned.forEach(collect);
+        }
+        if (node instanceof Element && node.shadowRoot) collect(node.shadowRoot);
+        node.childNodes.forEach(collect);
+    };
+    collect(root as Node);
+    return result;
+}
+
+export function deepActiveElement(root: Document | ShadowRoot = document): Element | null {
+    let active: Element | null = root.activeElement;
+    while (active instanceof HTMLElement && active.shadowRoot?.activeElement) {
+        active = active.shadowRoot.activeElement;
+    }
+    return active;
 }
 
 export class AdminElement extends LitElement {

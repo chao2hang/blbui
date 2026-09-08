@@ -11,6 +11,12 @@ import {
     virtualizeRows,
     type AdminTableLike,
 } from "../business/src/adapters";
+import {
+    connectEditorAdapter,
+    readEditorState,
+    writeEditorState,
+    type AdminEditorAdapter,
+} from "../business/src/editor-adapters";
 
 type Row = { id: string; name: string };
 
@@ -20,7 +26,9 @@ function table(overrides: Partial<AdminTableLike<Row>> = {}): AdminTableLike<Row
             { id: "name", columnDef: { header: "Name" } },
             { id: "status", columnDef: { meta: { label: "State", align: "center" } } },
         ],
-        getRowModel: () => ({ rows: [{ id: "gateway-2", original: { id: "gateway-2", name: "Edge" } }] }),
+        getRowModel: () => ({
+            rows: [{ id: "gateway-2", original: { id: "gateway-2", name: "Edge" } }],
+        }),
         getState: () => ({
             sorting: [{ id: "name", desc: true }],
             pagination: { pageIndex: 1, pageSize: 25 },
@@ -84,5 +92,39 @@ describe("business data adapter contract", () => {
         expect(result.rows).toEqual([9, 10, 11, 12]);
         expect(result.top).toBe(396);
         expect(result.bottom).toBe(3828);
+    });
+
+    it("normalizes editor selections without coupling to an editor runtime", () => {
+        let value = "hello";
+        let selection = { from: 1, to: 3 };
+        let listener: ((state: { value: string; selection: typeof selection }) => void) | undefined;
+        const adapter: AdminEditorAdapter = {
+            getValue: () => value,
+            setValue: (next) => {
+                value = next;
+            },
+            getSelection: () => selection,
+            setSelection: (next) => {
+                selection = next;
+            },
+            subscribe: (next) => {
+                listener = next;
+                return () => {
+                    listener = undefined;
+                };
+            },
+        };
+
+        expect(readEditorState(adapter)).toEqual({ value: "hello", selection: { from: 1, to: 3 } });
+        expect(writeEditorState(adapter, { value: "ok", selection: { from: 9, to: -2 } })).toEqual({
+            value: "ok",
+            selection: { from: 0, to: 2 },
+        });
+        const received: unknown[] = [];
+        const disconnect = connectEditorAdapter(adapter, (state) => received.push(state));
+        listener?.({ value, selection });
+        expect(received).toHaveLength(1);
+        disconnect();
+        expect(listener).toBeUndefined();
     });
 });

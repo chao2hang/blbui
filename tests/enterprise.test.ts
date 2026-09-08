@@ -96,7 +96,9 @@ describe("enterprise workflow components", () => {
         ];
         await chart.updateComplete;
         expect(chart.shadowRoot?.querySelectorAll("polyline")).toHaveLength(2);
-        expect(chart.shadowRoot?.querySelector("svg")?.namespaceURI).toBe("http://www.w3.org/2000/svg");
+        expect(chart.shadowRoot?.querySelector("svg")?.namespaceURI).toBe(
+            "http://www.w3.org/2000/svg",
+        );
         expect(chart.shadowRoot?.querySelector('[role="img"]')).not.toBeNull();
     });
 
@@ -109,7 +111,9 @@ describe("enterprise workflow components", () => {
         ];
         await area.updateComplete;
         expect(area.shadowRoot?.querySelectorAll("polygon")).toHaveLength(2);
-        expect(area.shadowRoot?.querySelector("svg")?.namespaceURI).toBe("http://www.w3.org/2000/svg");
+        expect(area.shadowRoot?.querySelector("svg")?.namespaceURI).toBe(
+            "http://www.w3.org/2000/svg",
+        );
 
         const pie = await element<AdminPieChartElement>("aui-pie-chart");
         pie.data = [
@@ -157,6 +161,60 @@ describe("enterprise workflow components", () => {
         area.data = [{ label: "A", value: 1 }];
         await area.updateComplete;
         expect(area.shadowRoot?.querySelector("circle")?.getAttribute("tabindex")).toBe("-1");
+    });
+
+    it("renders multiple line series with legend and series-aware point events", async () => {
+        const chart = await element<AdminLineChartElement>("aui-line-chart");
+        chart.series = [
+            { id: "api", label: "API", color: "red", data: [{ label: "A", value: 10 }] },
+            { id: "worker", label: "Worker", color: "blue", data: [{ label: "A", value: 20 }] },
+        ];
+        const points: unknown[] = [];
+        chart.addEventListener("aui-chart-point", (event) =>
+            points.push((event as CustomEvent).detail),
+        );
+        await chart.updateComplete;
+        expect(chart.shadowRoot?.querySelectorAll("polyline")).toHaveLength(2);
+        expect(chart.shadowRoot?.querySelectorAll(".legend-item")).toHaveLength(2);
+        chart.shadowRoot
+            ?.querySelectorAll<SVGCircleElement>("circle")[1]
+            ?.dispatchEvent(new FocusEvent("focus"));
+        await chart.updateComplete;
+        expect(points).toContainEqual({
+            seriesId: "worker",
+            seriesLabel: "Worker",
+            index: 0,
+            point: { label: "A", value: 20 },
+        });
+    });
+
+    it("renders multiple area series with a shared domain and series-aware events", async () => {
+        const chart = await element<AdminAreaChartElement>("aui-area-chart");
+        chart.series = [
+            { id: "capacity", label: "Capacity", color: "red", data: [{ label: "A", value: 10 }] },
+            { id: "reserved", label: "Reserved", color: "blue", data: [{ label: "A", value: 20 }] },
+        ];
+        const points: unknown[] = [];
+        chart.addEventListener("aui-chart-point", (event) =>
+            points.push((event as CustomEvent).detail),
+        );
+        await chart.updateComplete;
+        expect(chart.shadowRoot?.querySelectorAll("polygon")).toHaveLength(2);
+        expect(chart.shadowRoot?.querySelectorAll("polyline")).toHaveLength(2);
+        expect(chart.shadowRoot?.querySelectorAll(".legend-item")).toHaveLength(2);
+        const circles = chart.shadowRoot?.querySelectorAll<SVGCircleElement>("circle");
+        expect(circles?.[1]?.getAttribute("cy")).not.toBe(circles?.[0]?.getAttribute("cy"));
+        circles?.[1]?.dispatchEvent(new FocusEvent("focus"));
+        await chart.updateComplete;
+        expect(points).toContainEqual({
+            seriesId: "reserved",
+            seriesLabel: "Reserved",
+            index: 0,
+            point: { label: "A", value: 20 },
+        });
+        expect(chart.shadowRoot?.querySelector('[role="tooltip"]')?.textContent).toContain(
+            "Reserved · A: 20",
+        );
     });
 
     it("moves through a linear wizard and emits completion", async () => {

@@ -5,7 +5,8 @@ it under the terms of the GNU Affero General Public License.
 */
 
 import { css, html } from "lit";
-import { AdminElement, nextUid } from "./base";
+import { AdminElement, deepActiveElement, nextUid } from "./base";
+import { registerOverlay, unregisterOverlay } from "./overlay-stack";
 
 export class AdminDialogElement extends AdminElement {
     static properties = {
@@ -91,6 +92,7 @@ export class AdminDialogElement extends AdminElement {
     description = "";
     closeLabel = "Close";
     private titleId = nextUid("dialog-title");
+    private lastFocused: HTMLElement | null = null;
 
     protected firstUpdated(): void {
         this.syncDialog();
@@ -104,18 +106,28 @@ export class AdminDialogElement extends AdminElement {
         const dialog = this.renderRoot.querySelector("dialog");
         if (!dialog) return;
         if (this.open && !dialog.open) {
+            this.lastFocused = deepActiveElement(document) as HTMLElement | null;
             if (typeof dialog.showModal === "function") dialog.showModal();
             else dialog.setAttribute("open", "");
+            registerOverlay(this, () => this.close());
         }
         if (!this.open && dialog.open) {
             if (typeof dialog.close === "function") dialog.close();
             else dialog.removeAttribute("open");
+            unregisterOverlay(this);
+            this.lastFocused?.focus();
+            this.lastFocused = null;
         }
     }
 
     private close(): void {
         this.open = false;
         this.dispatchDetail("aui-close", { open: false });
+    }
+
+    disconnectedCallback(): void {
+        super.disconnectedCallback();
+        unregisterOverlay(this);
     }
 
     private handleCancel(event: Event): void {
@@ -265,6 +277,7 @@ export class AdminConfirmDialogElement extends AdminElement {
     loading = false;
     danger = false;
     private titleId = nextUid("confirm-title");
+    private lastFocused: HTMLElement | null = null;
 
     protected firstUpdated(): void {
         this.syncDialog();
@@ -276,18 +289,28 @@ export class AdminConfirmDialogElement extends AdminElement {
         const dialog = this.renderRoot.querySelector("dialog");
         if (!dialog) return;
         if (this.open && !dialog.open) {
+            this.lastFocused = deepActiveElement(document) as HTMLElement | null;
             if (typeof dialog.showModal === "function") dialog.showModal();
             else dialog.setAttribute("open", "");
+            registerOverlay(this, () => this.cancel());
         }
         if (!this.open && dialog.open) {
             if (typeof dialog.close === "function") dialog.close();
             else dialog.removeAttribute("open");
+            unregisterOverlay(this);
+            this.lastFocused?.focus();
+            this.lastFocused = null;
         }
     }
     private cancel(): void {
         this.open = false;
         this.dispatchDetail("aui-cancel", { open: false });
         this.dispatchDetail("aui-close", { open: false });
+    }
+
+    disconnectedCallback(): void {
+        super.disconnectedCallback();
+        unregisterOverlay(this);
     }
     private confirm(): void {
         if (this.loading) return;

@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+后续变更记录从这里开始。
+
+## 0.0.12 — 2026-09-08
+
+- 为 DateRange 增加快捷范围、清空操作、动态日期边界、严格格式校验和完整 validation/preset 事件；同步 React/Vue 绑定、目录与文档契约。
+- 完成嵌套浮层 Escape 焦点栈、shadow DOM/slot 感知的 Drawer focus trap，并覆盖 Dialog、Popover、Dropdown、Drawer、FilePreview、Command 等浮层的顶层关闭行为。
+- LineChart 支持多系列共享坐标域、图例、系列颜色和带 seriesId/seriesLabel 的键盘与指针点位事件，同时保持单系列 API 兼容。
+- Business 新增无运行时依赖的 `AdminEditorAdapter` contract，统一文本、半开区间选区、受控更新和订阅桥接，便于接入 CodeMirror/TipTap/Monaco。
+- AreaChart 复用 LineChart 多系列 contract，增加共享坐标域、系列图例、系列点位事件和颜色隔离；补充外部宿主迁移示例与 profile-aware fixed-runner visual golden contract。
+
 ## 0.0.11 — 2026-09-08
 
 - 为 Bar/Line/Area/Pie 图表增加主题化 hover 与键盘 tooltip，新增 `aui-chart-point` 事件和 React `onPoint` 回调；关闭 tooltip 时仍保持静态可访问语义与 null telemetry gap。

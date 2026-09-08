@@ -5,7 +5,8 @@ it under the terms of the GNU Affero General Public License.
 */
 
 import { css, html } from "lit";
-import { AdminElement, nextUid } from "./base";
+import { AdminElement, deepActiveElement, nextUid } from "./base";
+import { registerOverlay, unregisterOverlay } from "./overlay-stack";
 
 export type AdminUploadStatus = "pending" | "uploading" | "success" | "error";
 
@@ -427,6 +428,7 @@ export class AdminFilePreviewElement extends AdminElement {
 
     private dialogId = nextUid("file-preview");
     private objectUrl = "";
+    private lastFocused: HTMLElement | null = null;
 
     protected firstUpdated(): void {
         this.syncObjectUrl();
@@ -441,6 +443,7 @@ export class AdminFilePreviewElement extends AdminElement {
     disconnectedCallback(): void {
         super.disconnectedCallback();
         this.revokeObjectUrl();
+        unregisterOverlay(this);
     }
 
     private revokeObjectUrl(): void {
@@ -463,12 +466,17 @@ export class AdminFilePreviewElement extends AdminElement {
         const dialog = this.renderRoot.querySelector("dialog");
         if (!dialog) return;
         if (this.open && !dialog.open) {
+            this.lastFocused = deepActiveElement(document) as HTMLElement | null;
             if (typeof dialog.showModal === "function") dialog.showModal();
             else dialog.setAttribute("open", "");
+            registerOverlay(this, () => this.close());
         }
         if (!this.open && dialog.open) {
             if (typeof dialog.close === "function") dialog.close();
             else dialog.removeAttribute("open");
+            unregisterOverlay(this);
+            this.lastFocused?.focus();
+            this.lastFocused = null;
         }
     }
 

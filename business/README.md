@@ -36,6 +36,11 @@ accepts common `{label, value}` and `{x, y}` data shapes, preserves null telemet
 gaps, and `fromChartData` returns normalized series plus stable X/Y domains. This
 keeps Recharts, VChart and future SVG renderers optional.
 
+Editor integrations use `AdminEditorAdapter` with `readEditorState`,
+`writeEditorState` and `connectEditorAdapter`. The contract covers text,
+half-open selections, controlled updates and optional subscriptions while
+leaving CodeMirror, TipTap or Monaco as host-owned dependencies.
+
 They depend on `@chaos_team/blbui-core` and register on top of it.
 
 ```ts

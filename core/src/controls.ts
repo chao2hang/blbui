@@ -6,6 +6,7 @@ it under the terms of the GNU Affero General Public License.
 
 import { css, html } from "lit";
 import { AdminElement, nextUid } from "./base";
+import { isTopOverlay, registerOverlay, unregisterOverlay } from "./overlay-stack";
 
 export type AdminAlertVariant = "info" | "success" | "warning" | "danger";
 
@@ -320,7 +321,7 @@ export class AdminComboboxElement extends AdminElement {
     private activeIndex = 0;
     private listId = nextUid("combobox-list");
     private readonly onDocumentClick = (event: Event) => {
-        if (!this.contains(event.target as Node) && this.open) {
+        if (isTopOverlay(this) && !this.contains(event.target as Node) && this.open) {
             this.open = false;
             this.requestUpdate();
         }
@@ -349,13 +350,22 @@ export class AdminComboboxElement extends AdminElement {
     }
     protected updated(changed: Map<string, unknown>): void {
         if (changed.has("open")) {
-            if (this.open) document.addEventListener("click", this.onDocumentClick, true);
-            else document.removeEventListener("click", this.onDocumentClick, true);
+            if (this.open) {
+                document.addEventListener("click", this.onDocumentClick, true);
+                registerOverlay(this, () => {
+                    this.open = false;
+                    this.requestUpdate();
+                });
+            } else {
+                document.removeEventListener("click", this.onDocumentClick, true);
+                unregisterOverlay(this);
+            }
         }
     }
     disconnectedCallback(): void {
         super.disconnectedCallback();
         document.removeEventListener("click", this.onDocumentClick, true);
+        unregisterOverlay(this);
     }
     private keydown(event: KeyboardEvent): void {
         const options = this.filtered();
@@ -372,9 +382,6 @@ export class AdminComboboxElement extends AdminElement {
             event.preventDefault();
             const option = options[this.activeIndex];
             if (option) this.choose(option);
-        } else if (event.key === "Escape") {
-            this.open = false;
-            this.requestUpdate();
         }
     }
     render() {
@@ -586,7 +593,7 @@ export class AdminMultiSelectElement extends AdminElement {
     private activeIndex = 0;
     private listId = nextUid("multiselect-list");
     private readonly onDocumentClick = (event: Event) => {
-        if (!this.contains(event.target as Node) && this.open) {
+        if (isTopOverlay(this) && !this.contains(event.target as Node) && this.open) {
             this.open = false;
             this.requestUpdate();
         }
@@ -643,13 +650,22 @@ export class AdminMultiSelectElement extends AdminElement {
     }
     protected updated(changed: Map<string, unknown>): void {
         if (changed.has("open")) {
-            if (this.open) document.addEventListener("click", this.onDocumentClick, true);
-            else document.removeEventListener("click", this.onDocumentClick, true);
+            if (this.open) {
+                document.addEventListener("click", this.onDocumentClick, true);
+                registerOverlay(this, () => {
+                    this.open = false;
+                    this.requestUpdate();
+                });
+            } else {
+                document.removeEventListener("click", this.onDocumentClick, true);
+                unregisterOverlay(this);
+            }
         }
     }
     disconnectedCallback(): void {
         super.disconnectedCallback();
         document.removeEventListener("click", this.onDocumentClick, true);
+        unregisterOverlay(this);
     }
     render() {
         const query = this.query.toLowerCase();
@@ -810,15 +826,21 @@ export class AdminCommandElement extends AdminElement {
     private query = "";
     private activeIndex = 0;
     private readonly onDocumentClick = (event: Event) => {
-        if (this.open && !this.contains(event.target as Node)) this.setOpen(false);
+        if (isTopOverlay(this) && this.open && !this.contains(event.target as Node))
+            this.setOpen(false);
     };
     private setOpen(open: boolean): void {
         if (this.open === open) return;
         this.open = open;
         this.dispatchDetail("aui-open-change", { open });
         this.requestUpdate();
-        if (open) document.addEventListener("click", this.onDocumentClick, true);
-        else document.removeEventListener("click", this.onDocumentClick, true);
+        if (open) {
+            document.addEventListener("click", this.onDocumentClick, true);
+            registerOverlay(this, () => this.setOpen(false));
+        } else {
+            document.removeEventListener("click", this.onDocumentClick, true);
+            unregisterOverlay(this);
+        }
     }
     private select(item: AdminOption): void {
         if (item.disabled) return;
@@ -840,12 +862,20 @@ export class AdminCommandElement extends AdminElement {
             const item = items[this.activeIndex];
             if (item) this.select(item);
         } else if (event.key === "Escape") {
-            this.setOpen(false);
+            if (isTopOverlay(this)) this.setOpen(false);
+        }
+    }
+
+    protected updated(changed: Map<string, unknown>): void {
+        if (changed.has("open") && this.open) {
+            document.addEventListener("click", this.onDocumentClick, true);
+            registerOverlay(this, () => this.setOpen(false));
         }
     }
     disconnectedCallback(): void {
         super.disconnectedCallback();
         document.removeEventListener("click", this.onDocumentClick, true);
+        unregisterOverlay(this);
     }
     render() {
         if (!this.open) {
@@ -954,6 +984,13 @@ export class AdminColorPickerElement extends AdminElement {
     }
 }
 
+export interface AdminDateRangePreset {
+    id: string;
+    label: string;
+    start: string;
+    end: string;
+}
+
 export class AdminDateRangeElement extends AdminElement {
     static properties = {
         start: { type: String },
@@ -962,6 +999,9 @@ export class AdminDateRangeElement extends AdminElement {
         endLabel: { type: String, attribute: "end-label" },
         min: { type: String },
         max: { type: String },
+        presets: { attribute: false },
+        presetLabel: { type: String, attribute: "preset-label" },
+        clearable: { type: Boolean, reflect: true },
         required: { type: Boolean, reflect: true },
         disabled: { type: Boolean, reflect: true },
         invalid: { type: Boolean, reflect: true },
@@ -976,6 +1016,39 @@ export class AdminDateRangeElement extends AdminElement {
             flex-wrap: wrap;
             align-items: end;
             gap: 10px;
+        }
+        .presets {
+            display: flex;
+            flex: 1 0 100%;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+        .preset-label {
+            color: var(--aui-text-muted);
+            font: 10px/1 var(--aui-font-mono);
+            text-transform: uppercase;
+        }
+        .preset,
+        .clear {
+            min-height: 28px;
+            padding: 5px 8px;
+            border: 1px solid var(--aui-border);
+            border-radius: var(--aui-radius-sm, var(--aui-radius));
+            background: var(--aui-surface);
+            color: var(--aui-text-secondary);
+            cursor: pointer;
+            font: 10px/1 var(--aui-font-mono);
+        }
+        .preset:hover,
+        .clear:hover {
+            border-color: var(--aui-border-hover);
+            color: var(--aui-text-primary);
+        }
+        .preset:focus-visible,
+        .clear:focus-visible {
+            outline: 2px solid var(--aui-focus);
+            outline-offset: 2px;
         }
         label {
             display: flex;
@@ -1008,6 +1081,12 @@ export class AdminDateRangeElement extends AdminElement {
             color: var(--aui-danger);
             font: 10px/1.3 var(--aui-font-mono);
         }
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding-bottom: 1px;
+        }
     `;
     start = "";
     end = "";
@@ -1015,12 +1094,25 @@ export class AdminDateRangeElement extends AdminElement {
     endLabel = "To";
     min = "";
     max = "";
+    presets: AdminDateRangePreset[] = [];
+    presetLabel = "Quick ranges";
+    clearable = false;
     required = false;
     disabled = false;
     invalid = false;
     error = "";
 
+    private readonly startId = nextUid("date-range-start");
+    private readonly endId = nextUid("date-range-end");
+    private readonly errorId = nextUid("date-range-error");
+
+    private isDate(value: string): boolean {
+        return !value || /^\d{4}-\d{2}-\d{2}$/.test(value);
+    }
+
     private validationError(): string {
+        if (!this.isDate(this.start)) return "Start date must use YYYY-MM-DD format.";
+        if (!this.isDate(this.end)) return "End date must use YYYY-MM-DD format.";
         if (this.required && (!this.start || !this.end)) return "Both dates are required.";
         if (this.start && this.end && this.start > this.end)
             return "Start date must be before end date.";
@@ -1037,7 +1129,7 @@ export class AdminDateRangeElement extends AdminElement {
         return "";
     }
 
-    protected updated(changed: Map<string, unknown>): void {
+    protected willUpdate(changed: Map<string, unknown>): void {
         if (["start", "end", "min", "max", "required"].some((key) => changed.has(key))) {
             const error = this.validationError();
             if (error !== this.error || Boolean(error) !== this.invalid) {
@@ -1052,27 +1144,88 @@ export class AdminDateRangeElement extends AdminElement {
         this[kind] = (event.target as HTMLInputElement).value;
         this.dispatchDetail("aui-range-change", { start: this.start, end: this.end });
     }
+
+    private applyPreset(preset: AdminDateRangePreset): void {
+        this.start = preset.start;
+        this.end = preset.end;
+        this.dispatchDetail("aui-range-preset", {
+            preset,
+            start: this.start,
+            end: this.end,
+        });
+        this.dispatchDetail("aui-range-change", { start: this.start, end: this.end });
+        this.requestUpdate();
+    }
+
+    private clear(): void {
+        this.start = "";
+        this.end = "";
+        this.dispatchDetail("aui-range-change", { start: "", end: "" });
+        this.requestUpdate();
+    }
+
     render() {
-        return html`<div class="range">
-            <label
+        const describedBy = this.error ? this.errorId : undefined;
+        return html`<div class="range" role="group" aria-label="Date range">
+            ${
+                this.presets.length
+                    ? html`<div class="presets" aria-label=${this.presetLabel}>
+                          <span class="preset-label">${this.presetLabel}</span>
+                          ${this.presets.map(
+                              (preset) => html`<button
+                                  class="preset"
+                                  type="button"
+                                  ?disabled=${this.disabled}
+                                  @click=${() => this.applyPreset(preset)}
+                              >
+                                  ${preset.label}
+                              </button>`,
+                          )}
+                      </div>`
+                    : null
+            }
+            <label for=${this.startId}
                 >${this.startLabel}<input
+                    id=${this.startId}
                     type="date"
                     .value=${this.start}
                     min=${this.min || undefined}
-                    max=${this.max || undefined}
+                    max=${this.end || this.max || undefined}
                     ?required=${this.required}
                     ?disabled=${this.disabled}
+                    aria-invalid=${this.invalid ? "true" : "false"}
+                    aria-describedby=${describedBy}
                     @change=${(event: Event) => this.change("start", event)} /></label
-            ><label
+            ><label for=${this.endId}
                 >${this.endLabel}<input
+                    id=${this.endId}
                     type="date"
                     .value=${this.end}
-                    min=${this.min || undefined}
+                    min=${this.start || this.min || undefined}
                     max=${this.max || undefined}
                     ?required=${this.required}
                     ?disabled=${this.disabled}
+                    aria-invalid=${this.invalid ? "true" : "false"}
+                    aria-describedby=${describedBy}
                     @change=${(event: Event) => this.change("end", event)} /></label
-            >${this.error ? html`<div class="error" role="alert">${this.error}</div>` : null}
+            >${
+                this.clearable && (this.start || this.end)
+                    ? html`<div class="actions">
+                          <button
+                              class="clear"
+                              type="button"
+                              ?disabled=${this.disabled}
+                              @click=${this.clear}
+                          >
+                              Clear
+                          </button>
+                      </div>`
+                    : null
+            }${
+                this.error
+                    ? html`<div id=${this.errorId} class="error" role="alert">${this.error}</div>`
+                    : null
+            }
         </div>`;
     }
 }

@@ -7,6 +7,7 @@ it under the terms of the GNU Affero General Public License.
 import { css, html } from "lit";
 import { AdminElement, nextUid } from "./base";
 import type { AdminMenuEntry } from "./essentials";
+import { isTopOverlay, registerOverlay, unregisterOverlay } from "./overlay-stack";
 
 export interface AdminCascaderOption {
     value: string;
@@ -197,23 +198,17 @@ export class AdminCascaderElement extends AdminElement {
     private activePath: AdminCascaderOption[] = [];
     private panelId = nextUid("cascader-panel");
     private readonly onDocumentClick = (event: Event) => {
-        if (this.open && !this.contains(event.target as Node)) this.close();
-    };
-    private readonly onDocumentKeydown = (event: KeyboardEvent) => {
-        if (this.open && event.key === "Escape") {
-            event.preventDefault();
-            this.close();
-        }
+        if (isTopOverlay(this) && this.open && !this.contains(event.target as Node)) this.close();
     };
 
     protected updated(changed: Map<string, unknown>): void {
         if (changed.has("open")) {
             if (this.open) {
                 document.addEventListener("click", this.onDocumentClick, true);
-                document.addEventListener("keydown", this.onDocumentKeydown);
+                registerOverlay(this, () => this.close());
             } else {
                 document.removeEventListener("click", this.onDocumentClick, true);
-                document.removeEventListener("keydown", this.onDocumentKeydown);
+                unregisterOverlay(this);
             }
         }
     }
@@ -221,7 +216,7 @@ export class AdminCascaderElement extends AdminElement {
     disconnectedCallback(): void {
         super.disconnectedCallback();
         document.removeEventListener("click", this.onDocumentClick, true);
-        document.removeEventListener("keydown", this.onDocumentKeydown);
+        unregisterOverlay(this);
     }
 
     private findPath(values: string[], options = this.options): AdminCascaderOption[] {
@@ -759,15 +754,11 @@ export class AdminContextMenuElement extends AdminElement {
         this.dispatchDetail("aui-open-change", { open: true });
     };
     private readonly onDocumentClick = (event: Event) => {
-        if (this.open && !this.contains(event.target as Node)) this.close();
+        if (isTopOverlay(this) && this.open && !this.contains(event.target as Node)) this.close();
     };
     private readonly onDocumentKeydown = (event: KeyboardEvent) => {
         if (!this.open) return;
-        if (event.key === "Escape") {
-            event.preventDefault();
-            this.close();
-            return;
-        }
+        if (event.key === "Escape") return;
         const buttons = [
             ...(this.renderRoot.querySelectorAll<HTMLButtonElement>("button.item") ?? []),
         ];
@@ -790,12 +781,14 @@ export class AdminContextMenuElement extends AdminElement {
             if (this.open) {
                 document.addEventListener("click", this.onDocumentClick, true);
                 document.addEventListener("keydown", this.onDocumentKeydown);
+                registerOverlay(this, () => this.close());
                 this.updateComplete.then(() =>
                     this.renderRoot.querySelector<HTMLButtonElement>("button.item")?.focus(),
                 );
             } else {
                 document.removeEventListener("click", this.onDocumentClick, true);
                 document.removeEventListener("keydown", this.onDocumentKeydown);
+                unregisterOverlay(this);
             }
         }
     }
@@ -805,6 +798,7 @@ export class AdminContextMenuElement extends AdminElement {
         this.removeEventListener("contextmenu", this.onContextMenu);
         document.removeEventListener("click", this.onDocumentClick, true);
         document.removeEventListener("keydown", this.onDocumentKeydown);
+        unregisterOverlay(this);
     }
 
     private close(): void {
@@ -933,6 +927,7 @@ export class AdminHoverCardElement extends AdminElement {
         this.removeEventListener("focusin", this.scheduleOpen);
         this.removeEventListener("focusout", this.scheduleClose);
         this.clearTimers();
+        unregisterOverlay(this);
     }
 
     private clearTimers(): void {
@@ -949,6 +944,10 @@ export class AdminHoverCardElement extends AdminElement {
             () => {
                 this.open = true;
                 this.dispatchDetail("aui-open-change", { open: true });
+                registerOverlay(this, () => {
+                    this.open = false;
+                    this.dispatchDetail("aui-open-change", { open: false });
+                });
             },
             Math.max(0, this.delay),
         );
@@ -963,6 +962,7 @@ export class AdminHoverCardElement extends AdminElement {
                 if (!this.open) return;
                 this.open = false;
                 this.dispatchDetail("aui-open-change", { open: false });
+                unregisterOverlay(this);
             },
             Math.max(0, this.closeDelay),
         );

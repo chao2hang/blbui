@@ -15,6 +15,7 @@ import type {
 } from "../core/src";
 import { getAdminVirtualRange } from "../core/src/virtual";
 import type { AdminFilterBuilderElement, AdminQueryBuilderElement } from "../core/src/data-complex";
+import { focusableElements } from "../core/src/base";
 
 beforeAll(() => {
     registerAdminElements();
@@ -564,6 +565,48 @@ describe("expanded component contracts", () => {
         expect(february15?.getAttribute("data-selected")).toBe("true");
     });
 
+    it("supports validated date-range presets, dynamic bounds and clear", async () => {
+        const range = document.createElement("aui-date-range") as HTMLElement & {
+            start: string;
+            end: string;
+            min: string;
+            max: string;
+            presets: Array<{ id: string; label: string; start: string; end: string }>;
+            clearable: boolean;
+            invalid: boolean;
+            updateComplete: Promise<boolean>;
+        };
+        range.min = "2026-01-01";
+        range.max = "2026-12-31";
+        range.clearable = true;
+        range.presets = [
+            { id: "week", label: "This week", start: "2026-09-01", end: "2026-09-05" },
+        ];
+        document.body.append(range);
+        await range.updateComplete;
+
+        const preset = range.shadowRoot?.querySelector<HTMLButtonElement>("button.preset");
+        preset?.click();
+        await range.updateComplete;
+        expect(range.start).toBe("2026-09-01");
+        expect(range.end).toBe("2026-09-05");
+        const inputs = range.shadowRoot?.querySelectorAll<HTMLInputElement>("input") ?? [];
+        expect(inputs[0]?.max).toBe("2026-09-05");
+        expect(inputs[1]?.min).toBe("2026-09-01");
+
+        range.start = "2026-10-10";
+        range.end = "2026-10-01";
+        await range.updateComplete;
+        await range.updateComplete;
+        expect(range.invalid).toBe(true);
+        expect(range.shadowRoot?.querySelector('[role="alert"]')?.textContent).toContain("before");
+
+        range.shadowRoot?.querySelector<HTMLButtonElement>("button.clear")?.click();
+        await range.updateComplete;
+        expect(range.start).toBe("");
+        expect(range.end).toBe("");
+    });
+
     it("supports multi-select in a toggle group", async () => {
         const group = document.createElement("aui-toggle-group") as HTMLElement & {
             items: Array<{ id: string; label: string }>;
@@ -691,7 +734,9 @@ describe("accessibility contracts", () => {
         await popover.updateComplete;
         const popoverTrigger = popover.querySelector("button") as HTMLButtonElement;
         popoverTrigger.focus();
-        popover.shadowRoot?.querySelector("span")?.dispatchEvent(new MouseEvent("click", { bubbles: true, composed: true }));
+        popover.shadowRoot
+            ?.querySelector("span")
+            ?.dispatchEvent(new MouseEvent("click", { bubbles: true, composed: true }));
         await popover.updateComplete;
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
         await popover.updateComplete;
@@ -708,11 +753,78 @@ describe("accessibility contracts", () => {
         await dropdown.updateComplete;
         const dropdownTrigger = dropdown.querySelector("button") as HTMLButtonElement;
         dropdownTrigger.focus();
-        dropdown.shadowRoot?.querySelector("span")?.dispatchEvent(new MouseEvent("click", { bubbles: true, composed: true }));
+        dropdown.shadowRoot
+            ?.querySelector("span")
+            ?.dispatchEvent(new MouseEvent("click", { bubbles: true, composed: true }));
         await dropdown.updateComplete;
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
         await dropdown.updateComplete;
         expect(document.activeElement).toBe(dropdownTrigger);
+    });
+
+    it("closes only the topmost nested overlay on Escape", async () => {
+        const outer = document.createElement("aui-popover") as HTMLElement & {
+            open: boolean;
+            updateComplete: Promise<boolean>;
+        };
+        const inner = document.createElement("aui-dropdown") as HTMLElement & {
+            items: Array<{ id: string; label: string }>;
+            open: boolean;
+            updateComplete: Promise<boolean>;
+        };
+        outer.innerHTML = '<button slot="trigger">OUTER</button>';
+        inner.items = [{ id: "inspect", label: "Inspect" }];
+        inner.innerHTML = '<button slot="trigger">INNER</button>';
+        inner.slot = "content";
+        outer.append(inner);
+        document.body.append(outer);
+        await outer.updateComplete;
+        await inner.updateComplete;
+
+        outer.open = true;
+        await outer.updateComplete;
+        inner.open = true;
+        await inner.updateComplete;
+        expect(outer.open).toBe(true);
+        expect(inner.open).toBe(true);
+
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+        await inner.updateComplete;
+        expect(inner.open).toBe(false);
+        expect(outer.open).toBe(true);
+
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+        await outer.updateComplete;
+        expect(outer.open).toBe(false);
+    });
+
+    it("keeps nested slotted custom controls inside the drawer focus trap", async () => {
+        const drawer = document.createElement("aui-drawer") as HTMLElement & {
+            open: boolean;
+            updateComplete: Promise<boolean>;
+        };
+        const button = document.createElement("aui-button");
+        button.textContent = "APPLY";
+        drawer.append(button);
+        document.body.append(drawer);
+        await drawer.updateComplete;
+        await (button as unknown as { updateComplete: Promise<boolean> }).updateComplete;
+
+        drawer.open = true;
+        await drawer.updateComplete;
+        const panel = drawer.shadowRoot?.querySelector(".panel") as HTMLElement;
+        const closeButton = panel?.querySelector("button.close") as HTMLButtonElement;
+        const innerButton = button.shadowRoot?.querySelector("button") as HTMLButtonElement;
+        expect(innerButton).toBeInstanceOf(HTMLButtonElement);
+        expect(focusableElements(panel)).toContain(innerButton);
+        closeButton.focus();
+        document.dispatchEvent(
+            new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true }),
+        );
+        expect(button.shadowRoot?.activeElement).toBe(innerButton);
+        innerButton.focus();
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true }));
+        expect(drawer.shadowRoot?.activeElement).toBe(closeButton);
     });
 
     it("navigates a dropdown menu with arrow keys and renders separators inert", async () => {
@@ -895,7 +1007,9 @@ describe("composed form and data contracts", () => {
         await form.updateComplete;
 
         expect(form.shadowRoot?.querySelector(".select-control select")).not.toBeNull();
-        expect(form.shadowRoot?.querySelector(".select-chevron")?.getAttribute("aria-hidden")).toBe("true");
+        expect(form.shadowRoot?.querySelector(".select-chevron")?.getAttribute("aria-hidden")).toBe(
+            "true",
+        );
 
         let change: { name: string; value: unknown } | undefined;
         let submit: { valid: boolean } | undefined;

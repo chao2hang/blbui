@@ -43,6 +43,16 @@ export type {
     AdminPieDatum,
     NormalizeChartOptions,
 } from "@chaos_team/blbui-business";
+export {
+    connectEditorAdapter,
+    readEditorState,
+    writeEditorState,
+} from "@chaos_team/blbui-business";
+export type {
+    AdminEditorAdapter,
+    AdminEditorSelection,
+    AdminEditorState,
+} from "@chaos_team/blbui-business";
 import "@chaos_team/blbui-business/styles.css";
 
 type CustomElement = HTMLElement & Record<string, unknown>;
@@ -287,14 +297,17 @@ export interface AdminBarChartProps extends CommonProps {
     onPoint?: (detail: { index: number; point: { label: string; value: number } }) => void;
 }
 export function AdminBarChart(props: AdminBarChartProps) {
-    const { ref } = useBusinessElement({
-        data: props.data,
-        height: props.height,
-        label: props.label,
-        showTooltip: props.showTooltip,
-    }, {
-        "aui-chart-point": props.onPoint,
-    });
+    const { ref } = useBusinessElement(
+        {
+            data: props.data,
+            height: props.height,
+            label: props.label,
+            showTooltip: props.showTooltip,
+        },
+        {
+            "aui-chart-point": props.onPoint,
+        },
+    );
     const rest = restProps(props, ["data", "height", "label", "showTooltip", "onPoint"]);
     return createElement("aui-bar-chart", { ...rest, ref, className: props.className });
 }
@@ -306,49 +319,97 @@ export interface AdminSparklineProps extends CommonProps {
 }
 export interface AdminLineChartProps extends CommonProps {
     data?: Array<{ label: string; value: number | null }>;
+    series?: Array<{
+        id: string;
+        label: string;
+        color?: string;
+        data: Array<{ label: string; value: number | null }>;
+    }>;
     height?: string;
     label?: string;
     color?: string;
     showPoints?: boolean;
     showTooltip?: boolean;
-    onPoint?: (detail: { index: number; point: { label: string; value: number | null } }) => void;
+    onPoint?: (detail: {
+        index: number;
+        point: { label: string; value: number | null };
+        seriesId?: string;
+        seriesLabel?: string;
+    }) => void;
 }
 export function AdminLineChart(props: AdminLineChartProps) {
-    const { ref } = useBusinessElement({
-        data: props.data,
-        height: props.height,
-        label: props.label,
-        color: props.color,
-        showPoints: props.showPoints,
-        showTooltip: props.showTooltip,
-    }, {
-        "aui-chart-point": props.onPoint,
-    });
-    const rest = restProps(props, ["data", "height", "label", "color", "showPoints", "showTooltip", "onPoint"]);
+    const { ref } = useBusinessElement(
+        {
+            data: props.data,
+            series: props.series,
+            height: props.height,
+            label: props.label,
+            color: props.color,
+            showPoints: props.showPoints,
+            showTooltip: props.showTooltip,
+        },
+        {
+            "aui-chart-point": props.onPoint,
+        },
+    );
+    const rest = restProps(props, [
+        "data",
+        "series",
+        "height",
+        "label",
+        "color",
+        "showPoints",
+        "showTooltip",
+        "onPoint",
+    ]);
     return createElement("aui-line-chart", { ...rest, ref, className: props.className });
 }
 
 export interface AdminAreaChartProps extends CommonProps {
     data?: Array<{ label: string; value: number | null }>;
+    series?: Array<{
+        id: string;
+        label: string;
+        color?: string;
+        data: Array<{ label: string; value: number | null }>;
+    }>;
     height?: string;
     label?: string;
     color?: string;
     showPoints?: boolean;
     showTooltip?: boolean;
-    onPoint?: (detail: { index: number; point: { label: string; value: number | null } }) => void;
+    onPoint?: (detail: {
+        index: number;
+        point: { label: string; value: number | null };
+        seriesId?: string;
+        seriesLabel?: string;
+    }) => void;
 }
 export function AdminAreaChart(props: AdminAreaChartProps) {
-    const { ref } = useBusinessElement({
-        data: props.data,
-        height: props.height,
-        label: props.label,
-        color: props.color,
-        showPoints: props.showPoints,
-        showTooltip: props.showTooltip,
-    }, {
-        "aui-chart-point": props.onPoint,
-    });
-    const rest = restProps(props, ["data", "height", "label", "color", "showPoints", "showTooltip", "onPoint"]);
+    const { ref } = useBusinessElement(
+        {
+            data: props.data,
+            series: props.series,
+            height: props.height,
+            label: props.label,
+            color: props.color,
+            showPoints: props.showPoints,
+            showTooltip: props.showTooltip,
+        },
+        {
+            "aui-chart-point": props.onPoint,
+        },
+    );
+    const rest = restProps(props, [
+        "data",
+        "series",
+        "height",
+        "label",
+        "color",
+        "showPoints",
+        "showTooltip",
+        "onPoint",
+    ]);
     return createElement("aui-area-chart", { ...rest, ref, className: props.className });
 }
 
@@ -367,17 +428,28 @@ export interface AdminPieChartProps extends CommonProps {
     onPoint?: (detail: { index: number; point: AdminPieChartItem }) => void;
 }
 export function AdminPieChart(props: AdminPieChartProps) {
-    const { ref } = useBusinessElement({
-        data: props.data,
-        height: props.height,
-        label: props.label,
-        donut: props.donut,
-        showLegend: props.showLegend,
-        showTooltip: props.showTooltip,
-    }, {
-        "aui-chart-point": props.onPoint,
-    });
-    const rest = restProps(props, ["data", "height", "label", "donut", "showLegend", "showTooltip", "onPoint"]);
+    const { ref } = useBusinessElement(
+        {
+            data: props.data,
+            height: props.height,
+            label: props.label,
+            donut: props.donut,
+            showLegend: props.showLegend,
+            showTooltip: props.showTooltip,
+        },
+        {
+            "aui-chart-point": props.onPoint,
+        },
+    );
+    const rest = restProps(props, [
+        "data",
+        "height",
+        "label",
+        "donut",
+        "showLegend",
+        "showTooltip",
+        "onPoint",
+    ]);
     return createElement("aui-pie-chart", { ...rest, ref, className: props.className });
 }
 

@@ -67,7 +67,7 @@
 
 ## 当前状态
 
-当前已注册 104 个 Core Custom Elements。React 与 Vue 均提供 104:1 的完整 Core 同构绑定（`Admin*` 命名），Svelte 提供核心注册入口（`registerAdminElements` / `adminUi`）、27 个常用组件封装，共 29 个公开导出。Business 已有 19 个组件和 React 绑定，Vue/Svelte 可直接注册 Custom Elements 消费。文档站 `docs-site/` 覆盖全部 123 个组件（含 19 个 Business）的实时预览与四框架用法。主题基础设施已包含 9 套主题和 light/dark 模式；DataGrid、组合式表单、移动端 Drawer、Breadcrumb 溢出、通知持久化、TreeTable/ListView/FilterBuilder/QueryBuilder、Business workflow/权限/审计/导入导出、TanStack-compatible adapter contract、chart adapter contract、Area/Pie/Gauge 图表、键盘 tooltip/点位事件和 Playwright/a11y/pixelmatch/visual-matrix 矩阵已落地。下一步：外部宿主迁移、固定 runner 上积累跨平台 PNG golden、编辑器 adapter、复杂嵌套浮层焦点栈和图表多系列交互。
+当前已注册 104 个 Core Custom Elements。React 与 Vue 均提供 104:1 的完整 Core 同构绑定（`Admin*` 命名），Svelte 提供核心注册入口（`registerAdminElements` / `adminUi`）、27 个常用组件封装，共 29 个公开导出。Business 已有 19 个组件和 React 绑定，Vue/Svelte 可直接注册 Custom Elements 消费。文档站 `docs-site/` 覆盖全部 123 个组件（含 19 个 Business）的实时预览与四框架用法。主题基础设施已包含 9 套主题和 light/dark 模式；DataGrid、组合式表单、移动端 Drawer、Breadcrumb 溢出、通知持久化、TreeTable/ListView/FilterBuilder/QueryBuilder、Business workflow/权限/审计/导入导出、TanStack-compatible adapter contract、chart adapter contract、Area/Pie/Gauge 图表、DateRange 快捷范围、Line/AreaChart 多系列、键盘 tooltip/点位事件、外部宿主迁移指南和 Playwright/a11y/pixelmatch/visual-matrix/golden 矩阵已落地。下一步：固定 runner golden status 切换、编辑器 adapter 宿主示例、自定义 Date/Time picker 和更完整的复杂交互。
 
 ## 依赖边界
 

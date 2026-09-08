@@ -44,5 +44,6 @@
 
 - 已完成 SSR hydration 检查和 React/Vue/Svelte 三框架最小示例应用；注册时机统一通过 `whenAdminElementsDefined`。
 - Playwright 已加入 pixelmatch 重复渲染稳定性门禁；`tests/e2e/visual-matrix.json` 固化 Windows/Ubuntu Chromium、代表视口、场景和 9 × 2 主题矩阵，PNG golden 在固定 runner 上按 profile 保存。
+- `docs/migration.md` 固化原生 Web Components、React、Vue、Svelte 的注册时机、property 传递、事件清理和 SSR hydration 迁移示例；`tests/e2e/visual-golden.json` 固化同 profile PNG 命名与 pixelmatch 比较策略。
 - DataGrid 的可选 TanStack Table / Virtual adapter，以及 TreeTable、ListView、FilterBuilder、QueryBuilder 等复杂交互已提供第一版无依赖实现；Business adapter contract 通过纯单元测试保护分页、排序、选择和虚拟窗口语义。
 - 业务包中的权限矩阵、审计日志、workflow、导入导出和可选数据适配器已落地；公共 API 文档生成与一致性检查纳入发布门禁。

@@ -14,7 +14,7 @@
 
 ### P0：语义 Token 与主题合同
 
-0.0.11 已在 0.0.10 基础上继续收紧：
+0.0.12 已在 0.0.11 基础上继续收紧：
 
 - 固化 surface、text、border、focus、status、overlay、shadow、radius、motion、form color-scheme 等 token。
 - 9 套主题均维护 light/dark 两套值；新增主题必须提供同一份 token 清单。
@@ -71,7 +71,7 @@
 - 主题矩阵按 9 × 2 运行，重点组件再覆盖 hover、focus、disabled、loading、empty、error。
 - [x] 发布前执行 catalog、public API/docs、typecheck、build、Svelte、docs smoke、unit、a11y、320px/forced-colors 和视觉冒烟；新增 `tests/e2e/visual-matrix.json` 作为跨平台 golden screenshot 的版本化范围合同。
 - 0.0.9 保留 0.0.7 的 pixelmatch 重复渲染门禁，并将 Windows/Ubuntu Chromium、视口、9 × 2 主题和代表场景写入可检查 manifest；真实截图按 CI runner 分平台保存，避免字体和系统控件差异造成误报。
-- [x] 增加 `.github/workflows/visual-regression.yml`，在 Windows/Ubuntu 固定 runner 上生成 9 × 2 × 3 × 5 的 PNG 视觉证据并保留 14 天；首批证据确认后再提升为提交到仓库的 platform-specific golden 比较。
+- [x] 增加 `.github/workflows/visual-regression.yml`，在 Windows/Ubuntu 固定 runner 上生成 9 × 2 × 3 × 8 的 PNG 视觉证据并保留 14 天；`visual-golden.json`、同 profile 文件命名和 pixelmatch 比较入口已固定，首批证据确认后即可将 status 切为 active。
 - 组件状态发生变化时更新 changelog、migration note 和截图基准。
 - 每季度清理一次重复组件、过期 token、未使用 utility 和文档示例漂移。
 
@@ -87,7 +87,7 @@
 | 框架 | Web Components、React、Vue、Svelte 的属性与事件行为一致                     |
 | 文档 | catalog 条目、预览、props/events、四框架 usage、截图和已知限制              |
 
-## 当前组件缺口（0.0.11 后）
+## 当前组件缺口（0.0.12 后）
 
 短期缺口集中在可复用的复杂交互，而不是继续堆叠展示型组件：
 
@@ -95,9 +95,10 @@
 - Toast manager、通知跨标签页同步、Result action slots 已落地。
 - TreeTable、ListView 已提供首版；TanStack-compatible adapter contract、分页/排序/选择映射和虚拟窗口边界测试已落地。
 - PermissionMatrix、AuditLog、ImportDialog、ExportButton、BulkActionsToolbar 和更完整的 workflow 业务组件已落地。
-- React/Vue/Svelte parity playground 与 SSR/hydration 验证已落地；跨平台截图矩阵范围已版本化，后续在固定 runner 上积累 PNG golden 产物。
+- React/Vue/Svelte parity playground、SSR/hydration 验证和 `docs/migration.md` 外部宿主迁移示例已落地；跨平台截图矩阵与 profile-aware PNG golden 策略已版本化。
 - LineChart 已完成 SVG 命名空间人工验收；AreaChart、PieChart、Gauge 已按同一 adapter contract 落地，并覆盖 null/empty、donut/legend 与 meter 可访问语义。
 - 0.0.10 的图表视觉矩阵新增 AreaChart、PieChart、Gauge 场景；0.0.11 增加图表 tooltip 与键盘点位事件，`fromPieData` / `normalizeGaugeValue` 保持外部图表运行时可选。
+- Unreleased 增加 LineChart 与 AreaChart 多系列共享坐标域、图例和 series-aware 点位事件；AreaChart 多系列已补充文档站预览、React 类型、行为测试和主题/窄屏人工复核。
 
 ## 每次迭代的完成定义
 
