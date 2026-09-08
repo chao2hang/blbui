@@ -155,7 +155,7 @@ test.describe("BLBUI documentation quality matrix", () => {
                             path: testInfo.outputPath("visual-matrix", `${filename}.png`),
                             animations: "disabled",
                         });
-                        if (goldenRoot && process.env.VISUAL_MATRIX_CAPTURE_ONLY !== "1") {
+                        if (goldenRoot) {
                             const goldenPath = resolve(goldenRoot, `${filename}.png`);
                             if (!existsSync(goldenPath)) {
                                 if (goldenRequired)
