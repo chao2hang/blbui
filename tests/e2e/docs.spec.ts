@@ -149,10 +149,17 @@ test.describe("BLBUI documentation quality matrix", () => {
                         await target.scrollIntoViewIfNeeded();
                         await expect(target).toBeVisible();
                         await target.evaluate(async (element) => {
-                            const updateComplete = (element as HTMLElement & {
-                                updateComplete?: Promise<unknown>;
-                            }).updateComplete;
-                            if (updateComplete) await updateComplete;
+                            const elements = [element, ...element.querySelectorAll<HTMLElement>("*")];
+                            await Promise.all(
+                                elements
+                                    .map((item) =>
+                                        (item as HTMLElement & { updateComplete?: Promise<unknown> })
+                                            .updateComplete,
+                                    )
+                                    .filter((updateComplete): updateComplete is Promise<unknown> =>
+                                        Boolean(updateComplete),
+                                    ),
+                            );
                             await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
                         });
                         const filename = [platform, viewportValue.id, theme, mode, scene.id].join(
