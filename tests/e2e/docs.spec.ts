@@ -171,6 +171,7 @@ test.describe("BLBUI documentation quality matrix", () => {
         const platform =
             process.env.VISUAL_MATRIX_PROFILE ??
             (process.platform === "win32" ? "windows-chromium" : "ubuntu-chromium");
+        const goldenMismatches: string[] = [];
         for (const viewportValue of visualMatrix.viewports) {
             await page.setViewportSize({
                 width: viewportValue.width,
@@ -246,16 +247,16 @@ test.describe("BLBUI documentation quality matrix", () => {
                                     body: PNG.sync.write(diff),
                                     contentType: "image/png",
                                 });
-                                expect(
-                                    differentPixels,
-                                    `visual golden mismatch for ${filename}`,
-                                ).toBe(0);
+                                if (differentPixels !== 0) {
+                                    goldenMismatches.push(`${filename}: ${differentPixels} pixels`);
+                                }
                             }
                         }
                     }
                 }
             }
         }
+        expect(goldenMismatches, "visual golden mismatches").toEqual([]);
     });
 
     test("keeps a deterministic visual render for pixel-level gating", async ({
