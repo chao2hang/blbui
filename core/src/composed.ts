@@ -394,6 +394,9 @@ export class AdminSchemaFormElement extends AdminElement {
             }
         }
         @media (max-width: 768px) {
+            .fields {
+                gap: 15px;
+            }
             input:not([type="checkbox"]),
             select {
                 height: 38px;
