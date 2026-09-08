@@ -224,7 +224,10 @@ export class AdminImportDialogElement extends AdminElement {
             } catch {
                 dialog.setAttribute("open", "");
             }
-        } else if (!this.open && dialog.open) dialog.close();
+        } else if (!this.open && dialog.open) {
+            if (typeof dialog.close === "function") dialog.close();
+            else dialog.removeAttribute("open");
+        }
     }
 
     private close(): void {

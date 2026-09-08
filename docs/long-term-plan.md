@@ -65,6 +65,7 @@
 - [x] 用 axe 做目录重点组件扫描，修复名称、描述、tab order 和 aria 状态问题。
 - [x] 对 docs playground 建立首屏和渲染节点数预算（DOMContentLoaded < 5s、节点 < 20,000、目录卡片数固定）；DataGrid/长列表的滚动性能预算继续由真实业务宿主接入后补充。
 - [x] 验证 prefers-reduced-motion、forced-colors、键盘-only 和移动端 320px 宽度。
+- [x] 0.0.18 后续收口：Vue/Svelte Business 直连元素在 320px 视口下通过真实浏览器无页面级溢出检查，内部 PermissionMatrix/AuditLog 表格保留局部横向滚动。
 
 ### P5：视觉回归与发布治理
 
@@ -74,6 +75,7 @@
 - 0.0.9 保留 0.0.7 的 pixelmatch 重复渲染门禁，并将 Windows/Ubuntu Chromium、视口、9 × 2 主题和代表场景写入可检查 manifest；真实截图按 CI runner 分平台保存，避免字体和系统控件差异造成误报。
 - [x] 增加 `.github/workflows/visual-regression.yml`，在 Windows/Ubuntu 固定 runner 上生成 9 × 2 × 3 × 8 的 PNG 视觉证据并保留 14 天；两次同 commit、同 profile 的 432 张证据逐张一致后，已将 profile-specific golden 切换为 active，并在 CI 启用 pixelmatch 比较。
 - 组件状态发生变化时更新 changelog、migration note 和截图基准。
+- [x] 0.0.18 后续收口：npm registry 传播超时时仍写入缺失包列表的 GitHub job summary，并由失败路径单测保护。
 - 每季度清理一次重复组件、过期 token、未使用 utility 和文档示例漂移。
 
 ## 组件主题验收矩阵

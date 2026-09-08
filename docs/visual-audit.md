@@ -30,6 +30,14 @@
 - 自动化补充：Vue/Svelte/Web Components playground E2E 通过；PermissionMatrix 的 Operator/Channels、AuditLog 的 `channel.updated` 和 ExportButton 的 EXPORT 文案均可访问。
 - 结果：未发现新增 Business 直连示例的 token、布局、注册时机或自定义元素警告问题；既有 9×2 golden 未改变。
 
+## 0.0.18 后续质量收口
+
+- 日期：2026-09-09；入口：Vue 与 Svelte playground；浏览器：Chrome/Codex Computer Use；自动化补充视口：320 × 720。
+- 人工检查桌面截面：Vue/Svelte 的 PermissionMatrix、AuditLog、ExportButton 均保持工业深色层级、边框和焦点状态；AuditLog 的工具栏与 LOAD MORE、ExportButton 均可见，通知层不遮挡业务表格。
+- 自动化补充：Vue/Svelte 320px E2E 均通过，页面 `scrollWidth <= clientWidth`；宽表只在组件内部保留横向滚动，不产生页面级横向溢出。
+- 行为补充：ImportDialog、ExportButton、BulkActionsToolbar、PermissionMatrix、AuditLog 的直接 Custom Element 事件均由单测验证；npm registry 超时会输出包含六个包缺失状态的 summary。
+- 结果：本轮仅新增测试、降级保护和发布诊断，没有修改主题 token 或视觉 golden；未发现新增布局回归。
+
 ## 结果
 
 | 检查项 | 结果 | 说明 |

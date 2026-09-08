@@ -13,7 +13,9 @@ const frameworkPlaygrounds = [
 ];
 
 for (const playground of frameworkPlaygrounds) {
-    test(`${playground.name} playground preserves the parity contract at runtime`, async ({ page }) => {
+    test(`${playground.name} playground preserves the parity contract at runtime`, async ({
+        page,
+    }) => {
         const pageErrors: string[] = [];
         page.on("pageerror", (error) => pageErrors.push(error.message));
         await page.goto(playground.url);
@@ -54,8 +56,15 @@ for (const playground of frameworkPlaygrounds) {
         await page.getByRole("button", { name: "NEXT" }).click();
         await expect(root).toHaveAttribute("data-parity-page", "2");
         await expect(page.locator("#business-table")).toContainText("Gateway");
-        await page.locator("#business-table").getByRole("checkbox", { name: /Select row/ }).first().check();
-        await expect(page.locator("[data-parity-business-selection]")).toHaveAttribute("data-parity-business-selection", "1");
+        await page
+            .locator("#business-table")
+            .getByRole("checkbox", { name: /Select row/ })
+            .first()
+            .check();
+        await expect(page.locator("[data-parity-business-selection]")).toHaveAttribute(
+            "data-parity-business-selection",
+            "1",
+        );
         if (playground.name !== "React") {
             await expect(page.locator("aui-permission-matrix")).toContainText("Operator");
             await expect(page.locator("aui-audit-log")).toContainText("channel.updated");
@@ -65,7 +74,47 @@ for (const playground of frameworkPlaygrounds) {
     });
 }
 
-test("Web Components playground updates a DataGrid through DOM properties and events", async ({ page }) => {
+for (const playground of frameworkPlaygrounds.filter(({ name }) => name !== "React")) {
+    test(`${playground.name} direct Business elements remain usable at 320px`, async ({
+        page,
+    }, testInfo) => {
+        await page.setViewportSize({ width: 320, height: 720 });
+        await page.goto(playground.url);
+
+        await expect(page.locator("[data-parity-page]")).toHaveAttribute("data-parity-page", "1");
+        await expect(page.locator("aui-permission-matrix")).toBeVisible();
+        await expect(page.locator("aui-audit-log")).toBeVisible();
+        await expect(page.locator("aui-export-button")).toBeVisible();
+        await expect
+            .poll(() =>
+                page.evaluate(
+                    () =>
+                        document.documentElement.scrollWidth <=
+                        document.documentElement.clientWidth,
+                ),
+            )
+            .toBe(true);
+
+        const bounds = await page.evaluate(() => ({
+            viewport: document.documentElement.clientWidth,
+            permission:
+                document.querySelector("aui-permission-matrix")?.getBoundingClientRect().width ?? 0,
+            audit: document.querySelector("aui-audit-log")?.getBoundingClientRect().width ?? 0,
+            export: document.querySelector("aui-export-button")?.getBoundingClientRect().width ?? 0,
+        }));
+        expect(bounds.permission).toBeLessThanOrEqual(bounds.viewport);
+        expect(bounds.audit).toBeLessThanOrEqual(bounds.viewport);
+        expect(bounds.export).toBeLessThanOrEqual(bounds.viewport);
+        await page.screenshot({
+            path: testInfo.outputPath(`${playground.name.toLowerCase()}-business-narrow.png`),
+            fullPage: true,
+        });
+    });
+}
+
+test("Web Components playground updates a DataGrid through DOM properties and events", async ({
+    page,
+}) => {
     const pageErrors: string[] = [];
     page.on("pageerror", (error) => pageErrors.push(error.message));
     await page.goto("http://127.0.0.1:4177");
@@ -80,7 +129,10 @@ test("Web Components playground updates a DataGrid through DOM properties and ev
     await expect(page.locator("#async-state")).toHaveAttribute("data-parity-async-state", "ready");
     await expect(page.locator("#async-state")).toHaveAttribute("data-parity-retry-count", "1");
     await page.getByRole("button", { name: "SIMULATE PERMISSION DENIAL" }).click();
-    await expect(page.locator("#async-state")).toHaveAttribute("data-parity-async-state", "permission-denied");
+    await expect(page.locator("#async-state")).toHaveAttribute(
+        "data-parity-async-state",
+        "permission-denied",
+    );
     await expect(page.locator("#async-grid")).toContainText("Request access to continue.");
     await page.getByRole("button", { name: "RECOVER DATA" }).click();
     await expect(page.locator("#async-state")).toHaveAttribute("data-parity-async-state", "ready");
@@ -88,7 +140,14 @@ test("Web Components playground updates a DataGrid through DOM properties and ev
     await expect(servicesGrid).toContainText("Gateway / Edge");
     await expect(servicesGrid).not.toContainText("Gateway / Production");
     await expect(page.locator("#business-table")).toContainText("Gateway");
-    await page.locator("#business-table").getByRole("checkbox", { name: /Select row/ }).first().check();
-    await expect(page.locator("[data-parity-business-selection]")).toHaveAttribute("data-parity-business-selection", "1");
+    await page
+        .locator("#business-table")
+        .getByRole("checkbox", { name: /Select row/ })
+        .first()
+        .check();
+    await expect(page.locator("[data-parity-business-selection]")).toHaveAttribute(
+        "data-parity-business-selection",
+        "1",
+    );
     expect(pageErrors).toEqual([]);
 });

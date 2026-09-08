@@ -304,7 +304,9 @@ describe("enterprise workflow components", () => {
         audit.error = false;
         audit.permissionDenied = true;
         await audit.updateComplete;
-        expect(audit.shadowRoot?.querySelector('[role="status"]')?.textContent).toContain("PERMISSION DENIED");
+        expect(audit.shadowRoot?.querySelector('[role="status"]')?.textContent).toContain(
+            "PERMISSION DENIED",
+        );
     });
 
     it("supports import preview, CSV export and guarded bulk actions", async () => {
@@ -312,11 +314,29 @@ describe("enterprise workflow components", () => {
         importer.open = true;
         const input = importer.shadowRoot?.querySelector<HTMLInputElement>('input[type="file"]');
         const file = new File(["id,name\n1,Gateway\n"], "channels.csv", { type: "text/csv" });
+        const parsed = vi.fn();
+        const cancelled = vi.fn();
+        const submitted = vi.fn();
+        importer.addEventListener("aui-import-parse", (event) =>
+            parsed((event as CustomEvent).detail),
+        );
+        importer.addEventListener("aui-import-cancel", (event) =>
+            cancelled((event as CustomEvent).detail),
+        );
+        importer.addEventListener("aui-import-submit", (event) =>
+            submitted((event as CustomEvent).detail),
+        );
         Object.defineProperty(input, "files", { configurable: true, value: [file] });
         input?.dispatchEvent(new Event("change", { bubbles: true }));
         await new Promise((resolve) => setTimeout(resolve, 0));
         await importer.updateComplete;
         expect(importer.rows).toEqual([{ id: "1", name: "Gateway" }]);
+        expect(parsed).toHaveBeenCalledWith(expect.objectContaining({ file, rows: importer.rows }));
+        importer.shadowRoot?.querySelector<HTMLButtonElement>("button.primary")?.click();
+        expect(submitted).toHaveBeenCalledWith({ rows: importer.rows });
+        importer.shadowRoot?.querySelector<HTMLButtonElement>("button.close")?.click();
+        expect(cancelled).toHaveBeenCalledWith({});
+        expect(importer.open).toBe(false);
 
         const exporter = await element<AdminExportButtonElement>("aui-export-button");
         exporter.data = [{ id: "1", status: "ready" }];
@@ -339,5 +359,9 @@ describe("enterprise workflow components", () => {
         expect(action).toHaveBeenCalledWith(
             expect.objectContaining({ id: "archive", selected: 2 }),
         );
+        const cleared = vi.fn();
+        bulk.addEventListener("aui-bulk-clear", (event) => cleared((event as CustomEvent).detail));
+        bulk.shadowRoot?.querySelector<HTMLButtonElement>("button:last-of-type")?.click();
+        expect(cleared).toHaveBeenCalledWith({ selected: 2 });
     });
 });
