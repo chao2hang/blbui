@@ -3,6 +3,7 @@
 ## Unreleased
 
 - 刷新 Windows/Ubuntu fixed-runner 窄屏图表、Workflow 与 PermissionMatrix 基准，覆盖 Lit 子组件完成渲染后的稳定截图边界；继续保持严格 pixelmatch，不放宽全局视觉阈值。
+- 记录 Obsidian 深色窄屏场景在 fixed runner 上的实际高度与 SVG 绘制基线，golden 按 profile 分离维护。
 - 视觉矩阵继续作为 2 个平台 × 432 张 PNG 的发布前证据，新增基准须经过人工复核后再提交。
 
 ## 0.0.16 — 2026-09-08
