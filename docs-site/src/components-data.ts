@@ -1989,6 +1989,25 @@ export const components: ComponentItem[] = [
         },
     },
     {
+        id: "line-chart",
+        tag: "aui-line-chart",
+        name: "Line Chart",
+        category: "business",
+        description:
+            "Theme-aware lightweight line chart with null-gap handling and accessible labeling.",
+        status: "stable",
+        props: ["data", "height", "label", "color", "show-points"],
+        events: [],
+        initKey: "line-chart",
+        previewHtml: `<div style="width:100%;max-width:340px;"><aui-line-chart id="preview-line-chart" height="90px" label="REQUESTS TREND"></aui-line-chart></div>`,
+        usage: {
+            wc: `<aui-line-chart id="requests-line" height="160px" label="Requests/sec"></aui-line-chart>`,
+            react: `import { AdminLineChart } from '@chaos_team/blbui-business-react'\n\n<AdminLineChart data={lineData} height="160px" label="Requests/sec" />`,
+            vue: `<aui-line-chart :data="lineData" height="160px" label="Requests/sec" />`,
+            svelte: `<aui-line-chart data={lineData} height="160px" label="Requests/sec"></aui-line-chart>`,
+        },
+    },
+    {
         id: "tree-table",
         tag: "aui-tree-table",
         name: "Tree Table",
@@ -2362,7 +2381,7 @@ export function initComponentDemo(root: HTMLElement): void {
     setProp("#preview-descriptions", "items", [
         { label: "REGION", value: "us-east-1", description: "Primary" },
         { label: "STATUS", value: "ONLINE" },
-        { label: "VERSION", value: "v0.0.8" },
+                        { label: "VERSION", value: "v0.0.9" },
         { label: "OWNER", value: "Platform Ops" },
     ]);
     setProp("#preview-accordion", "items", [
@@ -2618,6 +2637,14 @@ export function initComponentDemo(root: HTMLElement): void {
         { label: "12:00", value: 920 },
         { label: "16:00", value: 850 },
         { label: "20:00", value: 710 },
+    ]);
+    setProp("#preview-line-chart", "data", [
+        { label: "00:00", value: 18 },
+        { label: "04:00", value: 28 },
+        { label: "08:00", value: null },
+        { label: "12:00", value: 42 },
+        { label: "16:00", value: 36 },
+        { label: "20:00", value: 48 },
     ]);
     setProp("#preview-sparkline", "values", [18, 22, 29, 25, 20, 17, 24, 18]);
     setProp("#preview-form-wizard", "steps", [

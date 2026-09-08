@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.9 — 2026-09-08
+
+- 新增 Business `LineChart` 与无依赖 chart adapter contract，统一 `{label, value}` / `{x, y}` 数据、稳定 domain 计算和 null telemetry gap 语义。
+- 补齐 `AdminLineChart` React 绑定、目录/API/示例/测试，并修复 SVG 图表在浏览器中错误使用 HTML 命名空间导致的空白渲染。
+- 完成 Obsidian、Rounded、Glass 主题及 320px 窄屏的人工视觉验收；继续保留 9 × 2 跨平台视觉矩阵和长期图表/宿主迁移计划。
+
 ## 0.0.8 — 2026-09-08
 
 - 完善 Business 数据 adapter contract：支持当前页/总数、排序、分页、跨页选择映射，并新增纯函数 selection 与虚拟窗口边界测试；TanStack Table / Virtual 仍为可选依赖。

@@ -18,6 +18,7 @@ import type {
     AdminExportButtonElement,
     AdminImportDialogElement,
 } from "../business/src/operations";
+import type { AdminLineChartElement } from "../business/src/analytics";
 
 type ElementWithUpdate = HTMLElement & { updateComplete: Promise<unknown> };
 
@@ -81,6 +82,19 @@ describe("application notification manager", () => {
 });
 
 describe("enterprise workflow components", () => {
+    it("renders line chart gaps as separate segments", async () => {
+        const chart = await element<AdminLineChartElement>("aui-line-chart");
+        chart.data = [
+            { label: "A", value: 10 },
+            { label: "B", value: null },
+            { label: "C", value: 30 },
+        ];
+        await chart.updateComplete;
+        expect(chart.shadowRoot?.querySelectorAll("polyline")).toHaveLength(2);
+        expect(chart.shadowRoot?.querySelector("svg")?.namespaceURI).toBe("http://www.w3.org/2000/svg");
+        expect(chart.shadowRoot?.querySelector('[role="img"]')).not.toBeNull();
+    });
+
     it("moves through a linear wizard and emits completion", async () => {
         const wizard = await element<AdminFormWizardElement>("aui-form-wizard");
         wizard.steps = [

@@ -14,6 +14,7 @@ declare global {
         "aui-metric-card": import("./analytics").AdminMetricCardElement;
         "aui-metric-grid": import("./analytics").AdminMetricGridElement;
         "aui-bar-chart": import("./analytics").AdminBarChartElement;
+        "aui-line-chart": import("./analytics").AdminLineChartElement;
         "aui-sparkline": import("./analytics").AdminSparklineElement;
         "aui-form-wizard": import("./enterprise").AdminFormWizardElement;
         "aui-permission-matrix": import("./enterprise").AdminPermissionMatrixElement;

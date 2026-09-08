@@ -9,6 +9,7 @@ import { AdminApprovalTimelineElement, AdminFormBuilderElement } from "./workflo
 import { AdminAdvancedTableElement, AdminCrudPageElement, AdminCrudToolbarElement } from "./crud";
 import {
     AdminBarChartElement,
+    AdminLineChartElement,
     AdminMetricCardElement,
     AdminMetricGridElement,
     AdminSparklineElement,
@@ -34,6 +35,7 @@ export function registerBusinessElements(): void {
     defineOnce("aui-metric-card", AdminMetricCardElement);
     defineOnce("aui-metric-grid", AdminMetricGridElement);
     defineOnce("aui-bar-chart", AdminBarChartElement);
+    defineOnce("aui-line-chart", AdminLineChartElement);
     defineOnce("aui-sparkline", AdminSparklineElement);
     defineOnce("aui-form-wizard", AdminFormWizardElement);
     defineOnce("aui-permission-matrix", AdminPermissionMatrixElement);

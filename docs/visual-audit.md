@@ -21,7 +21,7 @@
 | Dialog | 通过 | 打开、遮罩、焦点进入、ESC 关闭和焦点恢复均正常 |
 | Drawer | 通过 | 右侧抽屉打开、遮罩和 ESC 关闭均正常 |
 | Usage tabs | 通过 | Button 的 Web Components/React/Vue/Svelte 标签切换会更新代码片段 |
-| 代表组件视觉 | 通过 | 表单、导航、反馈、覆盖层、数据、布局、业务组件均有人工目视检查；0.0.8 parity playground、adapter 文档和视觉矩阵变更已复核 |
+| 代表组件视觉 | 通过 | 表单、导航、反馈、覆盖层、数据、布局、业务组件均有人工目视检查；0.0.9 LineChart SVG 命名空间修复、parity playground、adapter 文档和视觉矩阵变更已复核 |
 | 代码区与卡片窄屏布局 | 通过 | 代码区可横向滚动；窄屏页面无级联横向溢出，卡片内部代码区保留局部滚动；浮层预览不再被 playground 纵向裁切 |
 
 ## 人工目视范围

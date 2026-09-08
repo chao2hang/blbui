@@ -2,7 +2,7 @@
 
 > Generated from `docs-site/src/catalog.ts`. Run `bun run api:docs` after changing a component contract.
 
-The catalog currently describes **119 components** across Core and Business packages.
+The catalog currently describes **120 components** across Core and Business packages.
 
 | Component | Custom Element | Category | Properties | Events |
 | --- | --- | --- | --- | --- |
@@ -118,6 +118,7 @@ The catalog currently describes **119 components** across Core and Business pack
 | Metric Card | `aui-metric-card` | business | `label`, `value`, `unit`, `trend`, `tone` | — |
 | Metric Grid | `aui-metric-grid` | business | `items`, `columns` | — |
 | Bar Chart | `aui-bar-chart` | business | `data`, `height`, `label` | — |
+| Line Chart | `aui-line-chart` | business | `data`, `height`, `label`, `color`, `show-points` | — |
 | Sparkline | `aui-sparkline` | business | `values`, `label`, `color` | — |
 | Form Wizard | `aui-form-wizard` | business | `steps`, `active`, `completed`, `linear`, `next-label`, `previous-label`, `finish-label` | `aui-wizard-before-change`, `aui-wizard-change`, `aui-wizard-complete` |
 | Permission Matrix | `aui-permission-matrix` | business | `roles`, `resources`, `permissions`, `read-only`, `empty-label` | `aui-permission-change` |
@@ -140,3 +141,5 @@ The catalog currently describes **119 components** across Core and Business pack
 - `getAdapterSelection(rows, selectedKeys)` returns current-page `keys`, `all`, and `some` state without requiring TanStack Table or any other runtime.
 - `virtualizeRows(rows, scrollTop, viewportHeight, rowHeight, overscan)` returns bounded rows plus `start`, `end`, `top`, and `bottom` spacer values.
 - TanStack Table / Virtual remain optional integrations; no large table dependency is bundled into Core or Business.
+- `normalizeChartSeries` accepts `{label, value}` or `{x, y}` points, preserving null telemetry gaps; `fromChartData` returns normalized series and stable rendering domains.
+- Recharts, VChart and other chart engines remain optional integrations; chart adapters do not add a runtime dependency.

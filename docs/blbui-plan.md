@@ -1,6 +1,6 @@
 # BLBUI 组件库实施计划
 
-> **状态（0.0.8 更新）**：Core 现有 **104 个组件**、Business 15 个、React/Vue 为 104:1 完整 Core 绑定、Svelte 提供注册入口、27 个常用封装（共 29 个公开导出）；9 套主题均支持 light/dark，并提供语义 CSS utilities。当前已接入 token lint、Vitest、Playwright/a11y/E2E、文档 smoke、SSR 检查、三框架 playground 构建、公共 API 文档检查、数据 adapter contract、versioned parity fixture、visual matrix 和人工视觉验收；文档站覆盖 119 个组件。
+> **状态（0.0.9 更新）**：Core 现有 **104 个组件**、Business 16 个、React/Vue 为 104:1 完整 Core 绑定、Svelte 提供注册入口、27 个常用封装（共 29 个公开导出）；9 套主题均支持 light/dark，并提供语义 CSS utilities。当前已接入 token lint、Vitest、Playwright/a11y/E2E、文档 smoke、SSR 检查、三框架 playground 构建、公共 API 文档检查、数据 adapter contract、chart adapter contract、versioned parity fixture、visual matrix 和人工视觉验收；文档站覆盖 120 个组件。
 > 下文历史路径说明：`docs/admin-style-guide.md` 位于 `chaos-ui` 风格规范仓库（本仓库不复制全文，tokens 已提取进 `core/src/tokens.css`）；`packages/blbui` 与 `web/` 是规划阶段的占位命名，实际落地为仓库顶层的 `core/ react/ vue/ svelte/ business/ business-react/ docs-site/` workspace。
 
 ## 目标
@@ -79,6 +79,7 @@
 - [x] 发布 0.0.6 小版本，三框架 playground 与绑定测试作为真实使用反馈入口。
 - [x] 发布 0.0.7 小版本，业务组件、复杂查询、公共 API 文档和完整 release gate 纳入稳定发布流程。
 - [x] 发布 0.0.8 小版本，数据 adapter contract、跨框架受控 parity 和跨平台视觉矩阵纳入稳定发布流程。
+- [x] 发布 0.0.9 小版本，LineChart、chart adapter contract、SVG 视觉修复和人工主题验收纳入稳定发布流程。
 
 ## 验收标准
 

@@ -18,11 +18,20 @@ import type {
     AdminImportRow,
 } from "@chaos_team/blbui-business";
 export { fromTable, getAdapterSelection, virtualizeRows } from "@chaos_team/blbui-business";
+export { fromChartData, getChartDomain, normalizeChartSeries } from "@chaos_team/blbui-business";
 export type {
     AdminAdapterSelection,
     AdminDataGridAdapter,
     AdminTableLike,
     AdminVirtualRows,
+} from "@chaos_team/blbui-business";
+export type {
+    AdminChartAdapter,
+    AdminChartDatum,
+    AdminChartDomain,
+    AdminChartSeries,
+    AdminChartSeriesInput,
+    NormalizeChartOptions,
 } from "@chaos_team/blbui-business";
 import "@chaos_team/blbui-business/styles.css";
 
@@ -280,6 +289,25 @@ export interface AdminSparklineProps extends CommonProps {
     label?: string;
     color?: string;
 }
+export interface AdminLineChartProps extends CommonProps {
+    data?: Array<{ label: string; value: number | null }>;
+    height?: string;
+    label?: string;
+    color?: string;
+    showPoints?: boolean;
+}
+export function AdminLineChart(props: AdminLineChartProps) {
+    const { ref } = useBusinessElement({
+        data: props.data,
+        height: props.height,
+        label: props.label,
+        color: props.color,
+        showPoints: props.showPoints,
+    });
+    const rest = restProps(props, ["data", "height", "label", "color", "showPoints"]);
+    return createElement("aui-line-chart", { ...rest, ref, className: props.className });
+}
+
 export function AdminSparkline(props: AdminSparklineProps) {
     const { ref } = useBusinessElement({
         values: props.values,

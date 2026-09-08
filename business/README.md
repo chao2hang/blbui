@@ -1,8 +1,8 @@
 # @chaos_team/blbui-business
 
-Optional framework-neutral business components for enterprise systems (15 components).
+Optional framework-neutral business components for enterprise systems (16 components).
 
-Fifteen composable building blocks:
+Sixteen composable building blocks:
 
 - `aui-crud-page` — page shell with actions/filters/toolbar/pagination slots
 - `aui-crud-toolbar` — selection-aware toolbar with search and refresh
@@ -10,7 +10,7 @@ Fifteen composable building blocks:
 - `aui-form-builder` — schema-driven forms with submit/change events
 - `aui-approval-timeline` — step-by-step approval flow
 - `aui-metric-card` / `aui-metric-grid` — KPI cards with trend tone
-- `aui-bar-chart` / `aui-sparkline` — lightweight data visualization
+- `aui-bar-chart` / `aui-line-chart` / `aui-sparkline` — lightweight data visualization
 - `aui-form-wizard` — linear or non-linear multi-step workflow with slotted steps
 - `aui-permission-matrix` — editable role/resource permission grid
 - `aui-audit-log` — filterable audit stream with loading/error/pagination contracts
@@ -29,6 +29,11 @@ current-page `all` / `some` selection contract for any framework.
 a bounded virtual-window contract (`start`, `end`, `top`, `bottom`) without
 forcing a virtualizer runtime. See `tests/adapters.test.ts` for the contract
 examples and edge cases.
+
+Chart integrations use the same dependency-free boundary: `normalizeChartSeries`
+accepts common `{label, value}` and `{x, y}` data shapes, preserves null telemetry
+gaps, and `fromChartData` returns normalized series plus stable X/Y domains. This
+keeps Recharts, VChart and future SVG renderers optional.
 
 They depend on `@chaos_team/blbui-core` and register on top of it.
 

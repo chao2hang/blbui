@@ -45,6 +45,8 @@ const lines = [
   "- `getAdapterSelection(rows, selectedKeys)` returns current-page `keys`, `all`, and `some` state without requiring TanStack Table or any other runtime.",
   "- `virtualizeRows(rows, scrollTop, viewportHeight, rowHeight, overscan)` returns bounded rows plus `start`, `end`, `top`, and `bottom` spacer values.",
   "- TanStack Table / Virtual remain optional integrations; no large table dependency is bundled into Core or Business.",
+  "- `normalizeChartSeries` accepts `{label, value}` or `{x, y}` points, preserving null telemetry gaps; `fromChartData` returns normalized series and stable rendering domains.",
+  "- Recharts, VChart and other chart engines remain optional integrations; chart adapters do not add a runtime dependency.",
   "",
 ];
 const output = lines.join("\n");

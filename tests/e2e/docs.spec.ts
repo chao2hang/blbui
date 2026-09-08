@@ -10,7 +10,9 @@ import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
 import { readFileSync } from "node:fs";
 
-const visualMatrix = JSON.parse(readFileSync(new URL("./visual-matrix.json", import.meta.url), "utf8")) as {
+const visualMatrix = JSON.parse(
+    readFileSync(new URL("./visual-matrix.json", import.meta.url), "utf8"),
+) as {
     themes: string[];
     modes: Array<"light" | "dark">;
     viewports: Array<{ id: string; width: number; height: number }>;
@@ -26,7 +28,7 @@ const viewport = (id: string) => {
 test.describe("BLBUI documentation quality matrix", () => {
     test("renders every catalog card without page-level overflow", async ({ page }) => {
         await page.goto("/");
-        await expect(page.locator("[data-catalog-id]")).toHaveCount(119);
+        await expect(page.locator("[data-catalog-id]")).toHaveCount(120);
         await expect
             .poll(() =>
                 page.evaluate(
@@ -114,7 +116,8 @@ test.describe("BLBUI documentation quality matrix", () => {
         await page.emulateMedia({ reducedMotion: "reduce" });
         await page.goto("/");
         await page.addStyleTag({
-            content: "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}",
+            content:
+                "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}",
         });
         await page.evaluate(() => document.fonts?.ready);
 
@@ -140,13 +143,9 @@ test.describe("BLBUI documentation quality matrix", () => {
                         const target = page.locator(scene.selector).first();
                         await target.scrollIntoViewIfNeeded();
                         await expect(target).toBeVisible();
-                        const filename = [
-                            platform,
-                            viewportValue.id,
-                            theme,
-                            mode,
-                            scene.id,
-                        ].join("-");
+                        const filename = [platform, viewportValue.id, theme, mode, scene.id].join(
+                            "-",
+                        );
                         await target.screenshot({
                             path: testInfo.outputPath("visual-matrix", `${filename}.png`),
                             animations: "disabled",
@@ -157,17 +156,21 @@ test.describe("BLBUI documentation quality matrix", () => {
         }
     });
 
-    test("keeps a deterministic visual render for pixel-level gating", async ({ page }, testInfo) => {
+    test("keeps a deterministic visual render for pixel-level gating", async ({
+        page,
+    }, testInfo) => {
         await page.emulateMedia({ reducedMotion: "reduce" });
         await page.goto("/");
         await page.addStyleTag({
-            content: "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}",
+            content:
+                "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}",
         });
         await page.evaluate(() => document.fonts?.ready);
         const first = await page.screenshot({ fullPage: true });
         await page.reload();
         await page.addStyleTag({
-            content: "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}",
+            content:
+                "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}",
         });
         await page.evaluate(() => document.fonts?.ready);
         const second = await page.screenshot({ fullPage: true });
@@ -184,7 +187,10 @@ test.describe("BLBUI documentation quality matrix", () => {
             firstPng.height,
             { threshold: 0.1 },
         );
-        await testInfo.attach("visual-diff.png", { body: PNG.sync.write(diff), contentType: "image/png" });
+        await testInfo.attach("visual-diff.png", {
+            body: PNG.sync.write(diff),
+            contentType: "image/png",
+        });
         expect(differentPixels, "repeated docs render must be pixel-stable").toBe(0);
     });
 
@@ -196,11 +202,13 @@ test.describe("BLBUI documentation quality matrix", () => {
         await expect
             .poll(() =>
                 page.evaluate(
-                    () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+                    () =>
+                        document.documentElement.scrollWidth <=
+                        document.documentElement.clientWidth,
                 ),
             )
             .toBe(true);
-        expect(await page.locator("[data-catalog-id]").count()).toBe(119);
+        expect(await page.locator("[data-catalog-id]").count()).toBe(120);
         for (const scene of visualMatrix.scenes.filter((item) => item.id !== "catalog")) {
             await expect(page.locator(scene.selector).first()).toBeVisible();
         }
@@ -212,7 +220,7 @@ test.describe("BLBUI documentation quality matrix", () => {
             nodes: document.querySelectorAll("*").length,
             cards: document.querySelectorAll("[data-catalog-id]").length,
         }));
-        expect(budget.cards).toBe(119);
+        expect(budget.cards).toBe(120);
         expect(budget.nodes).toBeLessThan(20_000);
     });
 });

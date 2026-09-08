@@ -1016,6 +1016,14 @@ catalog.push(
         ["data", "height", "label"],
     ),
     item(
+        "line-chart",
+        "aui-line-chart",
+        "Line Chart",
+        "business",
+        "Theme-aware dependency-free line chart with intentional null telemetry gaps.",
+        ["data", "height", "label", "color", "show-points"],
+    ),
+    item(
         "sparkline",
         "aui-sparkline",
         "Sparkline",

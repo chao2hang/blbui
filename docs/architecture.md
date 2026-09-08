@@ -31,7 +31,7 @@
 
 - 构建顺序固定为 core → react/vue/svelte/business → business-react；`bun run build:packages` 先对 TS 源做 `useDefineForClassFields: false` 预编译（Lit 响应式属性依赖原型访问器，ES2022 class fields 的 `[[Define]]` 语义会在 dist 里覆盖它们），再用 Bun 打包。正式发布按同一依赖关系顺序执行。
 - Svelte 包以源码 `.svelte` 发布，`dist/index.js` 与 `dist/components.js` 由构建从 `src/components.ts` barrel 再生成，`check:svelte` 校验 dist/src 导出同步。
-- `catalog:check` 校验目录完整性（104 个 Core + 15 个 Business，共 119 个组件）与文档示例中每个 `Admin*` 导入、每个 `aui-*` 标签在对应包里真实存在。
+- `catalog:check` 校验目录完整性（104 个 Core + 16 个 Business，共 120 个组件）与文档示例中每个 `Admin*` 导入、每个 `aui-*` 标签在对应包里真实存在。
 
 ## 主题合同
 
