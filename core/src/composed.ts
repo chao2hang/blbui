@@ -393,6 +393,13 @@ export class AdminSchemaFormElement extends AdminElement {
                 grid-template-columns: 1fr;
             }
         }
+        @media (max-width: 768px) {
+            input:not([type="checkbox"]),
+            select {
+                height: 38px;
+                min-height: 38px;
+            }
+        }
     `;
 
     fields: AdminSchemaFormField[] = [];
