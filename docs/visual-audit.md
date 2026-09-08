@@ -90,6 +90,12 @@
 - 严格比较还发现两张既有 narrow 业务场景存在固定 runner 的 1px 高度漂移：Ubuntu Obsidian light 的 FormWizard 为 `254 × 127`、Windows Obsidian light 的 PermissionMatrix 为 `254 × 141`；两张均与已人工复核的 narrow 证据一致，已同步提升对应 profile-specific golden。
 - 后续双 runner 复核确认 Ubuntu Enterprise dark 的 PieChart 与 Windows Minimal light 的 Gauge 在 narrow 视口存在确定性的 1px 截图边界基线差异；两张失败证据与各自历史 golden 的组件内容逐像素一致，仅外层容器截取起点不同。已人工检查截图并提升对应的 profile-specific golden，未发现组件视觉回归。
 
+## 0.0.16 固定 runner narrow 边界复核（run 34261433120）
+
+- Ubuntu Chromium 与 Windows Chromium 的完整矩阵均已收集并逐组人工检查；本次 CI 报告的 54 张差异全部集中在 narrow 视口的业务场景：Ubuntu 为 PermissionMatrix / PieChart / FormWizard 共 36 张，Windows 为 Gauge / PermissionMatrix 共 18 张。
+- 对实际截图、历史 golden 和 diff 逐张核对后确认：图形、文字、颜色、主题 token 和组件内部布局均一致；差异来自 `target.screenshot()` 保留元素边界后，与历史 full-page clip 在 1px 外层截取起点/终点上的确定性差异。
+- 已依据 run `34261433120` 的固定 runner 证据提升上述 54 张 profile-specific golden；未放宽 pixel-exact 策略，也未更新任何非差异图。下一次双 runner 复核必须重新确认同样的边界语义，再处理 runner 或 Playwright 升级带来的变化。
+
 ## 0.0.11 图表 tooltip/focus 复核
 
 - 入口：`http://127.0.0.1:4179/#components`；Chrome 桌面视口；Business 分类显示 19 个组件。
