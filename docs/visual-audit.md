@@ -23,6 +23,13 @@
 - 人工检查九套主题矩阵、Glass light/dark、Business AdvancedTable 的 loading 与 permission-denied 状态；状态面板、对比度、请求访问按钮和卡片内横向滚动均正常。
 - 自动化补充：Table、DataGrid、AdvancedTable、AuditLog 均覆盖 ready/loading/empty/error/permission-denied、retry 和权限恢复。
 
+## 0.0.18 Business Vue/Svelte 直连示例复核
+
+- 日期：2026-09-09；入口：Vue 与 Svelte playground（`127.0.0.1:5185`、`127.0.0.1:5186`）；浏览器：Chrome/Codex Computer Use。
+- 人工检查桌面视口：Business AdvancedTable、PermissionMatrix、AuditLog、ExportButton 均已渲染；表格列、边框、状态按钮、分页和通知层级正常，无页面级横向溢出。
+- 自动化补充：Vue/Svelte/Web Components playground E2E 通过；PermissionMatrix 的 Operator/Channels、AuditLog 的 `channel.updated` 和 ExportButton 的 EXPORT 文案均可访问。
+- 结果：未发现新增 Business 直连示例的 token、布局、注册时机或自定义元素警告问题；既有 9×2 golden 未改变。
+
 ## 结果
 
 | 检查项 | 结果 | 说明 |
