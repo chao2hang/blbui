@@ -2,7 +2,7 @@
 
 > Generated from `docs-site/src/catalog.ts`. Run `bun run api:docs` after changing a component contract.
 
-The catalog currently describes **126 components** across Core and Business packages.
+The catalog currently describes **129 components** across Core and Business packages.
 
 | Component | Custom Element | Category | Properties | Events |
 | --- | --- | --- | --- | --- |
@@ -20,7 +20,7 @@ The catalog currently describes **126 components** across Core and Business pack
 | Input | `aui-input` | forms | `value`, `type`, `name`, `placeholder`, `invalid` | `aui-input`, `aui-change` |
 | Textarea | `aui-textarea` | forms | `value`, `rows`, `placeholder`, `invalid` | `aui-input` |
 | Select | `aui-select` | forms | `value`, `options`, `disabled`, `invalid` | `aui-change` |
-| Combobox | `aui-combobox` | forms | `options`, `value`, `placeholder`, `open` | `aui-change` |
+| Combobox | `aui-combobox` | forms | `options`, `value`, `query`, `selected-label`, `name`, `placeholder`, `open`, `loading`, `error`, `loading-label`, `empty-label`, `error-label` | `aui-change`, `aui-query-change`, `aui-open-change`, `aui-search`, `aui-search-error` |
 | Multi Select | `aui-multi-select` | forms | `options`, `values`, `placeholder` | `aui-change` |
 | Password Input | `aui-password-input` | forms | `value`, `placeholder`, `reveal-label` | `aui-input` |
 | Checkbox | `aui-checkbox` | forms | `checked`, `disabled`, `label` | `aui-checked-change` |
@@ -132,6 +132,9 @@ The catalog currently describes **126 components** across Core and Business pack
 | Heatmap | `aui-heatmap` | business | `data`, `height`, `label`, `show-tooltip` | `aui-chart-point` |
 | Funnel Chart | `aui-funnel-chart` | business | `data`, `height`, `label`, `show-tooltip` | `aui-chart-point` |
 | Gantt Chart | `aui-gantt-chart` | business | `tasks`, `min`, `max`, `height`, `label` | `aui-gantt-task` |
+| Markdown Editor | `aui-markdown-editor` | business | `value`, `name`, `placeholder`, `rows`, `disabled`, `readonly`, `preview`, `invalid`, `error`, `preview-label`, `allow-images` | `aui-input`, `aui-change` |
+| Markdown Viewer | `aui-markdown-viewer` | business | `value`, `label`, `empty-label` | — |
+| Rich Text Editor | `aui-rich-text-editor` | business | `value`, `name`, `placeholder`, `rows`, `disabled`, `readonly`, `preview`, `invalid`, `error`, `preview-label`, `allow-images` | `aui-input`, `aui-change` |
 
 ## Cross-framework contract
 

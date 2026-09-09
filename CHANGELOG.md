@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.24 — 2026-09-09
+
+- 新增 `MarkdownEditor`、`MarkdownViewer` 和 `RichTextEditor`，支持受控编辑、预览、表单关联、只读/空态/错误状态和跨框架文档示例。
+- Markdown 与 Rich Text 预览采用受限序列化和白名单清洗，移除脚本、事件属性及不安全协议，并补充行为与真实浏览器安全回归。
+- Popover/Dropdown 补齐键盘打开、Escape/outside 关闭、菜单导航、ARIA 关联和嵌套 Custom Element 内部真实焦点恢复。
+- 文档目录扩展为 104 个 Core + 25 个 Business，共 129 个组件；完成 9 套主题 light/dark、编辑器与 320px 窄屏人工视觉复核。
+- 六个可发布包统一升级到 `0.0.24`，并同步 peer dependency、示例、docs-site、发布门禁和 npm tag。
+
 ## 0.0.22 — 2026-09-09
 
 - `AdminDataResource` 新增缓存命中/过期命中/绕过/写入/失效事件、可读缓存统计和可选 telemetry hook；观测回调异常不会破坏请求状态。

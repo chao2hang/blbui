@@ -66,3 +66,15 @@ export function connectEditorAdapter(
 ): () => void {
     return adapter.subscribe?.(onChange) ?? (() => undefined);
 }
+
+export {
+    escapeEditorHtml,
+    renderMarkdownToHtml,
+    sanitizeRichTextHtml,
+    serializeEditorContent,
+} from "./content";
+export type {
+    AdminEditorFormat,
+    AdminSanitizeOptions,
+    AdminSerializedEditorContent,
+} from "./content";

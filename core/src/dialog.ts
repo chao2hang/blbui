@@ -5,7 +5,7 @@ it under the terms of the GNU Affero General Public License.
 */
 
 import { css, html } from "lit";
-import { AdminElement, deepActiveElement, nextUid } from "./base";
+import { AdminElement, deepActiveElement, firstFocusableElement, nextUid, trapFocus } from "./base";
 import { registerOverlay, unregisterOverlay } from "./overlay-stack";
 
 export class AdminDialogElement extends AdminElement {
@@ -110,6 +110,7 @@ export class AdminDialogElement extends AdminElement {
             if (typeof dialog.showModal === "function") dialog.showModal();
             else dialog.setAttribute("open", "");
             registerOverlay(this, () => this.close());
+            (firstFocusableElement(dialog) ?? dialog).focus();
         }
         if (!this.open && dialog.open) {
             if (typeof dialog.close === "function") dialog.close();
@@ -135,6 +136,10 @@ export class AdminDialogElement extends AdminElement {
         this.close();
     }
 
+    private handleKeydown(event: KeyboardEvent): void {
+        trapFocus(event, event.currentTarget as HTMLDialogElement);
+    }
+
     private handleClick(event: MouseEvent): void {
         const dialog = event.currentTarget as HTMLDialogElement;
         if (event.target === dialog) this.close();
@@ -144,7 +149,10 @@ export class AdminDialogElement extends AdminElement {
         return html`<dialog
             @cancel=${this.handleCancel}
             @click=${this.handleClick}
+            @keydown=${this.handleKeydown}
             aria-labelledby=${this.titleId}
+            aria-modal="true"
+            tabindex="-1"
         >
             <div class="panel">
                 <header class="header">
@@ -293,6 +301,7 @@ export class AdminConfirmDialogElement extends AdminElement {
             if (typeof dialog.showModal === "function") dialog.showModal();
             else dialog.setAttribute("open", "");
             registerOverlay(this, () => this.cancel());
+            (firstFocusableElement(dialog) ?? dialog).focus();
         }
         if (!this.open && dialog.open) {
             if (typeof dialog.close === "function") dialog.close();
@@ -321,8 +330,18 @@ export class AdminConfirmDialogElement extends AdminElement {
         this.cancel();
     }
 
+    private handleKeydown(event: KeyboardEvent): void {
+        trapFocus(event, event.currentTarget as HTMLDialogElement);
+    }
+
     render() {
-        return html`<dialog @cancel=${this.handleCancel} aria-labelledby=${this.titleId}>
+        return html`<dialog
+            @cancel=${this.handleCancel}
+            @keydown=${this.handleKeydown}
+            aria-labelledby=${this.titleId}
+            aria-modal="true"
+            tabindex="-1"
+        >
             <div class="panel">
                 <header class="header">
                     <h2 id=${this.titleId}>${this.title}<slot name="title"></slot></h2>

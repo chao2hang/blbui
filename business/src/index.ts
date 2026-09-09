@@ -12,5 +12,6 @@ export * from "./operations";
 export * from "./adapters";
 export * from "./chart-adapters";
 export * from "./editor-adapters";
+export * from "./content";
 export * from "./data-source";
 export { registerBusinessElements } from "./register";

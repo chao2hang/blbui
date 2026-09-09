@@ -6,35 +6,32 @@ component markup while preserving BLBUI's `loading`, `empty`, `error` and
 `permission-denied` vocabulary.
 
 ```ts
-import {
-  AdminDataResource,
-  createAdminFetchDataSource,
-} from '@chaos_team/blbui-business'
+import { AdminDataResource, createAdminFetchDataSource } from "@chaos_team/blbui-business";
 
-type Service = { id: string; name: string }
+type Service = { id: string; name: string };
 
 const services = new AdminDataResource<Service>({
-  loader: createAdminFetchDataSource<Service>({
-    endpoint: ({ page, pageSize }) =>
-      `/api/services?page=${page ?? 1}&pageSize=${pageSize ?? 25}`,
-  }),
-  retry: { maxRetries: 2, delayMs: 250, backoffMultiplier: 2 },
-  cache: { ttlMs: 30_000, staleWhileRevalidate: true },
-})
+    loader: createAdminFetchDataSource<Service>({
+        endpoint: ({ page, pageSize }) =>
+            `/api/services?page=${page ?? 1}&pageSize=${pageSize ?? 25}`,
+    }),
+    retry: { maxRetries: 2, delayMs: 250, backoffMultiplier: 2 },
+    cache: { ttlMs: 30_000, staleWhileRevalidate: true },
+});
 
 const unsubscribe = services.subscribe((snapshot) => {
-  dataGrid.loading = snapshot.status === 'loading'
-  dataGrid.empty = snapshot.status === 'empty'
-  dataGrid.error = snapshot.status === 'error'
-  dataGrid.permissionDenied = snapshot.status === 'permission-denied'
-  dataGrid.rows = snapshot.rows
-})
+    dataGrid.loading = snapshot.status === "loading";
+    dataGrid.empty = snapshot.status === "empty";
+    dataGrid.error = snapshot.status === "error";
+    dataGrid.permissionDenied = snapshot.status === "permission-denied";
+    dataGrid.rows = snapshot.rows;
+});
 
-await services.load({ page: 1, pageSize: 25 })
-await services.retry() // reuses the last request
-services.clearCache() // invalidate all cached pages after a mutation
-unsubscribe()
-services.dispose()
+await services.load({ page: 1, pageSize: 25 });
+await services.retry(); // reuses the last request
+services.clearCache(); // invalidate all cached pages after a mutation
+unsubscribe();
+services.dispose();
 ```
 
 Starting a new load aborts the previous request, and stale responses cannot
@@ -55,15 +52,15 @@ Cache behavior can be measured without coupling BLBUI to a telemetry SDK:
 
 ```ts
 const stopCacheMetrics = services.subscribeCache((event) => {
-  metrics.count(`blbui.data.cache.${event.type}`)
-})
+    metrics.count(`blbui.data.cache.${event.type}`);
+});
 
-console.log(services.getCacheStats())
+console.log(services.getCacheStats());
 // { entries, hits, staleHits, misses, bypasses, writes, invalidations,
 //   revalidations }
 
-services.resetCacheStats()
-stopCacheMetrics()
+services.resetCacheStats();
+stopCacheMetrics();
 ```
 
 The equivalent `cache.onEvent` option is useful when the resource owns the
@@ -76,6 +73,28 @@ The resource is framework-neutral. React can subscribe with
 `onMount`, and Web Components can update properties from the subscription.
 The component layer remains responsible for rendering the state and emitting
 `aui-retry`.
+
+## Remote Combobox search
+
+`aui-combobox` keeps remote option search framework-neutral. Set `search` (or
+`onSearch` in a direct property binding) to a function that receives the query
+and an `AbortSignal`; return an option array or update `options` yourself. A
+new query aborts the previous search, stale results are ignored, and loading or
+search errors are exposed through `loading`, `error`, `loading-label` and
+`error-label`. `query`, `value` and `selected-label` can be controlled by the
+host, while `name` enables `ElementInternals` form submission where supported.
+
+```ts
+const provider = document.querySelector("aui-combobox")!;
+provider.search = async (query, { signal }) => {
+    const response = await fetch(`/api/providers?q=${encodeURIComponent(query)}`, { signal });
+    if (!response.ok) throw new Error("Provider search failed");
+    return response.json();
+};
+provider.addEventListener("aui-query-change", (event) => {
+    console.log((event as CustomEvent<{ query: string }>).detail.query);
+});
+```
 
 The same options are framework-neutral. Keep one resource per page or data
 scope, pass the snapshot to the framework binding, and keep cleanup in the
@@ -92,12 +111,12 @@ resource on unmount/page hide.
 
 The fixture deliberately exercises the same state sequence in every host:
 
-| State | Contract |
-| --- | --- |
+| State               | Contract                                                                            |
+| ------------------- | ----------------------------------------------------------------------------------- |
 | `ready` / `loading` | rows remain controlled by the resource snapshot and loading is exposed to the table |
-| `error` | a transient 503 is retryable and keeps the error action visible |
-| `permission-denied` | a 403 is non-retryable and uses the permission slot/label |
-| recovery | the host changes the fixture mode and calls `load()` or `retry()` |
+| `error`             | a transient 503 is retryable and keeps the error action visible                     |
+| `permission-denied` | a 403 is non-retryable and uses the permission slot/label                           |
+| recovery            | the host changes the fixture mode and calls `load()` or `retry()`                   |
 
 The versioned parity fixture also enables `ttlMs: 30_000` with
 `staleWhileRevalidate`. Each playground renders the same cache telemetry panel
@@ -122,39 +141,39 @@ controlled component props:
 
 ```vue
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { AdminDataGrid } from '@chaos_team/blbui-vue'
-import { AdminDataResource, createAdminFetchDataSource } from '@chaos_team/blbui-business'
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { AdminDataGrid } from "@chaos_team/blbui-vue";
+import { AdminDataResource, createAdminFetchDataSource } from "@chaos_team/blbui-business";
 
-type Service = { id: string; name: string }
-const rows = ref<Service[]>([])
-const state = ref('idle')
+type Service = { id: string; name: string };
+const rows = ref<Service[]>([]);
+const state = ref("idle");
 const resource = new AdminDataResource<Service>({
-  loader: createAdminFetchDataSource({ endpoint: '/api/services' }),
-})
-let unsubscribe = () => undefined
+    loader: createAdminFetchDataSource({ endpoint: "/api/services" }),
+});
+let unsubscribe = () => undefined;
 
 onMounted(() => {
-  unsubscribe = resource.subscribe((snapshot) => {
-    rows.value = snapshot.rows
-    state.value = snapshot.status
-  })
-  void resource.load({ page: 1, pageSize: 25 })
-})
+    unsubscribe = resource.subscribe((snapshot) => {
+        rows.value = snapshot.rows;
+        state.value = snapshot.status;
+    });
+    void resource.load({ page: 1, pageSize: 25 });
+});
 onBeforeUnmount(() => {
-  unsubscribe()
-  resource.dispose()
-})
+    unsubscribe();
+    resource.dispose();
+});
 </script>
 
 <template>
-  <AdminDataGrid
-    :rows="rows"
-    :loading="state === 'loading'"
-    :error="state === 'error'"
-    :permission-denied="state === 'permission-denied'"
-    @retry="resource.retry()"
-  />
+    <AdminDataGrid
+        :rows="rows"
+        :loading="state === 'loading'"
+        :error="state === 'error'"
+        :permission-denied="state === 'permission-denied'"
+        @retry="resource.retry()"
+    />
 </template>
 ```
 

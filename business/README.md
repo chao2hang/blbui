@@ -1,6 +1,6 @@
 # @chaos_team/blbui-business
 
-Optional framework-neutral business components for enterprise systems (22 components).
+Optional framework-neutral business components for enterprise systems (25 components).
 
 Sixteen composable building blocks:
 
@@ -19,6 +19,8 @@ Sixteen composable building blocks:
 - `aui-import-dialog` — CSV/JSON file validation and preview before submit
 - `aui-export-button` — dependency-free CSV/JSON download with an export event
 - `aui-bulk-actions-toolbar` — selected-row summary and guarded batch actions
+- `aui-markdown-editor` / `aui-markdown-viewer` — safe Markdown authoring and read-only preview
+- `aui-rich-text-editor` — whitelist-sanitized rich-text authoring and preview
 
 The package also exports optional-dependency adapters. `fromTable(table)` maps a
 TanStack Table-compatible instance to `AdminAdvancedTable` props, including the

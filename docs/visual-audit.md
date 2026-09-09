@@ -3,12 +3,22 @@
 ## 本次验收
 
 - 日期：2026-09-09
-- 版本：0.0.23
+- 版本：0.0.24
 - 入口：http://127.0.0.1:4176/
 - 浏览器：Codex In-app Browser
 - 视口：桌面约 1280 × 720（页面有效宽度 1265px）；窄屏 390 × 844（页面有效宽度 375px）
-- 组件目录：126 个组件卡片，8 个分类
+- 组件目录：129 个组件卡片，8 个分类
 - 主题矩阵：9 套主题 × light/dark = 18 个组合
+
+### 0.0.24 发布前人工复核（2026-09-09）
+
+- 使用 Codex In-app Browser 实际检查 Markdown Editor、Markdown Viewer 和 Rich Text Editor；空内容、只读、错误文案、编辑后预览更新均保持卡片内布局稳定，Rich Text 预览不会执行脚本或 `onclick`。
+- 在 Obsidian dark、Rounded light、Glass dark、Atmospheric light 下逐项查看三类编辑器的表面、边框、文字、焦点和预览层级；日夜切换后编辑区域和只读内容均可读，未发现主题 token 缺失。
+- 在 320px 窄屏查看编辑器文本区、预览区、错误提示和代码区，确认页面无横向溢出；代码区保留局部滚动，编辑器卡片不会裁切预览。
+- 同步人工查看 Popover/Dropdown 的真实触发器、ARIA 状态、Escape 关闭和焦点回到内部按钮；新增业务卡片与旧组件目录均可见。
+- 自动化补充：129/129 catalog、9 套主题 × light/dark、axe、编辑器安全、Popover 键盘、320px、性能预算与视觉重复渲染门禁通过；固定 runner golden 仍保持 432/432 × 2 profile 合同。
+- 结果：0.0.24 的新增组件和交互质量完成发布前视觉收口；真实外部 `web/` 宿主仍未进入工作区，Users、Channels、Usage Logs 不宣称已迁移。
+
 
 ### 0.0.23 发布前人工复核（2026-09-09）
 
@@ -27,7 +37,7 @@
 
 ### 0.0.20 发布前人工收口（2026-09-09）
 
-- 重新检查 docs-site、React、Vue、Svelte 和 Web Components 五个实际入口；文档目录仍显示 126 个组件，四个 playground 均显示表格、异步状态控制、Business 图表和通知/分页等关键区域。
+- 重新检查 docs-site、React、Vue、Svelte 和 Web Components 五个实际入口；四个 playground 均显示表格、异步状态控制、Business 图表和通知/分页等关键区域。
 - docs-site 确认 9 套主题选择器与 light/dark 控制存在；Heatmap、Funnel Chart、Gantt Chart 的数据、标签、任务条、内部滚动和焦点语义均可见。
 - React/Vue/Svelte 确认共享 `AdminDataResource` 的 ready 状态、异步控制按钮、Business AdvancedTable 和图表渲染；Web Components 确认 pagehide 生命周期对应的 async contract、表格和图表仍稳定。
 - 结果：未发现新增主题缺失、页面级横向溢出、图表裁切、异步状态不可见或跨框架 parity 视觉差异；本轮不提升既有 pixel golden，继续由固定 runner 视觉矩阵维护基线。
@@ -87,11 +97,11 @@
 
 | 检查项 | 结果 | 说明 |
 | --- | --- | --- |
-| 组件目录完整渲染 | 通过 | 126/126 卡片存在并渲染；分类计数与可见数量一致；逐卡尺寸检查无 0 尺寸 |
+| 组件目录完整渲染 | 通过 | 129/129 卡片存在并渲染；分类计数与可见数量一致；逐卡尺寸检查无 0 尺寸 |
 | 页面级横向溢出 | 通过 | 桌面与 390px 窄屏均复核 `scrollWidth === clientWidth`；窄屏标题字号已收敛，水平滚动条已消除 |
-| 主题覆盖 | 通过 | 9 套主题 × light/dark 共 18 个组合均逐一切换目视；组件数量保持 126 个；新增组件只使用 AUI token |
+| 主题覆盖 | 通过 | 9 套主题 × light/dark 共 18 个组合均逐一切换目视；组件数量保持 129 个；新增组件只使用 AUI token |
 | 日夜切换 | 通过 | 根节点 `data-aui-mode` 正确在 light/dark 间切换 |
-| 分类筛选 | 通过 | Business 筛选准确显示 22 个业务组件，恢复 All 后显示 126 个 |
+| 分类筛选 | 通过 | Business 筛选准确显示 25 个业务组件，恢复 All 后显示 129 个 |
 | Dialog | 通过 | 打开、遮罩、焦点进入、ESC 关闭和焦点恢复均正常 |
 | Drawer | 通过 | 右侧抽屉打开、遮罩和 ESC 关闭均正常 |
 | Usage tabs | 通过 | Button 的 Web Components/React/Vue/Svelte 标签切换会更新代码片段 |

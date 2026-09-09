@@ -75,7 +75,7 @@ const captureVisualTarget = async (target: Locator, path: string) => {
 test.describe("BLBUI documentation quality matrix", () => {
     test("renders every catalog card without page-level overflow", async ({ page }) => {
         await page.goto("/");
-        await expect(page.locator("[data-catalog-id]")).toHaveCount(126);
+        await expect(page.locator("[data-catalog-id]")).toHaveCount(129);
         await expect
             .poll(() =>
                 page.evaluate(
@@ -157,6 +157,44 @@ test.describe("BLBUI documentation quality matrix", () => {
             await wrapper.locator("[data-async-request-access]").click();
             await expect(control("ready")).toHaveClass(/is-active/);
         }
+    });
+
+    test("checks editor preview safety, responsive layout and overlay keyboard semantics", async ({
+        page,
+    }) => {
+        await page.goto("/");
+        const markdown = page.locator("#markdown-editor aui-markdown-editor");
+        const viewer = page.locator("#markdown-viewer aui-markdown-viewer");
+        const richText = page.locator("#rich-text-editor aui-rich-text-editor");
+        await expect(markdown).toBeVisible();
+        await expect(viewer).toContainText("Deployment");
+        await expect(markdown.locator("h1")).toContainText("Release notes");
+        await expect(richText.locator("strong")).toContainText("rich text");
+
+        await markdown.locator("textarea").fill("# Updated\n\n**Safe**");
+        await expect(markdown.locator("h1")).toContainText("Updated");
+        await expect(markdown.locator("strong")).toContainText("Safe");
+        await richText.locator("textarea").fill('<p onclick="bad()">Safe <strong>HTML</strong></p><script>bad()</script>');
+        await expect(richText.locator("strong")).toContainText("HTML");
+        await expect(richText.locator("script")).toHaveCount(0);
+        await expect(richText).not.toContainText("bad()");
+
+        const popoverTrigger = page.locator("#popover aui-popover button").first();
+        await popoverTrigger.press("Enter");
+        await expect(page.locator("#popover aui-popover")).toHaveAttribute("open", "");
+        await page.keyboard.press("Escape");
+        await expect(page.locator("#popover aui-popover")).not.toHaveAttribute("open", "");
+
+        await page.setViewportSize({ width: 320, height: 720 });
+        await expect
+            .poll(() =>
+                page.evaluate(
+                    () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+                ),
+            )
+            .toBe(true);
+        await expect(markdown.locator("textarea")).toBeVisible();
+        await expect(richText.locator(".preview")).toBeVisible();
     });
 
     test("keeps Business analytics charts interactive across themes and narrow screens", async ({ page }) => {
@@ -373,7 +411,7 @@ test.describe("BLBUI documentation quality matrix", () => {
                 ),
             )
             .toBe(true);
-        expect(await page.locator("[data-catalog-id]").count()).toBe(126);
+        expect(await page.locator("[data-catalog-id]").count()).toBe(129);
         for (const scene of visualMatrix.scenes.filter((item) => item.id !== "catalog")) {
             await expect(page.locator(scene.selector).first()).toBeVisible();
         }
@@ -388,7 +426,7 @@ test.describe("BLBUI documentation quality matrix", () => {
                 "navigation",
             )[0] as PerformanceNavigationTiming,
         }));
-        expect(budget.cards).toBe(126);
+        expect(budget.cards).toBe(129);
         expect(budget.nodes).toBeLessThan(20_000);
         expect(
             budget.navigation.domContentLoadedEventEnd - budget.navigation.startTime,

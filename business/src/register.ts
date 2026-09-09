@@ -30,6 +30,11 @@ import {
     AdminExportButtonElement,
     AdminImportDialogElement,
 } from "./operations";
+import {
+    AdminMarkdownEditorElement,
+    AdminMarkdownViewerElement,
+    AdminRichTextEditorElement,
+} from "./content";
 
 export function registerBusinessElements(): void {
     if (typeof customElements === "undefined") return;
@@ -55,4 +60,7 @@ export function registerBusinessElements(): void {
     defineOnce("aui-import-dialog", AdminImportDialogElement);
     defineOnce("aui-export-button", AdminExportButtonElement);
     defineOnce("aui-bulk-actions-toolbar", AdminBulkActionsToolbarElement);
+    defineOnce("aui-markdown-editor", AdminMarkdownEditorElement);
+    defineOnce("aui-markdown-viewer", AdminMarkdownViewerElement);
+    defineOnce("aui-rich-text-editor", AdminRichTextEditorElement);
 }

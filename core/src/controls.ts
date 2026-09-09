@@ -203,15 +203,36 @@ export interface AdminOption {
     description?: string;
 }
 
+export interface AdminComboboxSearchContext {
+    query: string;
+    signal: AbortSignal;
+}
+
+export type AdminComboboxSearch = (
+    query: string,
+    context: AdminComboboxSearchContext,
+) => AdminOption[] | Promise<AdminOption[] | void> | void;
+
 export class AdminComboboxElement extends AdminElement {
     static properties = {
         options: { attribute: false },
         value: { type: String },
+        query: { type: String },
+        selectedLabel: { type: String, attribute: "selected-label" },
+        name: { type: String, reflect: true },
         placeholder: { type: String },
         disabled: { type: Boolean, reflect: true },
         open: { type: Boolean, reflect: true },
+        loading: { type: Boolean, reflect: true },
+        error: { type: Boolean, reflect: true },
+        loadingLabel: { type: String, attribute: "loading-label" },
+        emptyLabel: { type: String, attribute: "empty-label" },
+        errorLabel: { type: String, attribute: "error-label" },
+        search: { attribute: false },
+        onSearch: { attribute: false },
         ariaLabel: { attribute: "aria-label" },
     };
+    static formAssociated = true;
     static styles = css`
         :host {
             position: relative;
@@ -310,22 +331,64 @@ export class AdminComboboxElement extends AdminElement {
             color: var(--aui-text-muted);
             font: 11px/1.2 var(--aui-font-mono);
         }
+        .status {
+            padding: 12px 8px;
+            color: var(--aui-text-muted);
+            font: 11px/1.2 var(--aui-font-mono);
+        }
+        .status.error {
+            color: var(--aui-danger);
+        }
+        .retry {
+            margin-top: 8px;
+            padding: 5px 8px;
+            border: 1px solid currentColor;
+            border-radius: var(--aui-radius-sm);
+            background: transparent;
+            color: inherit;
+            cursor: pointer;
+            font: 700 10px/1 var(--aui-font-mono);
+            text-transform: uppercase;
+        }
     `;
     options: AdminOption[] = [];
-    value = "#ffffff";
+    value = "";
+    query = "";
+    selectedLabel = "";
+    name = "";
     placeholder = "Search or select";
     disabled = false;
     open = false;
+    loading = false;
+    error = false;
+    loadingLabel = "SEARCHING...";
+    emptyLabel = "NO MATCHES";
+    errorLabel = "FAILED TO LOAD OPTIONS";
+    search: AdminComboboxSearch | undefined;
+    onSearch: AdminComboboxSearch | undefined;
     ariaLabel = "";
-    private query = "";
     private activeIndex = 0;
     private listId = nextUid("combobox-list");
+    private searchController: AbortController | undefined;
+    private searchSequence = 0;
+    private queryDirty = false;
+    private formInternals: ElementInternals | undefined;
     private readonly onDocumentClick = (event: Event) => {
         if (isTopOverlay(this) && !this.contains(event.target as Node) && this.open) {
-            this.open = false;
-            this.requestUpdate();
+            this.close();
         }
     };
+    connectedCallback(): void {
+        super.connectedCallback();
+        if (!this.formInternals && typeof this.attachInternals === "function") {
+            try {
+                this.formInternals = this.attachInternals();
+            } catch {
+                // Older browsers can expose the method without supporting internals.
+            }
+        }
+        this.syncFormValue();
+    }
     private filtered(): AdminOption[] {
         const query = this.query.toLowerCase();
         return this.options.filter(
@@ -338,41 +401,136 @@ export class AdminComboboxElement extends AdminElement {
         if (option.disabled) return;
         this.value = option.value;
         this.query = option.label;
+        this.queryDirty = false;
+        this.error = false;
         this.open = false;
-        this.dispatchDetail("aui-change", { value: option.value, option });
+        this.searchController?.abort();
+        this.loading = false;
+        this.syncFormValue();
+        this.dispatchDetail("aui-change", {
+            value: option.value,
+            label: option.label,
+            option,
+        });
         this.requestUpdate();
     }
     private input(event: Event): void {
         this.query = (event.target as HTMLInputElement).value;
+        this.queryDirty = true;
+        this.error = false;
         this.open = true;
         this.activeIndex = 0;
+        this.dispatchDetail("aui-query-change", { query: this.query });
+        void this.searchOptions(this.query);
         this.requestUpdate();
+    }
+    private close(): void {
+        if (!this.open) return;
+        this.open = false;
+        this.searchController?.abort();
+        this.loading = false;
+        this.requestUpdate();
+    }
+    private async searchOptions(query: string): Promise<void> {
+        const callback = this.search ?? this.onSearch;
+        if (!callback) return;
+        this.searchController?.abort();
+        const controller = new AbortController();
+        const sequence = ++this.searchSequence;
+        this.searchController = controller;
+        this.loading = true;
+        this.error = false;
+        this.requestUpdate();
+        try {
+            const result = await callback(query, { query, signal: controller.signal });
+            if (sequence !== this.searchSequence || controller.signal.aborted) return;
+            if (Array.isArray(result)) this.options = result;
+            this.dispatchDetail("aui-search", {
+                query,
+                options: Array.isArray(result) ? result : this.options,
+            });
+        } catch (cause) {
+            if (sequence !== this.searchSequence || controller.signal.aborted) return;
+            this.error = true;
+            this.dispatchDetail("aui-search-error", { query, error: cause });
+        } finally {
+            if (sequence === this.searchSequence && !controller.signal.aborted) {
+                this.loading = false;
+                this.searchController = undefined;
+                this.requestUpdate();
+            }
+        }
+    }
+    private retrySearch(): void {
+        void this.searchOptions(this.query);
+    }
+    private focusout(event: FocusEvent): void {
+        const next = event.relatedTarget;
+        if (
+            next &&
+            (next === this ||
+                this.shadowRoot?.contains(next as Node) ||
+                this.contains(next as Node))
+        )
+            return;
+        queueMicrotask(() => {
+            if (!this.shadowRoot?.activeElement) this.close();
+        });
+    }
+    protected willUpdate(changed: Map<string, unknown>): void {
+        if (
+            (changed.has("value") || changed.has("options") || changed.has("selectedLabel")) &&
+            !this.queryDirty
+        ) {
+            const option = this.options.find((item) => item.value === this.value);
+            const nextQuery = this.selectedLabel || option?.label || "";
+            if (this.query !== nextQuery) this.query = nextQuery;
+        }
     }
     protected updated(changed: Map<string, unknown>): void {
         if (changed.has("open")) {
             if (this.open) {
                 document.addEventListener("click", this.onDocumentClick, true);
                 registerOverlay(this, () => {
-                    this.open = false;
-                    this.requestUpdate();
+                    this.close();
                 });
             } else {
                 document.removeEventListener("click", this.onDocumentClick, true);
                 unregisterOverlay(this);
             }
+            this.dispatchDetail("aui-open-change", { open: this.open });
         }
+        if (changed.has("value") || changed.has("name")) this.syncFormValue();
     }
     disconnectedCallback(): void {
         super.disconnectedCallback();
+        this.searchController?.abort();
         document.removeEventListener("click", this.onDocumentClick, true);
         unregisterOverlay(this);
+    }
+    formResetCallback(): void {
+        this.value = "";
+        this.query = "";
+        this.queryDirty = false;
+        this.syncFormValue();
+    }
+    formDisabledCallback(disabled: boolean): void {
+        this.disabled = disabled;
+    }
+    private syncFormValue(): void {
+        if (typeof this.formInternals?.setFormValue === "function") {
+            this.formInternals.setFormValue(this.value || null);
+        }
     }
     private keydown(event: KeyboardEvent): void {
         const options = this.filtered();
         if (event.key === "ArrowDown") {
             event.preventDefault();
+            const wasOpen = this.open;
             this.open = true;
-            this.activeIndex = Math.min(this.activeIndex + 1, Math.max(options.length - 1, 0));
+            this.activeIndex = wasOpen
+                ? Math.min(this.activeIndex + 1, Math.max(options.length - 1, 0))
+                : 0;
             this.requestUpdate();
         } else if (event.key === "ArrowUp") {
             event.preventDefault();
@@ -382,20 +540,28 @@ export class AdminComboboxElement extends AdminElement {
             event.preventDefault();
             const option = options[this.activeIndex];
             if (option) this.choose(option);
+        } else if (event.key === "Escape") {
+            if (this.open) {
+                event.preventDefault();
+                this.close();
+            }
         }
     }
     render() {
-        const selected = this.options.find((option) => option.value === this.value);
         const options = this.filtered();
         return html`<div class="control">
                 <input
-                    .value=${this.query || selected?.label || ""}
+                    .value=${this.query}
+                    name=${this.name || undefined}
                     placeholder=${this.placeholder}
                     ?disabled=${this.disabled}
                     role="combobox"
                     aria-label=${this.ariaLabel || undefined}
+                    aria-autocomplete="list"
+                    aria-haspopup="listbox"
                     aria-expanded=${this.open ? "true" : "false"}
                     aria-controls=${this.listId}
+                    aria-busy=${this.loading ? "true" : "false"}
                     aria-activedescendant=${
                         this.open && options.length
                             ? `${this.listId}-option-${this.activeIndex}`
@@ -405,44 +571,57 @@ export class AdminComboboxElement extends AdminElement {
                         this.open = true;
                         this.requestUpdate();
                     }}
+                    @focusout=${this.focusout}
                     @input=${this.input}
                     @keydown=${this.keydown}
                 /><button
                     class="chevron"
                     type="button"
-                    tabindex="-1"
-                    aria-hidden="true"
+                    aria-label=${this.open ? "Close options" : "Open options"}
+                    aria-haspopup="listbox"
+                    aria-expanded=${this.open ? "true" : "false"}
+                    aria-controls=${this.listId}
                     @click=${() => {
                         this.open = !this.open;
+                        this.shadowRoot?.querySelector<HTMLInputElement>("input")?.focus();
                         this.requestUpdate();
                     }}
                 ></button>
             </div>
             <div class="list" id=${this.listId} role="listbox">
                 ${
-                    options.length
-                        ? options.map(
-                              (option, index) =>
-                                  html`<button
-                                      class="option"
-                                      type="button"
-                                      role="option"
-                                      id=${`${this.listId}-option-${index}`}
-                                      aria-selected=${option.value === this.value ? "true" : "false"}
-                                      data-active=${index === this.activeIndex ? "true" : "false"}
-                                      ?disabled=${option.disabled}
-                                      @click=${() => this.choose(option)}
-                                  >
-                                      ${option.label}${
-                                          option.description
-                                              ? html`<div class="description">
-                                                    ${option.description}
-                                                </div>`
-                                              : null
-                                      }
-                                  </button>`,
-                          )
-                        : html`<div class="empty">NO MATCHES</div>`
+                    this.loading
+                        ? html`<div class="status" role="status">${this.loadingLabel}</div>`
+                        : this.error
+                          ? html`<div class="status error" role="alert">
+                                <div>${this.errorLabel}</div>
+                                <button class="retry" type="button" @click=${this.retrySearch}>
+                                    RETRY
+                                </button>
+                            </div>`
+                          : options.length
+                            ? options.map(
+                                  (option, index) =>
+                                      html`<button
+                                          class="option"
+                                          type="button"
+                                          role="option"
+                                          id=${`${this.listId}-option-${index}`}
+                                          aria-selected=${option.value === this.value ? "true" : "false"}
+                                          data-active=${index === this.activeIndex ? "true" : "false"}
+                                          ?disabled=${option.disabled}
+                                          @click=${() => this.choose(option)}
+                                      >
+                                          ${option.label}${
+                                              option.description
+                                                  ? html`<div class="description">
+                                                        ${option.description}
+                                                    </div>`
+                                                  : null
+                                          }
+                                      </button>`,
+                              )
+                            : html`<div class="empty" role="status">${this.emptyLabel}</div>`
                 }
             </div>`;
     }

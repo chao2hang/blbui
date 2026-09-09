@@ -96,6 +96,10 @@ onBeforeUnmount(() => unsubscribe())
     @aui-audit-load-more="loadMore"
   />
   <aui-export-button :data.prop="rows" format="csv" filename="channels" />
+
+  <aui-markdown-editor :value.prop="markdown" preview @aui-change="saveMarkdown" />
+  <aui-markdown-viewer :value.prop="releaseNotes" />
+  <aui-rich-text-editor :value.prop="html" allow-images @aui-change="saveHtml" />
 </template>
 ```
 
@@ -154,6 +158,10 @@ Business dependency does not leak into `@chaos_team/blbui-vue`.
   on:aui-audit-load-more={loadMore}
 ></aui-audit-log>
 <aui-export-button data={rows} format="csv" filename="channels"></aui-export-button>
+
+<aui-markdown-editor bind:value={markdown} preview on:aui-change={saveMarkdown}></aui-markdown-editor>
+<aui-markdown-viewer value={releaseNotes}></aui-markdown-viewer>
+<aui-rich-text-editor bind:value={html} allow-images on:aui-change={saveHtml}></aui-rich-text-editor>
 ```
 
 Svelte wrappers in `@chaos_team/blbui-svelte/components` cover the frequently
@@ -176,6 +184,20 @@ registered Business element:
   `aui-sparkline`, `aui-heatmap`, `aui-funnel-chart`, `aui-gantt-chart`
 - Enterprise and operations: `aui-permission-matrix`, `aui-audit-log`,
   `aui-import-dialog`, `aui-export-button`, `aui-bulk-actions-toolbar`
+- Content: `aui-markdown-editor`, `aui-markdown-viewer`, `aui-rich-text-editor`
+
+## Safe content contract
+
+`aui-markdown-editor` stores the source Markdown and renders only the supported
+safe subset in its preview. `aui-rich-text-editor` accepts HTML source but runs
+it through `sanitizeRichTextHtml` before preview; scripts, event attributes,
+unsafe URLs, styles and unknown dangerous elements are removed. Both controls
+are form-associated when `ElementInternals` is available and emit `aui-input`
+and `aui-change` with `{ value }` details.
+
+For a custom editor runtime, keep the adapter contract in
+`docs/editor-adapters.md`, then call `serializeEditorContent` at the storage
+boundary rather than rendering third-party HTML directly.
 
 The release gate runs `bun run business:examples:check` and the playground E2E
 starts real Vue, Svelte and Web Component hosts, so these snippets cannot drift

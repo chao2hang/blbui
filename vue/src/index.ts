@@ -30,6 +30,7 @@ import type {
     AdminFormLayout,
     AdminSchemaFormField,
     AdminSchemaFormValue,
+    AdminComboboxSearch,
 } from "@chaos_team/blbui-core";
 
 import "@chaos_team/blbui-core/styles.css";
@@ -1220,21 +1221,67 @@ export const AdminColorTag = adminElement({
 export const AdminCombobox = adminElement({
     name: "AdminCombobox",
     tag: "aui-combobox",
-    properties: ["options", "value", "placeholder", "disabled", "open"],
+    properties: [
+        "options",
+        "value",
+        "query",
+        "selectedLabel",
+        "name",
+        "placeholder",
+        "disabled",
+        "open",
+        "loading",
+        "error",
+        "loadingLabel",
+        "emptyLabel",
+        "errorLabel",
+        "search",
+    ],
     events: [
         {
             name: "aui-change",
             emit: "change",
             map: (detail) => [(detail as { value: string }).value],
+            model: "value",
         },
+        {
+            name: "aui-query-change",
+            emit: "query-change",
+            map: (detail) => [(detail as { query: string }).query],
+            model: "query",
+        },
+        {
+            name: "aui-open-change",
+            emit: "open-change",
+            map: (detail) => [(detail as { open: boolean }).open],
+            model: "open",
+        },
+        { name: "aui-search-error", emit: "search-error" },
     ],
-    emits: ["change"],
+    emits: [
+        "change",
+        "update:value",
+        "query-change",
+        "update:query",
+        "open-change",
+        "update:open",
+        "search-error",
+    ],
     props: {
         options: objectArray,
         value: String,
+        query: String,
+        selectedLabel: String,
+        name: String,
         placeholder: String,
         disabled: Boolean,
         open: Boolean,
+        loading: Boolean,
+        error: Boolean,
+        loadingLabel: String,
+        emptyLabel: String,
+        errorLabel: String,
+        search: Function as PropType<AdminComboboxSearch>,
     },
 });
 

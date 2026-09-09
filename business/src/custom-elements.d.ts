@@ -28,6 +28,9 @@ declare global {
         "aui-import-dialog": import("./operations").AdminImportDialogElement;
         "aui-export-button": import("./operations").AdminExportButtonElement;
         "aui-bulk-actions-toolbar": import("./operations").AdminBulkActionsToolbarElement;
+        "aui-markdown-editor": import("./content").AdminMarkdownEditorElement;
+        "aui-markdown-viewer": import("./content").AdminMarkdownViewerElement;
+        "aui-rich-text-editor": import("./content").AdminRichTextEditorElement;
     }
 }
 

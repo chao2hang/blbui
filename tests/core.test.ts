@@ -271,8 +271,9 @@ describe("industrial admin core", () => {
         expect(date.open).toBe(true);
         expect(opened).toBe(true);
         expect(date.shadowRoot?.querySelector(".popover")).not.toBeNull();
-        const allowed = [...(date.shadowRoot?.querySelectorAll<HTMLButtonElement>(".day") ?? [])]
-            .find((button) => button.getAttribute("aria-label") === "2026-09-08");
+        const allowed = [
+            ...(date.shadowRoot?.querySelectorAll<HTMLButtonElement>(".day") ?? []),
+        ].find((button) => button.getAttribute("aria-label") === "2026-09-08");
         allowed?.click();
         await date.updateComplete;
         expect(selected).toBe("2026-09-08");
@@ -562,6 +563,77 @@ describe("expanded component contracts", () => {
         expect((combobox as unknown as { open: boolean }).open).toBe(false);
     });
 
+    it("supports controlled query, outside dismissal and asynchronous option search", async () => {
+        const searches: Array<{ query: string; signal: AbortSignal }> = [];
+        const combobox = document.createElement("aui-combobox") as HTMLElement & {
+            options: Array<{ value: string; label: string }>;
+            query: string;
+            value: string;
+            search: (
+                query: string,
+                context: { query: string; signal: AbortSignal },
+            ) => Promise<Array<{ value: string; label: string }>>;
+            updateComplete: Promise<boolean>;
+        };
+        combobox.query = "user";
+        combobox.search = async (query, context) => {
+            searches.push({ query, signal: context.signal });
+            return [{ value: "user-1", label: "User One" }];
+        };
+        document.body.append(combobox);
+        await combobox.updateComplete;
+
+        const input = combobox.shadowRoot?.querySelector<HTMLInputElement>("input");
+        if (!input) throw new Error("Combobox input was not rendered");
+        input.value = "user";
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        await combobox.updateComplete;
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        await combobox.updateComplete;
+
+        expect(searches).toHaveLength(1);
+        expect(searches[0]?.query).toBe("user");
+        expect(combobox.shadowRoot?.querySelector(".option")?.textContent).toContain("User One");
+        expect(combobox.shadowRoot?.querySelector(".status")).toBeNull();
+
+        combobox.open = true;
+        await combobox.updateComplete;
+        document.body.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        await combobox.updateComplete;
+        expect(combobox.open).toBe(false);
+    });
+
+    it("exposes async search loading and error recovery semantics", async () => {
+        let rejectSearch: ((error: Error) => void) | undefined;
+        const combobox = document.createElement("aui-combobox") as HTMLElement & {
+            search: () => Promise<never>;
+            loading: boolean;
+            error: boolean;
+            updateComplete: Promise<boolean>;
+        };
+        combobox.search = () =>
+            new Promise((_, reject) => {
+                rejectSearch = reject;
+            });
+        document.body.append(combobox);
+        await combobox.updateComplete;
+        const input = combobox.shadowRoot?.querySelector<HTMLInputElement>("input");
+        if (!input) throw new Error("Combobox input was not rendered");
+        input.value = "remote";
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        await combobox.updateComplete;
+        expect(combobox.loading).toBe(true);
+
+        rejectSearch?.(new Error("network"));
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        await combobox.updateComplete;
+        expect(combobox.loading).toBe(false);
+        expect(combobox.error).toBe(true);
+        expect(combobox.shadowRoot?.querySelector('[role="alert"]')?.textContent).toContain(
+            "FAILED TO LOAD OPTIONS",
+        );
+    });
+
     it("keeps a progress value within its accessible range", async () => {
         const progress = document.createElement("aui-progress") as HTMLElement & {
             value: number;
@@ -725,6 +797,82 @@ describe("expanded component contracts", () => {
         await drawer.updateComplete;
         expect(drawer.open).toBe(false);
         expect(closeCount).toBe(1);
+    });
+
+    it("moves initial focus into dialogs and traps Tab in both modal variants", async () => {
+        const dialog = document.createElement("aui-dialog") as HTMLElement & {
+            open: boolean;
+            updateComplete: Promise<boolean>;
+        };
+        dialog.title = "DETAILS";
+        dialog.innerHTML = '<button slot="footer">APPLY</button>';
+        document.body.append(dialog);
+        await dialog.updateComplete;
+        const opener = document.createElement("button");
+        document.body.append(opener);
+        opener.focus();
+        dialog.open = true;
+        await dialog.updateComplete;
+
+        const nativeDialog = dialog.shadowRoot?.querySelector("dialog") as HTMLDialogElement;
+        const close = nativeDialog.querySelector("button.close") as HTMLButtonElement;
+        const footer = dialog.querySelector("button") as HTMLButtonElement;
+        expect(dialog.shadowRoot?.activeElement).toBe(close);
+        footer.focus();
+        nativeDialog.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true }));
+        expect(dialog.shadowRoot?.activeElement).toBe(close);
+
+        const confirm = document.createElement("aui-confirm-dialog") as HTMLElement & {
+            open: boolean;
+            updateComplete: Promise<boolean>;
+        };
+        confirm.title = "CONFIRM";
+        document.body.append(confirm);
+        await confirm.updateComplete;
+        confirm.open = true;
+        await confirm.updateComplete;
+        const confirmDialog = confirm.shadowRoot?.querySelector("dialog") as HTMLDialogElement;
+        const buttons = confirmDialog.querySelectorAll("button");
+        expect(confirm.shadowRoot?.activeElement).toBe(buttons[0]);
+        (buttons[1] as HTMLButtonElement).focus();
+        confirmDialog.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true }));
+        expect(confirm.shadowRoot?.activeElement).toBe(buttons[0]);
+    });
+
+    it("supports keyboard opening and ARIA trigger linkage for popovers and dropdowns", async () => {
+        const popover = document.createElement("aui-popover") as HTMLElement & {
+            open: boolean;
+            updateComplete: Promise<boolean>;
+        };
+        popover.innerHTML = '<button slot="trigger">MORE</button><button slot="content">EDIT</button>';
+        document.body.append(popover);
+        await popover.updateComplete;
+        const popoverTrigger = popover.querySelector("button") as HTMLButtonElement;
+        expect(popoverTrigger.getAttribute("aria-haspopup")).toBe("dialog");
+        expect(popoverTrigger.getAttribute("aria-expanded")).toBe("false");
+        popoverTrigger.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+        await popover.updateComplete;
+        expect(popover.open).toBe(true);
+        expect(popoverTrigger.getAttribute("aria-expanded")).toBe("true");
+
+        const dropdown = document.createElement("aui-dropdown") as HTMLElement & {
+            items: Array<{ id: string; label: string; disabled?: boolean }>;
+            open: boolean;
+            updateComplete: Promise<boolean>;
+        };
+        dropdown.items = [
+            { id: "disabled", label: "Disabled", disabled: true },
+            { id: "open", label: "Open" },
+        ];
+        dropdown.innerHTML = '<button slot="trigger">MENU</button>';
+        document.body.append(dropdown);
+        await dropdown.updateComplete;
+        const dropdownTrigger = dropdown.querySelector("button") as HTMLButtonElement;
+        expect(dropdownTrigger.getAttribute("aria-haspopup")).toBe("menu");
+        dropdownTrigger.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+        await dropdown.updateComplete;
+        expect(dropdown.open).toBe(true);
+        expect(dropdown.shadowRoot?.activeElement?.textContent).toContain("Open");
     });
 });
 
@@ -1304,5 +1452,22 @@ describe("table state sizing (issue #1)", () => {
         const css = await readFile(tokensPath, "utf8");
         expect(css).toContain("--aui-table-state-min-height: 96px");
         expect(css).toContain("--aui-table-state-padding: 16px");
+        expect(css).toContain("--aui-empty-state-min-height: 96px");
+        expect(css).toContain("--aui-empty-state-padding: 16px");
+    });
+
+    it("keeps standalone empty state compact and host-overridable", async () => {
+        const empty = document.createElement("aui-empty-state") as HTMLElement & {
+            updateComplete: Promise<boolean>;
+        };
+        document.body.append(empty);
+        await empty.updateComplete;
+        const styleText = Array.from(empty.shadowRoot?.querySelectorAll("style") ?? [])
+            .map((style) => style.textContent ?? "")
+            .join("\n");
+        expect(styleText).toContain("var(--aui-empty-state-min-height");
+        expect(styleText).toContain("var(--aui-empty-state-padding");
+        expect(styleText).not.toContain("min-height: 160px");
+        expect(styleText).not.toContain("padding: 48px");
     });
 });

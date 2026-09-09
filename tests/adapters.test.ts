@@ -14,6 +14,9 @@ import {
 import {
     connectEditorAdapter,
     readEditorState,
+    renderMarkdownToHtml,
+    sanitizeRichTextHtml,
+    serializeEditorContent,
     writeEditorState,
     type AdminEditorAdapter,
 } from "../business/src/editor-adapters";
@@ -126,5 +129,34 @@ describe("business data adapter contract", () => {
         expect(received).toHaveLength(1);
         disconnect();
         expect(listener).toBeUndefined();
+    });
+
+    it("serializes a safe markdown subset without allowing markup injection", () => {
+        const html = renderMarkdownToHtml(
+            '# Release\n\n**Ready** with `token` and [docs](https://example.com/docs).\n\n<script>alert(1)</script>',
+        );
+        expect(html).toContain("<h1>Release</h1>");
+        expect(html).toContain("<strong>Ready</strong>");
+        expect(html).toContain("<code>token</code>");
+        expect(html).toContain('href="https://example.com/docs"');
+        expect(html).not.toContain("<script>");
+        expect(html).toContain("&lt;script&gt;");
+    });
+
+    it("sanitizes rich text HTML, URLs and attributes", () => {
+        const html = sanitizeRichTextHtml(
+            '<p onclick="alert(1)">Hello <strong>world</strong></p><img src="javascript:alert(1)"><a href="javascript:alert(1)" style="color:red">bad</a><a href="https://example.com" target="_blank">good</a>',
+        );
+        expect(html).toContain("<p>Hello <strong>world</strong></p>");
+        expect(html).not.toContain("onclick");
+        expect(html).not.toContain("javascript:");
+        expect(html).not.toContain("<img");
+        expect(html).toContain('href="https://example.com"');
+        expect(html).toContain('rel="noopener noreferrer"');
+        expect(html).toContain('target="_blank"');
+
+        expect(serializeEditorContent("<script>bad()</script>", "html").html).not.toContain(
+            "script",
+        );
     });
 });

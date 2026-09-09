@@ -1,6 +1,6 @@
 {
   "name": "@chaos_team/blbui-svelte",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "description": "Svelte 5 bindings for the Chaos industrial admin component library.",
   "homepage": "https://github.com/chao2hang/blbui#readme",
   "license": "AGPL-3.0-or-later",
@@ -34,7 +34,7 @@
   },
   "scripts": {},
   "peerDependencies": {
-      "@chaos_team/blbui-core": "^0.0.23",
+      "@chaos_team/blbui-core": "^0.0.24",
     "svelte": "^5.0.0"
   }
 }

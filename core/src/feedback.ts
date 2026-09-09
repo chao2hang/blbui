@@ -107,8 +107,8 @@ export class AdminEmptyStateElement extends AdminElement {
             display: block;
         }
         .state {
-            min-height: 160px;
-            padding: 48px 16px;
+            min-height: var(--aui-empty-state-min-height, 96px);
+            padding: var(--aui-empty-state-padding, 16px);
             display: flex;
             flex-direction: column;
             align-items: center;

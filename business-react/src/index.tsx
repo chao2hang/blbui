@@ -57,10 +57,19 @@ export {
     readEditorState,
     writeEditorState,
 } from "@chaos_team/blbui-business";
+export {
+    escapeEditorHtml,
+    renderMarkdownToHtml,
+    sanitizeRichTextHtml,
+    serializeEditorContent,
+} from "@chaos_team/blbui-business";
 export type {
+    AdminEditorFormat,
     AdminEditorAdapter,
     AdminEditorSelection,
     AdminEditorState,
+    AdminSanitizeOptions,
+    AdminSerializedEditorContent,
 } from "@chaos_team/blbui-business";
 import "@chaos_team/blbui-business/styles.css";
 
@@ -103,6 +112,104 @@ function restProps(props: CommonProps, known: string[]): Record<string, unknown>
         if (!known.includes(key) && key !== "children" && value !== undefined) result[key] = value;
     }
     return result;
+}
+
+export interface AdminMarkdownEditorProps extends CommonProps {
+    value?: string;
+    name?: string;
+    placeholder?: string;
+    rows?: number;
+    disabled?: boolean;
+    readOnly?: boolean;
+    preview?: boolean;
+    invalid?: boolean;
+    error?: string;
+    previewLabel?: string;
+    allowImages?: boolean;
+    onInput?: (value: string) => void;
+    onChange?: (value: string) => void;
+}
+
+function editorProps(props: AdminMarkdownEditorProps): Record<string, unknown> {
+    return {
+        value: props.value,
+        name: props.name,
+        placeholder: props.placeholder,
+        rows: props.rows,
+        disabled: props.disabled,
+        readOnly: props.readOnly,
+        preview: props.preview,
+        invalid: props.invalid,
+        error: props.error,
+        previewLabel: props.previewLabel,
+        allowImages: props.allowImages,
+    };
+}
+
+function editorRestProps(props: AdminMarkdownEditorProps): Record<string, unknown> {
+    return restProps(props, [
+        "value",
+        "name",
+        "placeholder",
+        "rows",
+        "disabled",
+        "readOnly",
+        "preview",
+        "invalid",
+        "error",
+        "previewLabel",
+        "allowImages",
+        "onInput",
+        "onChange",
+    ]);
+}
+
+export function AdminMarkdownEditor(props: AdminMarkdownEditorProps) {
+    const { ref } = useBusinessElement(editorProps(props), {
+        "aui-input": props.onInput
+            ? (detail: { value: string }) => props.onInput?.(detail.value)
+            : undefined,
+        "aui-change": props.onChange
+            ? (detail: { value: string }) => props.onChange?.(detail.value)
+            : undefined,
+    });
+    return createElement("aui-markdown-editor", {
+        ...editorRestProps(props),
+        ref,
+        className: props.className,
+    });
+}
+
+export function AdminRichTextEditor(props: AdminMarkdownEditorProps) {
+    const { ref } = useBusinessElement(editorProps(props), {
+        "aui-input": props.onInput
+            ? (detail: { value: string }) => props.onInput?.(detail.value)
+            : undefined,
+        "aui-change": props.onChange
+            ? (detail: { value: string }) => props.onChange?.(detail.value)
+            : undefined,
+    });
+    return createElement("aui-rich-text-editor", {
+        ...editorRestProps(props),
+        ref,
+        className: props.className,
+    });
+}
+
+export interface AdminMarkdownViewerProps extends CommonProps {
+    value?: string;
+    label?: string;
+    emptyLabel?: string;
+}
+
+export function AdminMarkdownViewer(props: AdminMarkdownViewerProps) {
+    const { ref } = useBusinessElement({
+        value: props.value,
+        label: props.label,
+        emptyLabel: props.emptyLabel,
+    });
+    const rest = restProps(props, ["value", "label", "emptyLabel"]);
+    return createElement("aui-markdown-viewer", { ...rest, ref, className: props.className });
 }
 
 function slotNode(name: string, content: ReactNode): ReactNode {

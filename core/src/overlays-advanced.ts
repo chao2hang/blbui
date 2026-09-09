@@ -5,7 +5,13 @@ it under the terms of the GNU Affero General Public License.
 */
 
 import { css, html } from "lit";
-import { AdminElement, deepActiveElement, focusableElements, nextUid } from "./base";
+import {
+    AdminElement,
+    deepActiveElement,
+    firstFocusableElement,
+    focusableElements,
+    nextUid,
+} from "./base";
 import { isTopOverlay, registerOverlay, unregisterOverlay } from "./overlay-stack";
 
 export interface AdminMenuItem {
@@ -136,17 +142,20 @@ export class AdminPopoverElement extends AdminElement {
     open = false;
     title = "";
     private titleId = nextUid("popover-title");
+    private contentId = nextUid("popover-content");
     private lastFocused: HTMLElement | null = null;
     private readonly onDocumentClick = (event: Event) => {
         if (isTopOverlay(this) && !this.contains(event.target as Node)) this.close();
     };
     private triggerElement(): HTMLElement | null {
-        return (
-            this.shadowRoot
-                ?.querySelector<HTMLSlotElement>("slot[name='trigger']")
-                ?.assignedElements()
-                .find((node): node is HTMLElement => node instanceof HTMLElement) ?? null
-        );
+        for (const node of this.shadowRoot
+            ?.querySelector<HTMLSlotElement>("slot[name='trigger']")
+            ?.assignedElements() ?? []) {
+            const focusable = firstFocusableElement(node);
+            if (focusable) return focusable;
+            if (node instanceof HTMLElement) return node;
+        }
+        return null;
     }
     private close(): void {
         if (!this.open) return;
@@ -171,17 +180,48 @@ export class AdminPopoverElement extends AdminElement {
         this.open = true;
         this.dispatchDetail("aui-open-change", { open: this.open });
     }
+    private syncTriggerAria(): void {
+        for (const node of this.shadowRoot
+            ?.querySelector<HTMLSlotElement>("slot[name='trigger']")
+            ?.assignedElements() ?? []) {
+            const target =
+                firstFocusableElement(node) ?? (node instanceof HTMLElement ? node : null);
+            if (!target) continue;
+            target.setAttribute("aria-haspopup", "dialog");
+            target.setAttribute("aria-expanded", this.open ? "true" : "false");
+            target.setAttribute("aria-controls", this.contentId);
+        }
+    }
+    private handleTriggerKeydown(event: KeyboardEvent): void {
+        if (event.key === "Enter" || event.key === " " || event.key === "ArrowDown") {
+            event.preventDefault();
+            if (!this.open) this.toggle(event);
+        } else if (event.key === "Escape" && this.open) {
+            event.preventDefault();
+            this.close();
+        }
+    }
+    private focusContent(): void {
+        const content = this.shadowRoot?.querySelector<HTMLElement>(".content");
+        if (content) (firstFocusableElement(content) ?? content).focus();
+    }
     protected updated(changed: Map<string, unknown>): void {
         if (changed.has("open")) {
             if (this.open) {
                 document.addEventListener("click", this.onDocumentClick, true);
                 registerOverlay(this, () => this.close());
-                this.shadowRoot?.querySelector<HTMLElement>(".content")?.focus();
+                queueMicrotask(() => {
+                    if (this.open) this.focusContent();
+                });
             } else {
                 document.removeEventListener("click", this.onDocumentClick, true);
                 unregisterOverlay(this);
             }
+            this.syncTriggerAria();
         }
+    }
+    protected firstUpdated(): void {
+        this.syncTriggerAria();
     }
     disconnectedCallback(): void {
         super.disconnectedCallback();
@@ -190,11 +230,14 @@ export class AdminPopoverElement extends AdminElement {
         this.lastFocused = null;
     }
     render() {
-        return html`<span @click=${this.toggle}><slot name="trigger"></slot><slot></slot></span>
+        return html`<span @click=${this.toggle} @keydown=${this.handleTriggerKeydown}
+                ><slot name="trigger" @slotchange=${this.syncTriggerAria}></slot><slot></slot
+            ></span>
             <div
                 class="content"
                 role="dialog"
                 tabindex="-1"
+                id=${this.contentId}
                 aria-labelledby=${this.title ? this.titleId : undefined}
                 aria-label=${this.title ? undefined : "Popover"}
             >
@@ -256,28 +299,68 @@ export class AdminDropdownElement extends AdminElement {
     `;
     items: AdminMenuItem[] = [];
     open = false;
+    private menuId = nextUid("dropdown-menu");
     private lastFocused: HTMLElement | null = null;
+    private pendingFocusIndex = 0;
     private readonly onDocumentClick = (event: Event) => {
         if (isTopOverlay(this) && !this.contains(event.target as Node)) this.close();
     };
     private triggerElement(): HTMLElement | null {
-        return (
-            this.shadowRoot
-                ?.querySelector<HTMLSlotElement>("slot[name='trigger']")
-                ?.assignedElements()
-                .find((node): node is HTMLElement => node instanceof HTMLElement) ?? null
-        );
+        for (const node of this.shadowRoot
+            ?.querySelector<HTMLSlotElement>("slot[name='trigger']")
+            ?.assignedElements() ?? []) {
+            const focusable = firstFocusableElement(node);
+            if (focusable) return focusable;
+            if (node instanceof HTMLElement) return node;
+        }
+        return null;
+    }
+    private menuButtons(): HTMLButtonElement[] {
+        return [
+            ...(this.shadowRoot?.querySelectorAll<HTMLButtonElement>(
+                ".menu button[role='menuitem']",
+            ) ?? []),
+        ].filter((button) => !button.disabled);
+    }
+    private openMenu(index = 0, event?: Event): void {
+        if (this.open) return;
+        if (event) {
+            this.lastFocused =
+                this.triggerElement() ??
+                [...event.composedPath()].find(
+                    (node): node is HTMLElement => node instanceof HTMLElement && node !== this,
+                ) ??
+                (document.activeElement instanceof HTMLElement ? document.activeElement : null);
+        }
+        this.pendingFocusIndex = index;
+        this.open = true;
+        this.dispatchDetail("aui-open-change", { open: true });
+    }
+    private toggle(event: Event): void {
+        if (this.open) this.close();
+        else this.openMenu(0, event);
+    }
+    private handleTriggerKeydown(event: KeyboardEvent): void {
+        if (event.key === "Enter" || event.key === " " || event.key === "ArrowDown") {
+            event.preventDefault();
+            this.openMenu(0, event);
+        } else if (event.key === "ArrowUp") {
+            event.preventDefault();
+            this.openMenu(-1, event);
+        } else if (event.key === "Escape" && this.open) {
+            event.preventDefault();
+            this.close();
+        }
     }
     private readonly onMenuKeydown = (event: KeyboardEvent) => {
-        const buttons = this.shadowRoot?.querySelectorAll<HTMLElement>(
-            ".menu button[role='menuitem']",
-        );
-        if (!buttons?.length) return;
+        const buttons = this.menuButtons();
+        if (!buttons.length) return;
         const current = [...buttons].findIndex(
             (button) => button === (event.target as HTMLElement),
         );
         const move = (delta: number) => {
-            buttons[(current + delta + buttons.length) % buttons.length].focus();
+            const start = current < 0 ? (delta > 0 ? 0 : buttons.length - 1) : current;
+            buttons[(start + delta + buttons.length) % buttons.length].focus();
             event.preventDefault();
         };
         switch (event.key) {
@@ -320,10 +403,12 @@ export class AdminDropdownElement extends AdminElement {
         for (const node of this.shadowRoot
             ?.querySelector<HTMLSlotElement>("[name='trigger']")
             ?.assignedElements() ?? []) {
-            if (node instanceof HTMLElement) {
-                node.setAttribute("aria-haspopup", "menu");
-                node.setAttribute("aria-expanded", this.open ? "true" : "false");
-            }
+            const target =
+                firstFocusableElement(node) ?? (node instanceof HTMLElement ? node : null);
+            if (!target) continue;
+            target.setAttribute("aria-haspopup", "menu");
+            target.setAttribute("aria-expanded", this.open ? "true" : "false");
+            target.setAttribute("aria-controls", this.menuId);
         }
     }
     protected updated(changed: Map<string, unknown>): void {
@@ -331,15 +416,23 @@ export class AdminDropdownElement extends AdminElement {
             if (this.open) {
                 document.addEventListener("click", this.onDocumentClick, true);
                 registerOverlay(this, () => this.close());
-                this.shadowRoot
-                    ?.querySelector<HTMLElement>(".menu button[role='menuitem']")
-                    ?.focus();
+                queueMicrotask(() => {
+                    if (!this.open) return;
+                    const buttons = this.menuButtons();
+                    const index =
+                        this.pendingFocusIndex < 0 ? buttons.length - 1 : this.pendingFocusIndex;
+                    buttons[Math.min(index, Math.max(buttons.length - 1, 0))]?.focus();
+                });
             } else {
                 document.removeEventListener("click", this.onDocumentClick, true);
                 unregisterOverlay(this);
             }
             this.syncTriggerAria();
         }
+        if (changed.has("items")) this.syncTriggerAria();
+    }
+    protected firstUpdated(): void {
+        this.syncTriggerAria();
     }
     disconnectedCallback(): void {
         super.disconnectedCallback();
@@ -348,29 +441,10 @@ export class AdminDropdownElement extends AdminElement {
         this.lastFocused = null;
     }
     render() {
-        return html`<span
-                @click=${(event: Event) => {
-                    if (!this.open) {
-                        this.lastFocused =
-                            this.triggerElement() ??
-                            [...event.composedPath()].find(
-                                (node): node is HTMLElement =>
-                                    node instanceof HTMLElement && node !== this,
-                            ) ??
-                            (document.activeElement instanceof HTMLElement
-                                ? document.activeElement
-                                : null);
-                    }
-                    if (this.open) {
-                        this.close();
-                        return;
-                    }
-                    this.open = true;
-                    this.dispatchDetail("aui-open-change", { open: this.open });
-                }}
-                ><slot name="trigger" @slotchange=${this.syncTriggerAria}><slot></slot></slot
+        return html`<span @click=${this.toggle} @keydown=${this.handleTriggerKeydown}
+                ><slot name="trigger" @slotchange=${this.syncTriggerAria}></slot><slot></slot
             ></span>
-            <div class="menu" role="menu" @keydown=${this.onMenuKeydown}>
+            <div class="menu" id=${this.menuId} role="menu" @keydown=${this.onMenuKeydown}>
                 ${this.items.map((item) =>
                     item.separator
                         ? html`<div class="separator" role="separator"></div>`
@@ -379,6 +453,7 @@ export class AdminDropdownElement extends AdminElement {
                               role="menuitem"
                               class=${item.danger ? "danger" : ""}
                               ?disabled=${item.disabled}
+                              aria-disabled=${item.disabled ? "true" : "false"}
                               @click=${() => this.select(item)}
                           >
                               ${item.label}${item.shortcut ? html`<kbd>${item.shortcut}</kbd>` : null}

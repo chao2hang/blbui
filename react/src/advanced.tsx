@@ -35,6 +35,7 @@ import type {
     AdminTreeTableNode,
     AdminListViewItem,
     AdminToastItem,
+    AdminComboboxSearch,
     AdminFilterField,
     AdminFilterRule,
     AdminFilterNode,
@@ -136,27 +137,95 @@ function elementProps(
 export interface AdminComboboxProps extends ElementProps {
     options?: AdminOption[];
     value?: string;
+    query?: string;
+    selectedLabel?: string;
+    name?: string;
     placeholder?: string;
     disabled?: boolean;
     open?: boolean;
+    loading?: boolean;
+    error?: boolean;
+    loadingLabel?: string;
+    emptyLabel?: string;
+    errorLabel?: string;
+    onSearch?: AdminComboboxSearch;
     onChange?: (value: string) => void;
+    onQueryChange?: (query: string) => void;
+    onOpenChange?: (open: boolean) => void;
+    onSearchError?: (detail: { query: string; error: unknown }) => void;
 }
 export function AdminCombobox(props: AdminComboboxProps) {
-    const { options, value, placeholder, disabled, open, onChange, ...rest } = props;
+    const {
+        options,
+        value,
+        query,
+        selectedLabel,
+        name,
+        placeholder,
+        disabled,
+        open,
+        loading,
+        error,
+        loadingLabel,
+        emptyLabel,
+        errorLabel,
+        onSearch,
+        onChange,
+        onQueryChange,
+        onOpenChange,
+        onSearchError,
+        ...rest
+    } = props;
     const { setRef } = useBinding(
         undefined,
-        { options, value, placeholder, disabled, open },
+        {
+            options,
+            value,
+            query,
+            selectedLabel,
+            name,
+            placeholder,
+            disabled,
+            open,
+            loading,
+            error,
+            loadingLabel,
+            emptyLabel,
+            errorLabel,
+            search: onSearch,
+        },
         {
             "aui-change": onChange
                 ? (detail: { value: string }) => onChange(detail.value)
                 : undefined,
+            "aui-query-change": onQueryChange
+                ? (detail: { query: string }) => onQueryChange(detail.query)
+                : undefined,
+            "aui-open-change": onOpenChange
+                ? (detail: { open: boolean }) => onOpenChange(detail.open)
+                : undefined,
+            "aui-search-error": onSearchError,
         },
     );
     return createElement("aui-combobox", {
         ...elementProps(
             props,
-            ["options", "value", "placeholder", "disabled", "open"],
-            ["onChange"],
+            [
+                "options",
+                "value",
+                "query",
+                "selectedLabel",
+                "name",
+                "placeholder",
+                "disabled",
+                "open",
+                "loading",
+                "error",
+                "loadingLabel",
+                "emptyLabel",
+                "errorLabel",
+            ],
+            ["onSearch", "onChange", "onQueryChange", "onOpenChange", "onSearchError"],
         ),
         ...rest,
         ref: setRef,

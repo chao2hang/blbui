@@ -121,5 +121,48 @@ describe("business form builder", () => {
       expect(input, `control #${name}`).not.toBeNull();
       expect(label, `label for #${name}`).not.toBeNull();
     }
-  });
+    });
+});
+
+describe("business content editors", () => {
+    it("renders Markdown preview and exposes controlled input/change events", async () => {
+        registerAdminElements();
+        registerBusinessElements();
+        const editor = document.createElement("aui-markdown-editor") as HTMLElement & {
+            value: string;
+            preview: boolean;
+            updateComplete: Promise<boolean>;
+        };
+        editor.value = "# Release\n\n**Ready**";
+        editor.preview = true;
+        document.body.append(editor);
+        await editor.updateComplete;
+        expect(editor.shadowRoot?.querySelector("h1")?.textContent).toContain("Release");
+        expect(editor.shadowRoot?.querySelector("strong")?.textContent).toBe("Ready");
+
+        const input = editor.shadowRoot?.querySelector("textarea") as HTMLTextAreaElement;
+        input.value = "Updated";
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        await editor.updateComplete;
+        expect(editor.value).toBe("Updated");
+        expect(editor.shadowRoot?.querySelector("p")?.textContent).toBe("Updated");
+    });
+
+    it("sanitizes rich text preview and supports read-only rendering", async () => {
+        registerBusinessElements();
+        const editor = document.createElement("aui-rich-text-editor") as HTMLElement & {
+            value: string;
+            readOnly: boolean;
+            updateComplete: Promise<boolean>;
+        };
+        editor.value = '<p onclick="bad()">Safe <strong>text</strong></p><script>bad()</script>';
+        editor.readOnly = true;
+        document.body.append(editor);
+        await editor.updateComplete;
+        const preview = editor.shadowRoot?.querySelector(".preview");
+        expect(preview?.querySelector("strong")?.textContent).toBe("text");
+        expect(preview?.querySelector("script")).toBeNull();
+        expect(preview?.innerHTML).not.toContain("onclick");
+        expect(editor.shadowRoot?.querySelector("textarea")).toBeNull();
+    });
 });

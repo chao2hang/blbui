@@ -50,6 +50,37 @@ export function deepActiveElement(root: Document | ShadowRoot = document): Eleme
     return active;
 }
 
+/** Return the first focus target inside an overlay, or its focusable fallback. */
+export function firstFocusableElement(root: ParentNode): HTMLElement | null {
+    return (
+        focusableElements(root)[0] ??
+        (root instanceof HTMLElement && root.matches("[tabindex]") ? root : null)
+    );
+}
+
+/** Keep keyboard focus inside a modal overlay while Tab is moving focus. */
+export function trapFocus(event: KeyboardEvent, root: ParentNode): void {
+    if (event.key !== "Tab") return;
+    const focusable = focusableElements(root);
+    const fallback = firstFocusableElement(root);
+    if (!focusable.length) {
+        event.preventDefault();
+        fallback?.focus();
+        return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = deepActiveElement(document);
+    const inside = active instanceof HTMLElement && focusable.includes(active);
+    if (event.shiftKey && (active === first || !inside)) {
+        event.preventDefault();
+        last.focus();
+    } else if (!event.shiftKey && (active === last || !inside)) {
+        event.preventDefault();
+        first.focus();
+    }
+}
+
 export class AdminElement extends LitElement {
     // Note: hosts intentionally do NOT receive the `aui-root` class. Adding it
     // to every element painted the whole console skin (background/color/font)
