@@ -28,18 +28,49 @@ for (const playground of frameworkPlaygrounds) {
         const parityTable = page.locator("aui-table").first();
         await expect(parityTable).toContainText("gateway-prod");
         await expect(root).toHaveAttribute("data-parity-async-state", "ready");
+        await expect(page.locator("#cache-stats")).toHaveAttribute("data-parity-cache-misses", "1");
+        await expect(page.locator("#cache-stats")).toHaveAttribute("data-parity-cache-writes", "1");
+        await page.getByRole("button", { name: "Refresh cached data" }).click();
+        await expect(page.locator("#cache-event")).toHaveAttribute(
+            "data-parity-cache-event",
+            "hit",
+        );
+        await expect(page.locator("#cache-stats")).toHaveAttribute("data-parity-cache-hits", "1");
 
         await page.getByRole("button", { name: "Simulate data error" }).click();
         await expect(root).toHaveAttribute("data-parity-async-state", "error");
         await page.getByRole("button", { name: "Retry" }).click();
         await expect(root).toHaveAttribute("data-parity-async-state", "ready");
         await expect(root).toHaveAttribute("data-parity-retry-count", "1");
+        await expect(page.locator("#cache-stats")).toHaveAttribute(
+            "data-parity-cache-bypasses",
+            "1",
+        );
+        await expect(page.locator("#cache-stats")).toHaveAttribute("data-parity-cache-writes", "2");
 
         await page.getByRole("button", { name: "Simulate permission denial" }).click();
         await expect(root).toHaveAttribute("data-parity-async-state", "permission-denied");
         await expect(page.locator("#async-table")).toContainText("Request access to continue.");
         await page.getByRole("button", { name: "Recover data" }).click();
         await expect(root).toHaveAttribute("data-parity-async-state", "ready");
+        await expect(page.locator("#cache-event")).toHaveAttribute(
+            "data-parity-cache-event",
+            "hit",
+        );
+        await expect(page.locator("#cache-stats")).toHaveAttribute("data-parity-cache-hits", "2");
+        await page.getByRole("button", { name: "Clear cache" }).click();
+        await expect(page.locator("#cache-event")).toHaveAttribute(
+            "data-parity-cache-event",
+            "invalidate",
+        );
+        await expect(page.locator("#cache-stats")).toHaveAttribute(
+            "data-parity-cache-entries",
+            "0",
+        );
+        await expect(page.locator("#cache-stats")).toHaveAttribute(
+            "data-parity-cache-invalidations",
+            "1",
+        );
 
         await page.getByRole("textbox").fill("edge");
         await expect(parityTable).toContainText("gateway-edge");
@@ -127,11 +158,18 @@ test("Web Components playground updates a DataGrid through DOM properties and ev
     const servicesGrid = page.locator("#services");
     await expect(servicesGrid).toContainText("Gateway / Production");
     await expect(page.locator("#async-state")).toHaveAttribute("data-parity-async-state", "ready");
+    await expect(page.locator("#cache-stats")).toHaveAttribute("data-parity-cache-misses", "1");
+    await expect(page.locator("#cache-stats")).toHaveAttribute("data-parity-cache-writes", "1");
+    await page.locator("#refresh-cache").getByRole("button").click();
+    await expect(page.locator("#cache-event")).toHaveAttribute("data-parity-cache-event", "hit");
+    await expect(page.locator("#cache-stats")).toHaveAttribute("data-parity-cache-hits", "1");
     await page.getByRole("button", { name: "SIMULATE DATA ERROR" }).click();
     await expect(page.locator("#async-state")).toHaveAttribute("data-parity-async-state", "error");
     await page.locator("#async-grid").getByRole("button", { name: "RETRY" }).click();
     await expect(page.locator("#async-state")).toHaveAttribute("data-parity-async-state", "ready");
     await expect(page.locator("#async-state")).toHaveAttribute("data-parity-retry-count", "1");
+    await expect(page.locator("#cache-stats")).toHaveAttribute("data-parity-cache-bypasses", "1");
+    await expect(page.locator("#cache-stats")).toHaveAttribute("data-parity-cache-writes", "2");
     await page.getByRole("button", { name: "SIMULATE PERMISSION DENIAL" }).click();
     await expect(page.locator("#async-state")).toHaveAttribute(
         "data-parity-async-state",
@@ -140,6 +178,18 @@ test("Web Components playground updates a DataGrid through DOM properties and ev
     await expect(page.locator("#async-grid")).toContainText("Request access to continue.");
     await page.getByRole("button", { name: "RECOVER DATA" }).click();
     await expect(page.locator("#async-state")).toHaveAttribute("data-parity-async-state", "ready");
+    await expect(page.locator("#cache-event")).toHaveAttribute("data-parity-cache-event", "hit");
+    await expect(page.locator("#cache-stats")).toHaveAttribute("data-parity-cache-hits", "2");
+    await page.locator("#clear-cache").getByRole("button").click();
+    await expect(page.locator("#cache-event")).toHaveAttribute(
+        "data-parity-cache-event",
+        "invalidate",
+    );
+    await expect(page.locator("#cache-stats")).toHaveAttribute("data-parity-cache-entries", "0");
+    await expect(page.locator("#cache-stats")).toHaveAttribute(
+        "data-parity-cache-invalidations",
+        "1",
+    );
     await page.getByRole("textbox", { name: "Filter services" }).fill("edge");
     await expect(servicesGrid).toContainText("Gateway / Edge");
     await expect(servicesGrid).not.toContainText("Gateway / Production");

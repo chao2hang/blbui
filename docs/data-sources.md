@@ -99,6 +99,15 @@ The fixture deliberately exercises the same state sequence in every host:
 | `permission-denied` | a 403 is non-retryable and uses the permission slot/label |
 | recovery | the host changes the fixture mode and calls `load()` or `retry()` |
 
+The versioned parity fixture also enables `ttlMs: 30_000` with
+`staleWhileRevalidate`. Each playground renders the same cache telemetry panel
+from the resource itself: the latest event plus `entries`, `hits`, `staleHits`,
+`misses`, `bypasses`, `writes`, `invalidations` and `revalidations`. The browser
+contract checks the sequence `miss/write` on the first load, `hit` when refreshing
+the ready mode, `bypass/write` through retry, and `invalidate` after clearing the
+cache. This keeps cache instrumentation visible in the framework examples while
+the production API remains optional and transport-neutral.
+
 This keeps transport state out of page markup while making lifecycle leaks
 observable in real browser parity checks. The Web Components host additionally
 calls `unsubscribe()` and `resource.dispose()` from a one-shot `pagehide`

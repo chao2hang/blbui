@@ -41,6 +41,17 @@
 - [x] 完成版本、CHANGELOG、peer dependency、文档站、发布门禁和人工视觉复核同步。
 - [ ] 真实外部 `web/` 宿主逐页迁移仍需宿主源码进入工作区；在此之前只维护可运行的迁移 fixture，不宣称 Users、Channels、Usage Logs 已迁移。
 
+### 0.0.23 跨框架缓存观测收口
+
+0.0.23 已在 0.0.22 基础上继续推进仓库内可验证的长期项，真实外部 `web/` 宿主迁移仍保持
+blocker 事实边界：
+
+- [x] 共享 parity fixture 开启真实缓存和 stale-while-revalidate，并通过请求 key 区分 ready/error/permission-denied 场景。
+- [x] React、Vue、Svelte、Web Components playground 统一展示最近缓存事件和完整缓存统计，并提供刷新缓存、清空缓存操作。
+- [x] 增加 parity fixture 单元测试、四框架浏览器 E2E 和 `examples:check` contract 门禁，锁定 `miss/write → hit → bypass/write → invalidate` 序列。
+- [x] 更新数据源、Business framework、parity fixture 文档；视觉复核覆盖缓存面板窄屏换行、主题 surface 和状态可读性。
+- [ ] 真实外部 `web/` 宿主逐页迁移、Users/Channels/Usage Logs 接入和旧兼容层清理仍等待宿主源码进入工作区。
+
 ### P0：语义 Token 与主题合同
 
 0.0.20 已在 0.0.19 基础上继续收紧：
@@ -119,7 +130,7 @@
 | 框架 | Web Components、React、Vue、Svelte 的属性与事件行为一致                     |
 | 文档 | catalog 条目、预览、props/events、四框架 usage、截图和已知限制              |
 
-## 当前组件缺口（0.0.22 后）
+## 当前组件缺口（0.0.23 后）
 
 短期缺口集中在可复用的复杂交互，而不是继续堆叠展示型组件：
 
@@ -136,6 +147,7 @@
 - 0.0.20 完成四框架真实资源生命周期 parity、Business React 图表行为回归、Web Components pagehide 清理和全量 format release gate。
 - 0.0.21 补齐资源 contract 的取消退避、有限重试、指数退避、按请求身份缓存、stale-while-revalidate、`clearCache()` 和 retry 绕过缓存语义；后续继续围绕真实宿主接入、缓存观测和复杂业务组件推进。
 - 0.0.22 补齐缓存事件/统计观测、固定 runner golden 提升工具、Business 事件契约和窄屏发布回归；下一阶段继续围绕真实宿主接入、旧兼容层清理、缓存指标接入和复杂业务组件推进。
+- 0.0.23 将缓存观测从底层 API 接入四框架 parity playground，并以单元测试和真实浏览器 E2E 固化事件顺序；生产 telemetry 仍由宿主通过 `subscribeCache()` 或 `cache.onEvent` 接入。
 - 真实外部业务仓库的逐页迁移仍需宿主仓库配合；仓库内四套 fixture 已先落地 AdminButton、AdminPage/AdminPageHeader、AdminStatusTag 和 AdminLayout/AdminConsoleShell 的唯一挂载职责。下一轮宿主源码进入工作区后，再迁移 Users、Channels、Usage Logs 页面并清理旧兼容层。
 - [x] 补齐 Business Vue/Svelte 直接 Custom Elements 示例，覆盖 22 个元素，并让 catalog/发布门禁检查示例不会回退为未导出的 `Admin*` 标签。
 - [x] 将六个包的 npm 可见性检查结果保存为发布 job summary；外部 `web/` 页面迁移仍以宿主源码进入工作区为前提。

@@ -7,6 +7,9 @@ it under the terms of the GNU Affero General Public License.
 import {
     AdminDataError,
     AdminDataResource,
+    type AdminDataCacheEvent,
+    type AdminDataCacheStats,
+    type AdminDataSnapshot,
     type AdminDataStatus,
 } from "@chaos_team/blbui-business";
 
@@ -17,15 +20,22 @@ export interface ParityAsyncRow {
     label: string;
 }
 
+export type ParityAsyncQuery = { mode: ParityAsyncMode };
+export type ParityCacheEvent = AdminDataCacheEvent<ParityAsyncQuery>;
+export type ParityCacheStats = AdminDataCacheStats;
+
 export interface ParityAsyncResource {
-    resource: AdminDataResource<ParityAsyncRow>;
+    resource: AdminDataResource<ParityAsyncRow, ParityAsyncQuery>;
     setMode: (mode: ParityAsyncMode) => void;
+    load: () => Promise<AdminDataSnapshot<ParityAsyncRow, ParityAsyncQuery>>;
+    retry: () => Promise<AdminDataSnapshot<ParityAsyncRow, ParityAsyncQuery>>;
+    clearCache: () => void;
 }
 
 /** Shared playground loader used to prove the same lifecycle in every host. */
 export function createParityAsyncResource(): ParityAsyncResource {
     let mode: ParityAsyncMode = "ready";
-    const resource = new AdminDataResource<ParityAsyncRow>({
+    const resource = new AdminDataResource<ParityAsyncRow, ParityAsyncQuery>({
         loader: async ({ signal }) => {
             if (signal.aborted) throw new DOMException("The request was aborted.", "AbortError");
             if (mode === "error") {
@@ -36,11 +46,21 @@ export function createParityAsyncResource(): ParityAsyncResource {
             }
             return { rows: [{ id: "async-ready", label: "Async contract row" }] };
         },
+        cache: { ttlMs: 30_000, staleWhileRevalidate: true },
     });
     return {
         resource,
         setMode(nextMode) {
             mode = nextMode;
+        },
+        load() {
+            return resource.load({ query: { mode } });
+        },
+        retry() {
+            return resource.retry();
+        },
+        clearCache() {
+            resource.clearCache();
         },
     };
 }

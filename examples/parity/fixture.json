@@ -1,5 +1,5 @@
 {
-  "contractVersion": 3,
+  "contractVersion": 4,
   "tabs": [
     { "id": "all", "label": "All" },
     { "id": "healthy", "label": "Healthy" }
@@ -24,7 +24,18 @@
     "error": "error",
     "permissionDenied": "permission-denied",
     "retryEvent": "aui-retry",
-    "permissionSlot": "permission"
+    "permissionSlot": "permission",
+    "cacheStats": [
+      "entries",
+      "hits",
+      "staleHits",
+      "misses",
+      "bypasses",
+      "writes",
+      "invalidations",
+      "revalidations"
+    ],
+    "cacheEvents": ["miss", "hit", "stale-hit", "bypass", "write", "invalidate"]
   },
   "steps": [
     { "id": "details", "label": "Details" },
@@ -50,7 +61,11 @@
       "initialQuery": "",
       "emptyQueryLabel": "—",
       "initialAsyncState": "ready",
-      "retryCountAfterError": 1
+      "retryCountAfterError": 1,
+      "initialCacheMisses": 1,
+      "initialCacheWrites": 1,
+      "cacheHitsAfterRefresh": 1,
+      "cacheInvalidationsAfterClear": 1
     }
   }
 }

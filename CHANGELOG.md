@@ -9,6 +9,13 @@
 - 固定 runner 的 Windows/Ubuntu visual golden 已按完整 432 文件 manifest 提升，后续基准更新由 `bun run visual:promote` 审计。
 - 修复 Windows 本地 release preflight 调用 npm CLI 的兼容性，`BLBUI_CHECK_NPM=1` 现在可正确识别版本未占用状态。
 
+## 0.0.23 — 2026-09-09
+
+- 共享 parity fixture 开启真实 `AdminDataResource` 缓存与 stale-while-revalidate，四个 playground 统一展示最近缓存事件和完整缓存统计。
+- 新增缓存观测刷新/清空操作，并以单元测试和真实浏览器 E2E 固化 `miss/write → hit → bypass/write → invalidate` 事件顺序。
+- 将缓存观测面板优化为 token 驱动的可换行指标网格，补充桌面、320px 窄屏、dark/light 和四框架人工视觉复核记录。
+- 同步数据源、Business framework、parity fixture 文档与版本化 release gate；真实外部 `web/` 宿主逐页迁移仍等待宿主源码进入工作区。
+
 ## Unreleased
 
 ## 0.0.21 — 2026-09-09

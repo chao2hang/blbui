@@ -34,14 +34,25 @@ function App() {
     const [retryCount, setRetryCount] = useState(0);
     const asyncResource = useMemo(() => createParityAsyncResource(), []);
     const asyncMounts = useRef(0);
+    const asyncLoaded = useRef(false);
     const [asyncSnapshot, setAsyncSnapshot] = useState(() => asyncResource.resource.getSnapshot());
+    const [cacheEvent, setCacheEvent] = useState("none");
+    const [cacheStats, setCacheStats] = useState(() => asyncResource.resource.getCacheStats());
     const asyncState = parityAsyncState(asyncSnapshot.status);
     useEffect(() => {
         asyncMounts.current += 1;
         const unsubscribe = asyncResource.resource.subscribe(setAsyncSnapshot);
-        void asyncResource.resource.load();
+        const unsubscribeCache = asyncResource.resource.subscribeCache((event) => {
+            setCacheEvent(event.type);
+            setCacheStats(asyncResource.resource.getCacheStats());
+        });
+        if (!asyncLoaded.current) {
+            asyncLoaded.current = true;
+            void asyncResource.load();
+        }
         return () => {
             unsubscribe();
+            unsubscribeCache();
             asyncMounts.current -= 1;
             queueMicrotask(() => {
                 if (asyncMounts.current === 0) asyncResource.resource.dispose();
@@ -77,6 +88,14 @@ function App() {
             data-parity-active-tab={activeTab}
             data-parity-async-state={asyncState}
             data-parity-retry-count={retryCount}
+            data-parity-cache-event={cacheEvent}
+            data-parity-cache-hits={cacheStats.hits}
+            data-parity-cache-stale-hits={cacheStats.staleHits}
+            data-parity-cache-misses={cacheStats.misses}
+            data-parity-cache-bypasses={cacheStats.bypasses}
+            data-parity-cache-writes={cacheStats.writes}
+            data-parity-cache-invalidations={cacheStats.invalidations}
+            data-parity-cache-revalidations={cacheStats.revalidations}
         >
             <AdminShell
                 sidebarWidth="200px"
@@ -143,7 +162,7 @@ function App() {
                                 <AdminButton
                                     onClick={() => {
                                         asyncResource.setMode("error");
-                                        void asyncResource.resource.load();
+                                        void asyncResource.load();
                                     }}
                                 >
                                     Simulate data error
@@ -151,7 +170,7 @@ function App() {
                                 <AdminButton
                                     onClick={() => {
                                         asyncResource.setMode("permission-denied");
-                                        void asyncResource.resource.load();
+                                        void asyncResource.load();
                                     }}
                                 >
                                     Simulate permission denial
@@ -159,7 +178,7 @@ function App() {
                                 <AdminButton
                                     onClick={() => {
                                         asyncResource.setMode("ready");
-                                        void asyncResource.resource.load();
+                                        void asyncResource.load();
                                     }}
                                 >
                                     Recover data
@@ -173,7 +192,7 @@ function App() {
                                 onRetry={() => {
                                     setRetryCount((count) => count + 1);
                                     asyncResource.setMode("ready");
-                                    void asyncResource.resource.retry();
+                                    void asyncResource.retry();
                                 }}
                             >
                                 <table>
@@ -186,6 +205,87 @@ function App() {
                                 </table>
                                 <span slot="permission">Request access to continue.</span>
                             </AdminTable>
+                            <section aria-label="Cache observability" id="cache-observability">
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        gap: 8,
+                                        marginTop: 8,
+                                        flexWrap: "wrap",
+                                    }}
+                                >
+                                    <AdminButton
+                                        onClick={() => {
+                                            asyncResource.setMode("ready");
+                                            void asyncResource.load();
+                                        }}
+                                    >
+                                        Refresh cached data
+                                    </AdminButton>
+                                    <AdminButton onClick={asyncResource.clearCache}>
+                                        Clear cache
+                                    </AdminButton>
+                                </div>
+                                <output
+                                    id="cache-event"
+                                    style={{
+                                        display: "block",
+                                        marginTop: 8,
+                                        overflowWrap: "anywhere",
+                                    }}
+                                    data-parity-cache-event={cacheEvent}
+                                >
+                                    Cache event: {cacheEvent}
+                                </output>
+                                <output
+                                    id="cache-stats"
+                                    style={{
+                                        display: "grid",
+                                        gridTemplateColumns: "repeat(auto-fit, minmax(96px, 1fr))",
+                                        gap: 4,
+                                        minWidth: 0,
+                                        marginTop: 8,
+                                    }}
+                                    data-parity-cache-entries={cacheStats.entries}
+                                    data-parity-cache-hits={cacheStats.hits}
+                                    data-parity-cache-stale-hits={cacheStats.staleHits}
+                                    data-parity-cache-misses={cacheStats.misses}
+                                    data-parity-cache-bypasses={cacheStats.bypasses}
+                                    data-parity-cache-writes={cacheStats.writes}
+                                    data-parity-cache-invalidations={cacheStats.invalidations}
+                                    data-parity-cache-revalidations={cacheStats.revalidations}
+                                >
+                                    {[
+                                        ["entries", cacheStats.entries],
+                                        ["hits", cacheStats.hits],
+                                        ["stale", cacheStats.staleHits],
+                                        ["misses", cacheStats.misses],
+                                        ["bypasses", cacheStats.bypasses],
+                                        ["writes", cacheStats.writes],
+                                        ["invalidations", cacheStats.invalidations],
+                                        ["revalidations", cacheStats.revalidations],
+                                    ].map(([label, value]) => (
+                                        <span
+                                            key={label}
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                minWidth: 0,
+                                                padding: "4px 6px",
+                                                border: "1px solid var(--aui-border)",
+                                                color: "var(--aui-text-secondary)",
+                                                font: "10px/1.25 var(--aui-font-mono)",
+                                                textTransform: "uppercase",
+                                            }}
+                                        >
+                                            <strong style={{ color: "var(--aui-text-primary)" }}>
+                                                {value}
+                                            </strong>
+                                            {label}
+                                        </span>
+                                    ))}
+                                </output>
+                            </section>
                         </section>
                         <AdminAdvancedTable
                             id="business-table"

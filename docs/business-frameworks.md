@@ -35,6 +35,12 @@ Components listener 中另写一套缓存或重试逻辑。
 `resetCacheStats()`；也可以在 `cache.onEvent` 中接入宿主 telemetry。事件回调
 抛错不会影响请求状态，四个框架仍共享同一套命中、stale、绕过和失效语义。
 
+parity fixture 已把这套观测能力接入四个 playground：面板显示最近一次
+cache event 和完整的 `entries`、`hits`、`staleHits`、`misses`、`bypasses`、
+`writes`、`invalidations`、`revalidations` 统计，并提供刷新缓存和清空缓存
+操作。真实浏览器门禁会按 `miss/write → hit → bypass/write → invalidate`
+顺序校验 React、Vue、Svelte 和原生 Web Components 的显示结果一致。
+
 ## Vue 3
 
 ```vue

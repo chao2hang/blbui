@@ -24,11 +24,24 @@ const retryCount = ref(0);
 const asyncResource = createParityAsyncResource();
 const asyncSnapshot = ref(asyncResource.resource.getSnapshot());
 const asyncState = computed(() => parityAsyncState(asyncSnapshot.value.status));
+const cacheEvent = ref("none");
+const cacheStats = ref(asyncResource.resource.getCacheStats());
+const cacheMetricItems = computed(() => [
+    ["entries", cacheStats.value.entries],
+    ["hits", cacheStats.value.hits],
+    ["stale", cacheStats.value.staleHits],
+    ["misses", cacheStats.value.misses],
+    ["bypasses", cacheStats.value.bypasses],
+    ["writes", cacheStats.value.writes],
+    ["invalidations", cacheStats.value.invalidations],
+    ["revalidations", cacheStats.value.revalidations],
+]);
 let stopAsyncSubscription = () => undefined;
+let stopCacheSubscription = () => undefined;
 const recoverFromAsyncError = () => {
     retryCount.value += 1;
     asyncResource.setMode("ready");
-    void asyncResource.resource.retry();
+    void asyncResource.retry();
 };
 query.value = contract.initialQuery;
 const tabs = fixture.tabs;
@@ -85,7 +98,11 @@ onMounted(() => {
     stopAsyncSubscription = asyncResource.resource.subscribe((snapshot) => {
         asyncSnapshot.value = snapshot;
     });
-    void asyncResource.resource.load();
+    stopCacheSubscription = asyncResource.resource.subscribeCache((event) => {
+        cacheEvent.value = event.type;
+        cacheStats.value = asyncResource.resource.getCacheStats();
+    });
+    void asyncResource.load();
     const table = document.createElement("aui-advanced-table") as HTMLElement &
         Record<string, unknown>;
     table.id = "business-table";
@@ -104,6 +121,7 @@ onMounted(() => {
 });
 onBeforeUnmount(() => {
     stopAsyncSubscription();
+    stopCacheSubscription();
     asyncResource.resource.dispose();
 });
 const visibleRows = computed(() => {
@@ -130,6 +148,14 @@ const visibleRows = computed(() => {
         :data-parity-active-tab="activeTab"
         :data-parity-async-state="asyncState"
         :data-parity-retry-count="retryCount"
+        :data-parity-cache-event="cacheEvent"
+        :data-parity-cache-hits="cacheStats.hits"
+        :data-parity-cache-stale-hits="cacheStats.staleHits"
+        :data-parity-cache-misses="cacheStats.misses"
+        :data-parity-cache-bypasses="cacheStats.bypasses"
+        :data-parity-cache-writes="cacheStats.writes"
+        :data-parity-cache-invalidations="cacheStats.invalidations"
+        :data-parity-cache-revalidations="cacheStats.revalidations"
     >
         <AdminShell sidebar-width="200px" header-height="56px">
             <template #sidebar>
@@ -183,21 +209,21 @@ const visibleRows = computed(() => {
                             <AdminButton
                                 @click="
                                     asyncResource.setMode('error');
-                                    asyncResource.resource.load();
+                                    asyncResource.load();
                                 "
                                 >Simulate data error</AdminButton
                             >
                             <AdminButton
                                 @click="
                                     asyncResource.setMode('permission-denied');
-                                    asyncResource.resource.load();
+                                    asyncResource.load();
                                 "
                                 >Simulate permission denial</AdminButton
                             >
                             <AdminButton
                                 @click="
                                     asyncResource.setMode('ready');
-                                    asyncResource.resource.load();
+                                    asyncResource.load();
                                 "
                                 >Recover data</AdminButton
                             >
@@ -219,6 +245,65 @@ const visibleRows = computed(() => {
                             </table>
                             <template #permission>Request access to continue.</template>
                         </AdminTable>
+                        <section aria-label="Cache observability" id="cache-observability">
+                            <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap">
+                                <AdminButton
+                                    @click="
+                                        asyncResource.setMode('ready');
+                                        asyncResource.load();
+                                    "
+                                    >Refresh cached data</AdminButton
+                                >
+                                <AdminButton @click="asyncResource.clearCache"
+                                    >Clear cache</AdminButton
+                                >
+                            </div>
+                            <output
+                                id="cache-event"
+                                style="display: block; margin-top: 8px; overflow-wrap: anywhere"
+                                :data-parity-cache-event="cacheEvent"
+                            >
+                                Cache event: {{ cacheEvent }}
+                            </output>
+                            <output
+                                id="cache-stats"
+                                style="
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+                                    gap: 4px;
+                                    min-width: 0;
+                                    margin-top: 8px;
+                                "
+                                :data-parity-cache-entries="cacheStats.entries"
+                                :data-parity-cache-hits="cacheStats.hits"
+                                :data-parity-cache-stale-hits="cacheStats.staleHits"
+                                :data-parity-cache-misses="cacheStats.misses"
+                                :data-parity-cache-bypasses="cacheStats.bypasses"
+                                :data-parity-cache-writes="cacheStats.writes"
+                                :data-parity-cache-invalidations="cacheStats.invalidations"
+                                :data-parity-cache-revalidations="cacheStats.revalidations"
+                            >
+                                <span
+                                    v-for="([label, value], index) in cacheMetricItems"
+                                    :key="`${label}-${index}`"
+                                    style="
+                                        display: flex;
+                                        flex-direction: column;
+                                        min-width: 0;
+                                        padding: 4px 6px;
+                                        border: 1px solid var(--aui-border);
+                                        color: var(--aui-text-secondary);
+                                        font: 10px/1.25 var(--aui-font-mono);
+                                        text-transform: uppercase;
+                                    "
+                                >
+                                    <strong style="color: var(--aui-text-primary)">{{
+                                        value
+                                    }}</strong>
+                                    {{ label }}
+                                </span>
+                            </output>
+                        </section>
                     </section>
                     <div id="business-table-mount"></div>
                     <output data-parity-business-selection="0">Business selection: 0</output>

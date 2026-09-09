@@ -16,7 +16,7 @@ try {
   const fixture = JSON.parse(await readFile(parity, "utf8"));
   const assertions = fixture.parityContract?.assertions;
   if (
-    fixture.contractVersion !== 3 ||
+    fixture.contractVersion !== 4 ||
     !fixture.tabs?.length ||
     !fixture.rows?.length ||
     !fixture.business?.columns?.length ||
@@ -30,7 +30,11 @@ try {
     assertions?.initialAsyncState !== "ready" ||
     assertions?.retryCountAfterError !== 1 ||
     fixture.asyncStates?.retryEvent !== "aui-retry" ||
-    fixture.asyncStates?.permissionSlot !== "permission"
+    fixture.asyncStates?.permissionSlot !== "permission" ||
+    !fixture.asyncStates?.cacheStats?.includes("entries") ||
+    !fixture.asyncStates?.cacheStats?.includes("revalidations") ||
+    !fixture.asyncStates?.cacheEvents?.includes("hit") ||
+    !fixture.asyncStates?.cacheEvents?.includes("invalidate")
   ) {
     errors.push("parity fixture must contain the versioned controlled-state contract and assertions");
   }
@@ -69,8 +73,8 @@ for (const [framework, files] of Object.entries(required)) {
   }
   for (const marker of frameworkChecks) if (!source.includes(marker)) errors.push(`${framework}: missing ${marker}`);
   const asyncMarkers = framework === "web"
-    ? ["data-parity-async-state", "permission", "simulate-error", "simulate-permission", "retryCount"]
-    : ["data-parity-async-state", "permission", "Simulate data error", "Simulate permission denial", "retryCount"];
+    ? ["data-parity-async-state", "permission", "simulate-error", "simulate-permission", "retryCount", "subscribeCache", "cacheStats", "cache-event", "cache-stats", "refresh-cache", "clear-cache"]
+    : ["data-parity-async-state", "permission", "Simulate data error", "Simulate permission denial", "retryCount", "subscribeCache", "cacheStats", "cache-event", "cache-stats", "Refresh cached data", "Clear cache"];
   for (const marker of asyncMarkers) {
     if (!source.includes(marker)) errors.push(`${framework}: async state parity is missing ${marker}`);
   }
@@ -119,4 +123,4 @@ if (errors.length) {
   console.error(errors.join("\n"));
   process.exit(1);
 }
-console.log("Playground check passed: React, Vue and Svelte apps are present with build entrypoints");
+console.log("Playground check passed: React, Vue, Svelte and Web Components apps are present");
