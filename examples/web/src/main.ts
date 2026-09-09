@@ -374,7 +374,7 @@ app.innerHTML = `
       <nav class="web-nav" aria-label="Main navigation">
         ${navItems.map((item) => `<button class="web-nav-item" type="button" data-route="${item.id}">${item.label}</button>`).join("")}
       </nav>
-      <div class="web-sidebar-footer"><span class="web-pulse"></span><span>CONNECTED</span><span class="web-version">v0.0.27</span></div>
+      <div class="web-sidebar-footer"><span class="web-pulse"></span><span>CONNECTED</span><span class="web-version">v0.0.28</span></div>
     </div>
     <div slot="header" class="web-header">
       <div class="web-header-context"><span class="web-header-kicker">BLBUI / MIGRATION HOST</span><span id="route-label">Operations</span></div>

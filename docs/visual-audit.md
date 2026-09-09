@@ -3,7 +3,7 @@
 ## 本次验收
 
 - 日期：2026-09-09
-- 版本：0.0.27
+- 版本：0.0.28
 - 入口：http://127.0.0.1:4177/
 - 浏览器：Codex In-app Browser
 - 视口：桌面约 1280 × 720（页面有效宽度 1265px）；窄屏 320 × 720
@@ -18,6 +18,13 @@
 - 在 320 × 720 下确认 Shell 隐藏 sidebar 后移动导航仍可到达四页；Users/Channels 使用移动卡片，Usage Logs 保持内部日志滚动，页面级 `scrollWidth` 与 viewport 一致。
 - 自动化补充：`tests/e2e/web-host.spec.ts` 6/6 通过，覆盖页面导航、筛选、分页、选择、状态恢复、主题/明暗切换和三页 320px 无溢出；`examples/web` typecheck/build 通过。
 - 结果：canonical migration host 的四页能力、主题切换、状态矩阵和窄屏导航完成发布前视觉收口；真实外部业务仓库的接入仍按迁移指南作为后续集成工作。
+
+### 0.0.28 逐组件主题合同复核（2026-09-09）
+
+- 本版本没有修改组件视觉实现；沿用 0.0.27 的人工桌面、Glass light/dark 和 320px 复核结果。
+- 新增浏览器合同逐一遍历 129 个目录卡片，在 9 套主题 × light/dark 下检查每个预览宿主可渲染，并继承 canvas、surface、border、text、status、radius、shadow 和 focus token。
+- Dialog、Context Menu、File Preview、Import Dialog 等默认关闭的动态预览按宿主级 token 合同检查；交互展开和焦点语义继续由现有 E2E 覆盖。
+- 结果：129 × 18 的主题覆盖合同通过，未发现缺失 token、零尺寸目录卡片或页面级横向溢出。
 
 ### 0.0.26 发布前人工复核（2026-09-09）
 

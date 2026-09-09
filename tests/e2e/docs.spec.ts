@@ -35,16 +35,17 @@ const settleVisualTarget = async (target: Locator) => {
         const elements = [element, ...element.querySelectorAll<HTMLElement>("*")];
         await Promise.all(
             elements
-                .map((item) =>
-                    (item as HTMLElement & { updateComplete?: Promise<unknown> }).updateComplete,
+                .map(
+                    (item) =>
+                        (item as HTMLElement & { updateComplete?: Promise<unknown> })
+                            .updateComplete,
                 )
                 .filter((updateComplete): updateComplete is Promise<unknown> =>
                     Boolean(updateComplete),
                 ),
         );
 
-        const frame = () =>
-            new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+        const frame = () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
         let previous = "";
         let stableFrames = 0;
         for (let attempt = 0; attempt < 8 && stableFrames < 2; attempt += 1) {
@@ -117,6 +118,105 @@ test.describe("BLBUI documentation quality matrix", () => {
         }
     });
 
+    test("keeps every catalog preview on the semantic theme contract", async ({ page }) => {
+        await page.goto("/");
+        const requiredTokens = [
+            "--aui-bg",
+            "--aui-surface",
+            "--aui-border",
+            "--aui-text",
+            "--aui-text-primary",
+            "--aui-primary",
+            "--aui-info",
+            "--aui-success",
+            "--aui-warning",
+            "--aui-danger",
+            "--aui-radius",
+            "--aui-shadow-sm",
+            "--aui-focus-ring",
+        ];
+
+        await expect(page.locator("[data-catalog-id]")).toHaveCount(129);
+        await page.evaluate(async () => {
+            const updates = Array.from(
+                document.querySelectorAll<HTMLElement>("[data-catalog-id] *"),
+            )
+                .map(
+                    (element) =>
+                        (element as HTMLElement & { updateComplete?: Promise<unknown> })
+                            .updateComplete,
+                )
+                .filter((updateComplete): updateComplete is Promise<unknown> =>
+                    Boolean(updateComplete),
+                );
+            await Promise.all(updates);
+        });
+
+        for (const theme of themes) {
+            await page.locator("#theme-select").selectOption(theme);
+            for (const mode of visualMatrix.modes) {
+                const currentMode = await page.evaluate(
+                    () => document.documentElement.dataset.auiMode,
+                );
+                if (currentMode !== mode) await page.locator("#mode-toggle").click();
+                await expect(page.locator("#theme-select")).toHaveValue(theme);
+                await expect
+                    .poll(() =>
+                        page.evaluate(
+                            ({ expectedTheme, expectedMode }) =>
+                                `${document.documentElement.dataset.auiTheme}/${document.documentElement.dataset.auiMode}` ===
+                                `${expectedTheme}/${expectedMode}`,
+                            { expectedTheme: theme, expectedMode: mode },
+                        ),
+                    )
+                    .toBe(true);
+
+                const result = await page.evaluate((tokens) => {
+                    const cards = Array.from(
+                        document.querySelectorAll<HTMLElement>("[data-catalog-id]"),
+                    );
+                    const rootStyle = getComputedStyle(document.documentElement);
+                    const missingRootTokens = tokens.filter(
+                        (token) => !rootStyle.getPropertyValue(token).trim(),
+                    );
+                    const invalidCards = cards.flatMap((card) => {
+                        const preview = card.querySelector<HTMLElement>(".playground");
+                        if (!preview) return [card.dataset.catalogId ?? "unknown"];
+                        // Some previews intentionally render their useful surface only after
+                        // an action (dialog, context menu, file preview). The host element is
+                        // still the right contract boundary for inherited semantic tokens.
+                        const previewElement =
+                            Array.from(preview.querySelectorAll<HTMLElement>("*")).find((element) =>
+                                element.tagName.startsWith("AUI-"),
+                            ) ?? preview;
+                        const cardRect = card.getBoundingClientRect();
+                        const missingPreviewTokens = previewElement
+                            ? tokens.filter(
+                                  (token) =>
+                                      !getComputedStyle(previewElement)
+                                          .getPropertyValue(token)
+                                          .trim(),
+                              )
+                            : ["catalog preview host"];
+                        return cardRect.width > 0 &&
+                            cardRect.height > 0 &&
+                            !missingPreviewTokens.length
+                            ? []
+                            : [
+                                  `${card.dataset.catalogId ?? "unknown"}: ${
+                                      missingPreviewTokens.join(", ") || "zero-sized card"
+                                  }`,
+                              ];
+                    });
+                    return { missingRootTokens, invalidCards };
+                }, requiredTokens);
+
+                expect(result.missingRootTokens, `${theme}/${mode} root tokens`).toEqual([]);
+                expect(result.invalidCards, `${theme}/${mode} catalog previews`).toEqual([]);
+            }
+        }
+    });
+
     test("passes the page accessibility scan and keyboard dialog flow", async ({ page }) => {
         await page.goto("/");
         const results = await new AxeBuilder({ page })
@@ -142,10 +242,16 @@ test.describe("BLBUI documentation quality matrix", () => {
             const wrapper = page.locator(`[data-async-preview="${preview}"]`);
             const control = (state: string) => wrapper.locator(`[data-async-state="${state}"]`);
             await control("loading").click();
-            await expect(wrapper.locator('[role="status"]').filter({ hasText: /LOADING/i })).toBeVisible();
+            await expect(
+                wrapper.locator('[role="status"]').filter({ hasText: /LOADING/i }),
+            ).toBeVisible();
 
             await control("empty").click();
-            await expect(wrapper.locator('[role="status"]').filter({ hasText: /NO DATA|NO AUDIT|NO ITEMS|NO DATA AVAILABLE/i })).toBeVisible();
+            await expect(
+                wrapper
+                    .locator('[role="status"]')
+                    .filter({ hasText: /NO DATA|NO AUDIT|NO ITEMS|NO DATA AVAILABLE/i }),
+            ).toBeVisible();
 
             await control("error").click();
             await expect(wrapper.locator('[role="alert"]').first()).toBeVisible();
@@ -153,7 +259,9 @@ test.describe("BLBUI documentation quality matrix", () => {
             await expect(control("ready")).toHaveClass(/is-active/);
 
             await control("permission-denied").click();
-            await expect(wrapper.locator('[role="status"]').filter({ hasText: /PERMISSION/i })).toBeVisible();
+            await expect(
+                wrapper.locator('[role="status"]').filter({ hasText: /PERMISSION/i }),
+            ).toBeVisible();
             await wrapper.locator("[data-async-request-access]").click();
             await expect(control("ready")).toHaveClass(/is-active/);
         }
@@ -174,7 +282,9 @@ test.describe("BLBUI documentation quality matrix", () => {
         await markdown.locator("textarea").fill("# Updated\n\n**Safe**");
         await expect(markdown.locator("h1")).toContainText("Updated");
         await expect(markdown.locator("strong")).toContainText("Safe");
-        await richText.locator("textarea").fill('<p onclick="bad()">Safe <strong>HTML</strong></p><script>bad()</script>');
+        await richText
+            .locator("textarea")
+            .fill('<p onclick="bad()">Safe <strong>HTML</strong></p><script>bad()</script>');
         await expect(richText.locator("strong")).toContainText("HTML");
         await expect(richText.locator("script")).toHaveCount(0);
         await expect(richText).not.toContainText("bad()");
@@ -189,7 +299,9 @@ test.describe("BLBUI documentation quality matrix", () => {
         await expect
             .poll(() =>
                 page.evaluate(
-                    () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+                    () =>
+                        document.documentElement.scrollWidth <=
+                        document.documentElement.clientWidth,
                 ),
             )
             .toBe(true);
@@ -197,7 +309,9 @@ test.describe("BLBUI documentation quality matrix", () => {
         await expect(richText.locator(".preview")).toBeVisible();
     });
 
-    test("keeps Business analytics charts interactive across themes and narrow screens", async ({ page }) => {
+    test("keeps Business analytics charts interactive across themes and narrow screens", async ({
+        page,
+    }) => {
         await page.goto("/");
         const heatmap = page.locator("#preview-heatmap");
         const funnel = page.locator("#preview-funnel-chart");
@@ -226,7 +340,9 @@ test.describe("BLBUI documentation quality matrix", () => {
         await expect
             .poll(() =>
                 page.evaluate(
-                    () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+                    () =>
+                        document.documentElement.scrollWidth <=
+                        document.documentElement.clientWidth,
                 ),
             )
             .toBe(true);
@@ -295,9 +411,7 @@ test.describe("BLBUI documentation quality matrix", () => {
                         const filename = [platform, viewportValue.id, theme, mode, scene.id].join(
                             "-",
                         );
-                        const goldenPath = goldenRoot
-                            ? resolve(goldenRoot, `${filename}.png`)
-                            : "";
+                        const goldenPath = goldenRoot ? resolve(goldenRoot, `${filename}.png`) : "";
                         await captureVisualTarget(
                             target,
                             testInfo.outputPath("visual-matrix", `${filename}.png`),
@@ -321,7 +435,11 @@ test.describe("BLBUI documentation quality matrix", () => {
                                 ).toBeLessThanOrEqual(1);
                                 if (heightDelta < 0) {
                                     expect(
-                                        isUniformPngRow(expected.data, expected.width, actual.height),
+                                        isUniformPngRow(
+                                            expected.data,
+                                            expected.width,
+                                            actual.height,
+                                        ),
                                         `non-uniform cropped edge for ${filename}`,
                                     ).toBe(true);
                                 } else if (heightDelta > 0) {
@@ -337,7 +455,10 @@ test.describe("BLBUI documentation quality matrix", () => {
                                 });
                                 const differentPixels = pixelmatch(
                                     actual.data.subarray(0, actual.width * comparableHeight * 4),
-                                    expected.data.subarray(0, expected.width * comparableHeight * 4),
+                                    expected.data.subarray(
+                                        0,
+                                        expected.width * comparableHeight * 4,
+                                    ),
                                     diff.data,
                                     actual.width,
                                     comparableHeight,

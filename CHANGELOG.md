@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.28 — 2026-09-09
+
+- 将文档站主题验收扩展为逐组件合同：129 个目录预览在 9 套主题 × light/dark 下检查语义 token 继承和可渲染宿主。
+- 将动态 overlay 预览纳入同一套宿主级主题检查，避免 Dialog、Context Menu、File Preview 和 Import Dialog 因默认关闭状态产生误报。
+- 发布门禁继续覆盖完整浏览器 E2E、视觉矩阵、跨框架类型检查、构建和六个 npm 包打包校验。
+
 ## 0.0.27 — 2026-09-09
 
 - 将 `examples/web` 完善为可运行的迁移宿主：新增 Operations、Users、Channels、Usage Logs 四个内部页面，覆盖筛选、状态、选择、分页、日志和主题切换。

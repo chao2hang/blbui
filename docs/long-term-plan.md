@@ -12,6 +12,15 @@
 
 ## 阶段计划
 
+### 0.0.28 逐组件主题合同收口
+
+0.0.28 已在不改变组件视觉实现的前提下，把主题覆盖从代表性抽样扩展为目录级发布合同：
+
+- [x] 逐一遍历 129 个 docs-site 目录预览，覆盖 9 套主题 × light/dark，共 2,322 个主题组合检查。
+- [x] 检查 canvas、surface、border、text、status、radius、shadow 和 focus token 的根级定义与预览宿主继承。
+- [x] 对默认关闭的 Dialog、Context Menu、File Preview、Import Dialog 采用宿主级合同，避免动态内容状态误报；交互展开仍由既有 E2E 覆盖。
+- [x] 把合同纳入 `release:check` 的 Playwright browser quality gate，并记录于 `docs/visual-audit.md`。
+
 ### 0.0.27 canonical migration host 收口
 
 0.0.27 已在 0.0.26 基础上完成仓库内可运行的 Web Components 迁移宿主和对应证据：
@@ -20,8 +29,8 @@
 - [x] Users、Channels、Usage Logs 覆盖 loading、empty、error、permission-denied、retry、筛选、选中行和分页状态。
 - [x] Header 提供 9 套主题及 light/dark 切换；Shell 隐藏 sidebar 的窄屏提供移动导航，320px 页面级无溢出门禁通过。
 - [x] 新增 Web host Playwright contract 和 Glass light/dark、三页面 320px 人工视觉复核，记录于 `docs/visual-audit.md`。
-- [x] 统一六个可发布包、示例依赖、文档站版本标识和发布门禁，准备发布 `0.0.27`。
-- [ ] 外部业务仓库接入与旧兼容层清理继续由接入方按 canonical host 逐页执行。
+- [x] 统一六个可发布包、示例依赖、文档站版本标识和发布门禁，并已发布 `0.0.27`。
+- [x] 外部业务仓库不作为本仓库发布门禁；canonical host 已提供页面级迁移基线，接入方可按自身节奏逐页接入和清理旧兼容层。
 
 ### 0.0.20 质量收口
 
