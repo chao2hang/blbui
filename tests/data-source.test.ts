@@ -45,7 +45,15 @@ describe("business data source contract", () => {
         resource.setLoader(async () => ({ rows: [] }));
         await resource.load();
         expect(resource.getSnapshot().status).toBe("empty");
-        expect(statuses).toEqual(["idle", "loading", "error", "loading", "ready", "loading", "empty"]);
+        expect(statuses).toEqual([
+            "idle",
+            "loading",
+            "error",
+            "loading",
+            "ready",
+            "loading",
+            "empty",
+        ]);
     });
 
     it("normalizes permission errors as non-retryable permission-denied state", async () => {
@@ -96,11 +104,104 @@ describe("business data source contract", () => {
             total: 1,
         });
 
-        fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ code: "NOPE" }), { status: 429 }));
+        fetchMock.mockResolvedValueOnce(
+            new Response(JSON.stringify({ code: "NOPE" }), { status: 429 }),
+        );
         await expect(source({ signal: new AbortController().signal })).rejects.toMatchObject({
             status: 429,
             retryable: undefined,
         });
         fetchMock.mockRestore();
+    });
+
+    it("retries transient failures with a bounded backoff policy", async () => {
+        let attempts = 0;
+        const resource = new AdminDataResource<Row>({
+            retry: { maxRetries: 2, delayMs: 0, backoffMultiplier: 2 },
+            loader: async () => {
+                attempts += 1;
+                if (attempts < 3) throw new AdminDataError("temporary outage", { status: 503 });
+                return { rows: [{ id: "fresh", label: "Fresh" }] };
+            },
+        });
+
+        await resource.load();
+
+        expect(attempts).toBe(3);
+        expect(resource.getSnapshot()).toMatchObject({
+            status: "ready",
+            rows: [{ id: "fresh", label: "Fresh" }],
+        });
+    });
+
+    it("caches successful pages by request identity and lets retry bypass the cache", async () => {
+        const loader = vi.fn(async () => ({ rows: [{ id: "cached", label: "Cached" }] }));
+        const resource = new AdminDataResource<Row>({
+            loader,
+            cache: { ttlMs: 60_000 },
+        });
+
+        await resource.load({ page: 1, pageSize: 25 });
+        await resource.load({ page: 1, pageSize: 25 });
+        expect(loader).toHaveBeenCalledTimes(1);
+
+        await resource.load({ page: 2, pageSize: 25 });
+        expect(loader).toHaveBeenCalledTimes(2);
+
+        await resource.retry();
+        expect(loader).toHaveBeenCalledTimes(3);
+
+        resource.clearCache();
+        await resource.load({ page: 1, pageSize: 25 });
+        expect(loader).toHaveBeenCalledTimes(4);
+    });
+
+    it("serves stale data while revalidating when explicitly enabled", async () => {
+        let version = 1;
+        const statuses: string[] = [];
+        const resource = new AdminDataResource<Row>({
+            loader: async () => ({ rows: [{ id: `v${version}`, label: `Version ${version}` }] }),
+            cache: { ttlMs: 0, staleWhileRevalidate: true },
+        });
+        resource.subscribe((snapshot) => statuses.push(snapshot.status));
+
+        await resource.load({ page: 1 });
+        version = 2;
+        await resource.load({ page: 1 });
+
+        expect(resource.getSnapshot().rows).toEqual([{ id: "v2", label: "Version 2" }]);
+        expect(statuses).toEqual(["idle", "loading", "ready", "ready", "loading", "ready"]);
+    });
+
+    it("does not revalidate a fresh stale-while-revalidate cache hit", async () => {
+        const loader = vi.fn(async () => ({ rows: [{ id: "cached", label: "Cached" }] }));
+        const resource = new AdminDataResource<Row>({
+            loader,
+            cache: { ttlMs: 60_000, staleWhileRevalidate: true },
+        });
+
+        await resource.load({ page: 1 });
+        await resource.load({ page: 1 });
+
+        expect(loader).toHaveBeenCalledTimes(1);
+    });
+
+    it("cancels a retry backoff when the resource is aborted", async () => {
+        let attempts = 0;
+        const resource = new AdminDataResource<Row>({
+            retry: { maxRetries: 2, delayMs: 50 },
+            loader: async () => {
+                attempts += 1;
+                throw new AdminDataError("temporary outage", { status: 503 });
+            },
+        });
+
+        const load = resource.load();
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        resource.abort();
+        await load;
+
+        expect(attempts).toBe(1);
+        expect(resource.getSnapshot().status).toBe("loading");
     });
 });

@@ -38,6 +38,24 @@ export type AdminDataLoader<Row, Query = Record<string, unknown>> = (
     request: AdminDataRequest<Query>,
 ) => Promise<AdminDataPage<Row>>;
 
+export interface AdminDataRetryOptions {
+    /** Number of additional attempts after the initial retryable failure. */
+    maxRetries?: number;
+    /** Delay before the first retry, in milliseconds. */
+    delayMs?: number;
+    /** Multiplier applied to the delay for each subsequent retry. */
+    backoffMultiplier?: number;
+}
+
+export interface AdminDataCacheOptions<Query = Record<string, unknown>> {
+    /** Cache lifetime in milliseconds. A zero lifetime disables fresh hits. */
+    ttlMs?: number;
+    /** Serve the last cached page immediately while revalidating it. */
+    staleWhileRevalidate?: boolean;
+    /** Override the request-key strategy when query identity is domain-specific. */
+    key?: (request: AdminDataLoadOptions<Query>) => string;
+}
+
 export interface AdminDataErrorMeta {
     status?: number;
     code?: string;
@@ -61,6 +79,8 @@ export interface AdminDataResourceOptions<Row, Query = Record<string, unknown>> 
     loader: AdminDataLoader<Row, Query>;
     initialRows?: Row[];
     initialTotal?: number;
+    retry?: AdminDataRetryOptions;
+    cache?: AdminDataCacheOptions<Query>;
 }
 
 export interface AdminDataErrorOptions {
@@ -111,6 +131,40 @@ function defaultRetryable(status: number | undefined): boolean {
     return status === 408 || status === 425 || status === 429 || status >= 500;
 }
 
+function stableSerialize(value: unknown): string {
+    if (value === null) return "null";
+    if (value === undefined) return "undefined";
+    if (Array.isArray(value)) return `[${value.map(stableSerialize).join(",")}]`;
+    if (typeof value === "object") {
+        return `{${Object.entries(value as Record<string, unknown>)
+            .sort(([left], [right]) => left.localeCompare(right))
+            .map(([key, entry]) => `${JSON.stringify(key)}:${stableSerialize(entry)}`)
+            .join(",")}}`;
+    }
+    return JSON.stringify(value);
+}
+
+function defaultCacheKey<Query>(request: AdminDataLoadOptions<Query>): string {
+    return stableSerialize(request);
+}
+
+function waitForRetry(delayMs: number, signal: AbortSignal): Promise<void> {
+    if (delayMs <= 0) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+            signal.removeEventListener("abort", onAbort);
+            resolve();
+        }, delayMs);
+        const onAbort = () => {
+            clearTimeout(timer);
+            signal.removeEventListener("abort", onAbort);
+            reject(new DOMException("The request was aborted.", "AbortError"));
+        };
+        signal.addEventListener("abort", onAbort, { once: true });
+        if (signal.aborted) onAbort();
+    });
+}
+
 /** Convert arbitrary fetch/client errors into the shared async-state vocabulary. */
 export function getAdminDataErrorMeta(error: unknown): AdminDataErrorMeta {
     const record = asRecord(error);
@@ -145,6 +199,9 @@ type Listener<Row, Query> = (snapshot: AdminDataSnapshot<Row, Query>) => void;
 export class AdminDataResource<Row, Query = Record<string, unknown>> {
     private loader: AdminDataLoader<Row, Query>;
     private readonly listeners = new Set<Listener<Row, Query>>();
+    private readonly retryOptions: Required<AdminDataRetryOptions>;
+    private readonly cacheOptions?: Required<AdminDataCacheOptions<Query>>;
+    private readonly cache = new Map<string, { page: AdminDataPage<Row>; expiresAt: number }>();
     private activeController: AbortController | undefined;
     private lastRequest: AdminDataLoadOptions<Query> = {};
     private sequence = 0;
@@ -153,6 +210,18 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
 
     constructor(options: AdminDataResourceOptions<Row, Query>) {
         this.loader = options.loader;
+        this.retryOptions = {
+            maxRetries: Math.max(0, Math.trunc(options.retry?.maxRetries ?? 0)),
+            delayMs: Math.max(0, options.retry?.delayMs ?? 0),
+            backoffMultiplier: Math.max(1, options.retry?.backoffMultiplier ?? 2),
+        };
+        this.cacheOptions = options.cache
+            ? {
+                  ttlMs: Math.max(0, options.cache.ttlMs ?? 0),
+                  staleWhileRevalidate: options.cache.staleWhileRevalidate ?? false,
+                  key: options.cache.key ?? defaultCacheKey<Query>,
+              }
+            : undefined;
         const rows = options.initialRows ?? [];
         this.snapshot = {
             status: "idle",
@@ -184,13 +253,50 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
         for (const listener of this.listeners) listener(next);
     }
 
-    async load(options: AdminDataLoadOptions<Query> = {}): Promise<AdminDataSnapshot<Row, Query>> {
+    private cacheKey(options: AdminDataLoadOptions<Query>): string | undefined {
+        return this.cacheOptions?.key(options);
+    }
+
+    private publishPage(
+        page: AdminDataPage<Row>,
+        requestId: number,
+        request: AdminDataLoadOptions<Query>,
+    ): void {
+        const rows = Array.isArray(page.rows) ? page.rows : [];
+        this.publish({
+            ...this.snapshot,
+            status: rows.length ? "ready" : "empty",
+            rows,
+            total: page.total ?? rows.length,
+            nextCursor: page.nextCursor ?? null,
+            requestId,
+            request: { ...request },
+            error: undefined,
+        });
+    }
+
+    private async loadInternal(
+        options: AdminDataLoadOptions<Query>,
+        bypassCache: boolean,
+    ): Promise<AdminDataSnapshot<Row, Query>> {
         if (this.disposed) return this.snapshot;
         this.activeController?.abort();
         const controller = new AbortController();
         const requestId = ++this.sequence;
         this.activeController = controller;
         this.lastRequest = { ...options };
+
+        const cacheKey = this.cacheKey(options);
+        const cached = cacheKey === undefined ? undefined : this.cache.get(cacheKey);
+        const cacheIsFresh = cached !== undefined && cached.expiresAt > Date.now();
+        if (!bypassCache && cached && (cacheIsFresh || this.cacheOptions?.staleWhileRevalidate)) {
+            this.publishPage(cached.page, requestId, options);
+            if (cacheIsFresh) {
+                this.activeController = undefined;
+                return this.snapshot;
+            }
+        }
+
         this.publish({
             ...this.snapshot,
             status: "loading",
@@ -199,45 +305,64 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
             error: undefined,
         });
 
-        try {
-            const page = await this.loader({ ...options, signal: controller.signal });
-            if (this.disposed || requestId !== this.sequence || controller.signal.aborted) {
-                return this.snapshot;
+        for (let retry = 0; ; retry += 1) {
+            try {
+                const page = await this.loader({ ...options, signal: controller.signal });
+                if (this.disposed || requestId !== this.sequence || controller.signal.aborted) {
+                    return this.snapshot;
+                }
+                this.activeController = undefined;
+                if (cacheKey !== undefined && this.cacheOptions) {
+                    this.cache.set(cacheKey, {
+                        page,
+                        expiresAt: Date.now() + this.cacheOptions.ttlMs,
+                    });
+                }
+                this.publishPage(page, requestId, options);
+            } catch (error) {
+                if (
+                    this.disposed ||
+                    requestId !== this.sequence ||
+                    controller.signal.aborted ||
+                    isAbortError(error)
+                ) {
+                    return this.snapshot;
+                }
+                const meta = getAdminDataErrorMeta(error);
+                if (meta.retryable && retry < this.retryOptions.maxRetries) {
+                    const delay =
+                        this.retryOptions.delayMs * this.retryOptions.backoffMultiplier ** retry;
+                    try {
+                        await waitForRetry(delay, controller.signal);
+                    } catch {
+                        return this.snapshot;
+                    }
+                    continue;
+                }
+                this.activeController = undefined;
+                this.publish({
+                    ...this.snapshot,
+                    status: meta.permissionDenied ? "permission-denied" : "error",
+                    requestId,
+                    request: { ...options },
+                    error: meta,
+                });
             }
-            this.activeController = undefined;
-            const rows = Array.isArray(page.rows) ? page.rows : [];
-            this.publish({
-                ...this.snapshot,
-                status: rows.length ? "ready" : "empty",
-                rows,
-                total: page.total ?? rows.length,
-                nextCursor: page.nextCursor ?? null,
-                requestId,
-                error: undefined,
-            });
-        } catch (error) {
-            if (
-                this.disposed ||
-                requestId !== this.sequence ||
-                controller.signal.aborted ||
-                isAbortError(error)
-            ) {
-                return this.snapshot;
-            }
-            this.activeController = undefined;
-            const meta = getAdminDataErrorMeta(error);
-            this.publish({
-                ...this.snapshot,
-                status: meta.permissionDenied ? "permission-denied" : "error",
-                requestId,
-                error: meta,
-            });
+            return this.snapshot;
         }
-        return this.snapshot;
+    }
+
+    load(options: AdminDataLoadOptions<Query> = {}): Promise<AdminDataSnapshot<Row, Query>> {
+        return this.loadInternal(options, false);
     }
 
     retry(): Promise<AdminDataSnapshot<Row, Query>> {
-        return this.load(this.lastRequest);
+        return this.loadInternal(this.lastRequest, true);
+    }
+
+    clearCache(key?: string): void {
+        if (key === undefined) this.cache.clear();
+        else this.cache.delete(key);
     }
 
     abort(): void {
@@ -251,6 +376,7 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
         this.disposed = true;
         this.abort();
         this.listeners.clear();
+        this.cache.clear();
     }
 }
 

@@ -15,6 +15,22 @@ Vue 使用 `onBeforeUnmount`，Svelte 返回 `onMount` cleanup，原生 Web
 Components 在 `pagehide` 中清理。新增 Business 组件或宿主场景时，应优先
 复用这份 fixture，避免各框架重新实现一套异步状态语义。
 
+生产页面可以在同一 fixture 上按需开启数据能力：
+
+```ts
+const resource = new AdminDataResource<Service>({
+  loader,
+  retry: { maxRetries: 2, delayMs: 250, backoffMultiplier: 2 },
+  cache: { ttlMs: 30_000, staleWhileRevalidate: true },
+})
+```
+
+这段配置在四个框架中含义相同：瞬态 5xx 会有限重试，退避等待可被
+`AbortSignal` 取消；相同分页/筛选请求优先使用缓存，`retry()` 强制重新
+请求，写操作完成后调用 `clearCache()`。框架层只负责把 snapshot 映射到
+组件 props，不应在 React effect、Vue watcher、Svelte store 或 Web
+Components listener 中另写一套缓存或重试逻辑。
+
 ## Vue 3
 
 ```vue

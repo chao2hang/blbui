@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.21 — 2026-09-09
+
+- `AdminDataResource` 新增可配置有限重试与指数退避，退避等待响应 `AbortSignal`，避免瞬态网络故障造成无限请求。
+- 新增按 query/page/pageSize/cursor/sort/filters 请求身份缓存、stale-while-revalidate、`clearCache()`，并让 `retry()` 始终绕过缓存重新验证。
+- 补充数据源 8 项行为测试、四框架数据能力文档和 API 文档，保持 React/Vue/Svelte/Web Components 共用同一资源语义。
+
 ## 0.0.20 — 2026-09-09
 
 - 将四套 playground 的异步演示统一接入真实 `AdminDataResource` 生命周期，覆盖 ready/loading、503 可重试错误、403 permission-denied、retry、订阅清理和 `dispose()`。

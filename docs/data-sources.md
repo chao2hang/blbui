@@ -18,6 +18,8 @@ const services = new AdminDataResource<Service>({
     endpoint: ({ page, pageSize }) =>
       `/api/services?page=${page ?? 1}&pageSize=${pageSize ?? 25}`,
   }),
+  retry: { maxRetries: 2, delayMs: 250, backoffMultiplier: 2 },
+  cache: { ttlMs: 30_000, staleWhileRevalidate: true },
 })
 
 const unsubscribe = services.subscribe((snapshot) => {
@@ -30,6 +32,7 @@ const unsubscribe = services.subscribe((snapshot) => {
 
 await services.load({ page: 1, pageSize: 25 })
 await services.retry() // reuses the last request
+services.clearCache() // invalidate all cached pages after a mutation
 unsubscribe()
 services.dispose()
 ```
@@ -37,14 +40,27 @@ services.dispose()
 Starting a new load aborts the previous request, and stale responses cannot
 overwrite the newest snapshot. HTTP `401` and `403` become non-retryable
 `permission-denied`; transient `408`, `425`, `429` and `5xx` responses are
-retryable by default. Custom loaders can throw `AdminDataError` to provide an
+retryable by default. Set `retry.maxRetries` to enable bounded retries; the
+delay grows by `backoffMultiplier` after each retry and is cancelled together
+with the request. Custom loaders can throw `AdminDataError` to provide an
 explicit status, code or retry policy.
+
+`cache` is opt-in. The default request key includes query, page, page size,
+cursor, sort and filters. A fresh cache hit completes without a network call;
+`staleWhileRevalidate` publishes the cached page immediately and then refreshes
+it. `retry()` always bypasses the cache, and `clearCache()` can invalidate all
+entries or a custom-key entry after a mutation.
 
 The resource is framework-neutral. React can subscribe with
 `useSyncExternalStore`, Vue with `onMounted`/`onBeforeUnmount`, Svelte with
 `onMount`, and Web Components can update properties from the subscription.
 The component layer remains responsible for rendering the state and emitting
 `aui-retry`.
+
+The same options are framework-neutral. Keep one resource per page or data
+scope, pass the snapshot to the framework binding, and keep cleanup in the
+host lifecycle. React, Vue, Svelte and Web Components therefore share the same
+pagination, retry/backoff and cache semantics rather than reimplementing them.
 
 ## Four-framework parity lifecycle
 
