@@ -85,6 +85,27 @@ Vue 绑定使用 `update:value` + `value-change` 的约定；直接使用 Busine
 5. 将浮层的 `open` 状态作为受控值维护，确认卸载后事件监听和焦点恢复没有残留。
 6. 在 320px、light/dark、reduced-motion 和 forced-colors 下复核页面级溢出与可读性。
 
+## 唯一挂载职责
+
+应用级外壳只挂载一次，并负责 sidebar、header 和内容滚动区域；页面级组件只负责
+标题、描述、操作区和页面内容。推荐保持下面的单向层级，不要在 `AdminPage` 内再
+嵌套 `AdminShell`，也不要在 `AdminPage` 内重复放置同一组 `AdminPageHeader`：
+
+```html
+<aui-shell>
+  <aside slot="sidebar">Navigation</aside>
+  <header slot="header">Global actions</header>
+  <aui-page title="Users" description="Manage operators">
+    Page content
+  </aui-page>
+</aui-shell>
+```
+
+如果宿主已有 `AdminLayout` 或 `AdminConsoleShell`，将其作为唯一外壳保留，并把
+`AdminPage` 放入内容插槽；不要同时挂载两层 header/sidebar。仓库内四套 playground
+均按该层级运行，浏览器门禁会检查每个宿主只有一个 `aui-shell` 和一个嵌套的
+`aui-page`。
+
 仓库内的 `bun run e2e:check` 还会直接启动 React、Vue、Svelte 和原生 Web
 playground，验证查询、Tab、分页、Dialog、DOM property 与事件链路；它与
 `examples:check` 的构建检查互补，避免只验证源码存在而漏掉运行时绑定问题。

@@ -124,7 +124,7 @@
 - 0.0.19 新增 Heatmap、FunnelChart、GanttChart：三者均保持 framework-neutral、只依赖 `--aui-*` 语义 token，支持可访问焦点/点位或任务事件；docs-site 已提供预览、主题切换和 320px 组件内部滚动回归。
 - 0.0.20 完成四框架真实资源生命周期 parity、Business React 图表行为回归、Web Components pagehide 清理和全量 format release gate。
 - 0.0.21 补齐资源 contract 的取消退避、有限重试、指数退避、按请求身份缓存、stale-while-revalidate、`clearCache()` 和 retry 绕过缓存语义；后续继续围绕真实宿主接入、缓存观测和复杂业务组件推进。
-- 真实外部业务仓库的逐页迁移仍需宿主仓库配合，下一轮应优先落地 AdminButton、AdminPage/AdminPageHeader、AdminStatusTag 和 AdminLayout/AdminConsoleShell 的唯一挂载职责，再迁移 Users、Channels、Usage Logs 页面并清理旧兼容层。
+- 真实外部业务仓库的逐页迁移仍需宿主仓库配合；仓库内四套 fixture 已先落地 AdminButton、AdminPage/AdminPageHeader、AdminStatusTag 和 AdminLayout/AdminConsoleShell 的唯一挂载职责。下一轮宿主源码进入工作区后，再迁移 Users、Channels、Usage Logs 页面并清理旧兼容层。
 - [x] 补齐 Business Vue/Svelte 直接 Custom Elements 示例，覆盖 22 个元素，并让 catalog/发布门禁检查示例不会回退为未导出的 `Admin*` 标签。
 - [x] 将六个包的 npm 可见性检查结果保存为发布 job summary；外部 `web/` 页面迁移仍以宿主源码进入工作区为前提。
 

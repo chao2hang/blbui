@@ -14,6 +14,13 @@ if (!app) throw new Error("Web host mount point is missing");
 
 app.className = "aui-root";
 app.innerHTML = `
+  <aui-shell sidebar-width="200px" header-height="56px">
+    <div slot="sidebar" style="padding: 20px; font: 700 12px var(--aui-font-mono)">BLBUI</div>
+    <div slot="header" style="display: flex; width: 100%; justify-content: space-between; padding: 0 20px; font: 700 11px var(--aui-font-mono)">
+      <span>CONTROL PLANE</span>
+      <span style="color: var(--aui-success)">CONNECTED</span>
+    </div>
+    <div style="padding: 32px">
   <aui-page title="Operations" description="A framework-neutral host migration fixture.">
     <aui-filter-bar>
       <aui-input id="filter" placeholder="Filter services"></aui-input>
@@ -39,6 +46,8 @@ app.innerHTML = `
       <aui-gantt-chart id="business-gantt" min="0" max="100" label="Release plan"></aui-gantt-chart>
     </section>
   </aui-page>
+    </div>
+  </aui-shell>
 `;
 
 const grid = document.querySelector<

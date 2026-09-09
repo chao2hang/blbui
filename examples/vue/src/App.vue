@@ -9,6 +9,7 @@ import {
     AdminInput,
     AdminPage,
     AdminPagination,
+    AdminShell,
     AdminTable,
     AdminTabs,
     AdminToastManager,
@@ -122,7 +123,7 @@ const visibleRows = computed(() => {
 <template>
     <div
         class="aui-root"
-        style="min-height: 100vh; padding: 32px"
+        style="min-height: 100vh"
         :data-parity-query="query"
         :data-parity-page="page"
         :data-parity-dialog="String(open)"
@@ -130,103 +131,130 @@ const visibleRows = computed(() => {
         :data-parity-async-state="asyncState"
         :data-parity-retry-count="retryCount"
     >
-        <AdminPage title="Channels" description="Cross-framework operator playground.">
-            <AdminTabs :items="tabs" :active="activeTab" @tab-change="activeTab = $event" />
-            <div style="display: flex; gap: 8px; margin: 20px 0">
-                <AdminInput v-model:value="query" placeholder="Search channels" />
-                <AdminButton variant="primary" @click="open = true">Create channel</AdminButton>
-            </div>
-            <AdminTable>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Status</th>
-                            <th>Region</th>
-                            <th>Query</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="row in visibleRows" :key="row.id">
-                            <td>{{ row.id }}</td>
-                            <td>{{ row.status }}</td>
-                            <td>{{ row.region }}</td>
-                            <td>{{ query || "—" }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </AdminTable>
-            <section aria-label="Async data contract" style="margin-top: 20px">
-                <div style="display: flex; gap: 8px; margin-bottom: 8px">
-                    <AdminButton
-                        @click="
-                            asyncResource.setMode('error');
-                            asyncResource.resource.load();
-                        "
-                        >Simulate data error</AdminButton
-                    >
-                    <AdminButton
-                        @click="
-                            asyncResource.setMode('permission-denied');
-                            asyncResource.resource.load();
-                        "
-                        >Simulate permission denial</AdminButton
-                    >
-                    <AdminButton
-                        @click="
-                            asyncResource.setMode('ready');
-                            asyncResource.resource.load();
-                        "
-                        >Recover data</AdminButton
-                    >
-                </div>
-                <AdminTable
-                    id="async-table"
-                    :loading="asyncSnapshot.status === 'loading'"
-                    :error="asyncState === 'error'"
-                    :permission-denied="asyncState === 'permission-denied'"
-                    @retry="recoverFromAsyncError"
+        <AdminShell sidebar-width="200px" header-height="56px">
+            <template #sidebar>
+                <div style="padding: 20px; font: 700 12px var(--aui-font-mono)">BLBUI</div>
+            </template>
+            <template #header>
+                <div
+                    style="
+                        display: flex;
+                        width: 100%;
+                        justify-content: space-between;
+                        padding: 0 20px;
+                        font: 700 11px var(--aui-font-mono);
+                    "
                 >
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>Async contract row</td>
-                                <td>{{ retryCount }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <template #permission>Request access to continue.</template>
-                </AdminTable>
-            </section>
-            <div id="business-table-mount"></div>
-            <output data-parity-business-selection="0">Business selection: 0</output>
-            <section aria-label="Business direct Custom Elements" style="margin-top: 20px">
-                <aui-permission-matrix
-                    :roles.prop="businessRoles"
-                    :resources.prop="businessResources"
-                    :permissions.prop="businessPermissions"
-                />
-                <aui-audit-log :entries.prop="auditEntries" has-more />
-                <aui-export-button :data.prop="visibleRows" format="csv" filename="channels" />
-                <aui-heatmap :data.prop="heatmapData" label="Request density" />
-                <aui-funnel-chart :data.prop="funnelData" label="Channel funnel" />
-                <aui-gantt-chart
-                    :tasks.prop="ganttTasks"
-                    :min="0"
-                    :max="100"
-                    label="Release plan"
-                />
-            </section>
-            <AdminPagination
-                :page="page"
-                :total-pages="contract.totalPages"
-                @page-change="page = $event"
-            />
-            <AdminToastManager v-model:items="toasts" />
-            <AdminDialog v-model:open="open" title="Create channel">
-                <p>Page {{ page }}: confirm the new channel configuration.</p>
-                <AdminButton @click="open = false">Close</AdminButton>
-            </AdminDialog>
-        </AdminPage>
+                    <span>CONTROL PLANE</span>
+                    <span style="color: var(--aui-success)">CONNECTED</span>
+                </div>
+            </template>
+            <div style="padding: 32px">
+                <AdminPage title="Channels" description="Cross-framework operator playground.">
+                    <AdminTabs :items="tabs" :active="activeTab" @tab-change="activeTab = $event" />
+                    <div style="display: flex; gap: 8px; margin: 20px 0">
+                        <AdminInput v-model:value="query" placeholder="Search channels" />
+                        <AdminButton variant="primary" @click="open = true"
+                            >Create channel</AdminButton
+                        >
+                    </div>
+                    <AdminTable>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Region</th>
+                                    <th>Query</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="row in visibleRows" :key="row.id">
+                                    <td>{{ row.id }}</td>
+                                    <td>{{ row.status }}</td>
+                                    <td>{{ row.region }}</td>
+                                    <td>{{ query || "—" }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </AdminTable>
+                    <section aria-label="Async data contract" style="margin-top: 20px">
+                        <div style="display: flex; gap: 8px; margin-bottom: 8px">
+                            <AdminButton
+                                @click="
+                                    asyncResource.setMode('error');
+                                    asyncResource.resource.load();
+                                "
+                                >Simulate data error</AdminButton
+                            >
+                            <AdminButton
+                                @click="
+                                    asyncResource.setMode('permission-denied');
+                                    asyncResource.resource.load();
+                                "
+                                >Simulate permission denial</AdminButton
+                            >
+                            <AdminButton
+                                @click="
+                                    asyncResource.setMode('ready');
+                                    asyncResource.resource.load();
+                                "
+                                >Recover data</AdminButton
+                            >
+                        </div>
+                        <AdminTable
+                            id="async-table"
+                            :loading="asyncSnapshot.status === 'loading'"
+                            :error="asyncState === 'error'"
+                            :permission-denied="asyncState === 'permission-denied'"
+                            @retry="recoverFromAsyncError"
+                        >
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>Async contract row</td>
+                                        <td>{{ retryCount }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <template #permission>Request access to continue.</template>
+                        </AdminTable>
+                    </section>
+                    <div id="business-table-mount"></div>
+                    <output data-parity-business-selection="0">Business selection: 0</output>
+                    <section aria-label="Business direct Custom Elements" style="margin-top: 20px">
+                        <aui-permission-matrix
+                            :roles.prop="businessRoles"
+                            :resources.prop="businessResources"
+                            :permissions.prop="businessPermissions"
+                        />
+                        <aui-audit-log :entries.prop="auditEntries" has-more />
+                        <aui-export-button
+                            :data.prop="visibleRows"
+                            format="csv"
+                            filename="channels"
+                        />
+                        <aui-heatmap :data.prop="heatmapData" label="Request density" />
+                        <aui-funnel-chart :data.prop="funnelData" label="Channel funnel" />
+                        <aui-gantt-chart
+                            :tasks.prop="ganttTasks"
+                            :min="0"
+                            :max="100"
+                            label="Release plan"
+                        />
+                    </section>
+                    <AdminPagination
+                        :page="page"
+                        :total-pages="contract.totalPages"
+                        @page-change="page = $event"
+                    />
+                    <AdminToastManager v-model:items="toasts" />
+                    <AdminDialog v-model:open="open" title="Create channel">
+                        <p>Page {{ page }}: confirm the new channel configuration.</p>
+                        <AdminButton @click="open = false">Close</AdminButton>
+                    </AdminDialog>
+                </AdminPage>
+            </div>
+        </AdminShell>
     </div>
 </template>

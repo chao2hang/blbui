@@ -4,7 +4,7 @@
   import { registerAdminElements } from '@chaos_team/blbui-svelte'
   import { registerBusinessElements } from '@chaos_team/blbui-business/register'
   import { createParityAsyncResource, parityAsyncState } from '../../parity/data-resource'
-  import { AdminButton, AdminDialog, AdminInput, AdminPage, AdminPageHeader, AdminPagination, AdminShell, AdminStatusTag, AdminTable, AdminToastManager } from '@chaos_team/blbui-svelte'
+  import { AdminButton, AdminDialog, AdminInput, AdminPage, AdminPagination, AdminShell, AdminStatusTag, AdminTable, AdminToastManager } from '@chaos_team/blbui-svelte'
 
   const contract = fixture.parityContract.assertions
   let query = contract.initialQuery
@@ -82,7 +82,6 @@
     <div slot="header" style="display: flex; justify-content: flex-end; padding: 0 16px"><AdminStatusTag status="success">CONNECTED</AdminStatusTag></div>
     <div style="padding: 32px">
       <AdminPage title="Channels" description="Cross-framework operator playground.">
-        <AdminPageHeader title="Channel inventory" description="Shared PageHeader wrapper for Svelte hosts." />
     <aui-tabs items={fixture.tabs} active={activeTab} on:aui-tab-change={(event) => (activeTab = event.detail.id)}></aui-tabs>
     <div style="display: flex; gap: 8px; margin: 20px 0">
       <AdminInput value={query} onValueChange={(value) => (query = value)} placeholder="Search channels" />

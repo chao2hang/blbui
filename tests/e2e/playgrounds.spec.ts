@@ -22,6 +22,8 @@ for (const playground of frameworkPlaygrounds) {
 
         const root = page.locator("[data-parity-page]");
         await expect(root).toHaveAttribute("data-parity-page", "1");
+        await expect(page.locator("aui-shell")).toHaveCount(1);
+        await expect(page.locator("aui-shell aui-page")).toHaveCount(1);
         await expect(root).toHaveAttribute("data-parity-dialog", "false");
         const parityTable = page.locator("aui-table").first();
         await expect(parityTable).toContainText("gateway-prod");
@@ -119,6 +121,8 @@ test("Web Components playground updates a DataGrid through DOM properties and ev
     page.on("pageerror", (error) => pageErrors.push(error.message));
     await page.goto("http://127.0.0.1:4177");
 
+    await expect(page.locator("aui-shell")).toHaveCount(1);
+    await expect(page.locator("aui-shell aui-page")).toHaveCount(1);
     await expect(page.locator("aui-page")).toContainText("Operations");
     const servicesGrid = page.locator("#services");
     await expect(servicesGrid).toContainText("Gateway / Production");

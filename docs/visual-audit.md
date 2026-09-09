@@ -17,6 +17,14 @@
 - React/Vue/Svelte 确认共享 `AdminDataResource` 的 ready 状态、异步控制按钮、Business AdvancedTable 和图表渲染；Web Components 确认 pagehide 生命周期对应的 async contract、表格和图表仍稳定。
 - 结果：未发现新增主题缺失、页面级横向溢出、图表裁切、异步状态不可见或跨框架 parity 视觉差异；本轮不提升既有 pixel golden，继续由固定 runner 视觉矩阵维护基线。
 
+### 0.0.21 后续迁移结构复核（2026-09-09）
+
+- 使用 Codex In-app Browser 查看 docs-site 的桌面 Obsidian dark 截面；侧栏、主题选择器、框架示例代码、无障碍说明和底部状态栏层级清晰，未发现页面级横向溢出或文字裁切。
+- 查看 Vue/Svelte 320px playground 截图，确认新的 `AdminShell` 外壳、顶部连接状态、`AdminPage` 标题区、筛选控件、表格和异步操作按钮保持可读；按钮组在窄屏按组件内部布局工作，不产生页面级横向滚动。
+- 四个 playground 均改为单一 `AdminShell` 包裹单一 `AdminPage`；Svelte 移除重复 `AdminPageHeader`，避免双标题边框和重复页面职责。
+- 自动化补充：React、Vue、Svelte、Web Components 的浏览器测试均检查 `aui-shell` 数量为 1 且包含 1 个 `aui-page`；17 条 E2E 中 16 条通过、1 条按既有条件跳过。
+- 结果：未发现 shell/page 嵌套造成的视觉回归；本轮不提升 golden，继续以固定 runner 视觉矩阵作为像素基线。
+
 ### 0.0.19 发布前人工收口（2026-09-09）
 
 - 使用 Codex In-app Browser 实际查看 docs-site 桌面视口：默认 Obsidian dark、Glass dark/light、Chinese light/dark，以及 Heatmap、Funnel Chart、Gantt Chart 的业务图表截面。

@@ -68,7 +68,7 @@
 - [ ] 用 `AdminStatusTag` 替换通用状态标签。
 - [ ] 迁移 Users、Channels、Usage Logs 的 FilterBar/Table/Pagination。
 - [ ] 保留旧组件兼容层，迁移完成后再删除重复样式。
-- [ ] 明确 `AdminLayout` 与 `AdminConsoleShell` 唯一挂载职责，避免双外壳。
+- [x] 在四套迁移 fixture 中明确 `AdminShell` / `AdminLayout` / `AdminConsoleShell` 的唯一挂载职责，避免双外壳；真实外部宿主仍需迁移时复用该层级。
 
 ## Phase 6：三框架示例与发布
 
