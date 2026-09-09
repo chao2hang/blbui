@@ -363,10 +363,19 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
         return this.snapshot;
     }
 
+    /**
+     * Subscribe to snapshots. Subscriber failures are isolated so one view
+     * cannot interrupt another framework binding or the resource state.
+     */
     subscribe(listener: Listener<Row, Query>): () => void {
         if (this.disposed) return () => undefined;
         this.listeners.add(listener);
-        listener(this.snapshot);
+        try {
+            listener(this.snapshot);
+        } catch {
+            // A view subscriber must not prevent other subscribers or the
+            // resource itself from continuing to publish state.
+        }
         return () => this.listeners.delete(listener);
     }
 
@@ -406,7 +415,14 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
 
     private publish(next: AdminDataSnapshot<Row, Query>): void {
         this.snapshot = next;
-        for (const listener of this.listeners) listener(next);
+        for (const listener of this.listeners) {
+            try {
+                listener(next);
+            } catch {
+                // A view subscriber must not change the resource state or
+                // break another framework subscriber's update.
+            }
+        }
     }
 
     private cacheKey(options: AdminDataLoadOptions<Query>): string | undefined {
@@ -704,7 +720,8 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
     dispose(): void {
         if (this.disposed) return;
         this.disposed = true;
-        this.abort();
+        this.sequence += 1;
+        this.abortActiveLoad("dispose");
         this.listeners.clear();
         this.cacheListeners.clear();
         this.telemetryListeners.clear();

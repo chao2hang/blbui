@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.26 — 2026-09-09
+
+- `AdminDataResource` 现在隔离普通 snapshot subscriber 异常：一个框架视图崩溃不会阻断其他订阅者、状态存储或后续请求。
+- `dispose()` 取消活动请求时发出明确的 `load-abort` telemetry `reason: "dispose"`，与显式 `abort` 和被新请求替换的语义区分开。
+- 补充数据源回归测试、API/数据源文档，并修正视觉验收记录中与实际 320×720 检查一致的窄屏视口说明。
+- 六个可发布包及示例依赖统一升级到 `0.0.26`。
+
 ## 0.0.25 — 2026-09-09
 
 - `AdminDataResource` 新增隐私安全的请求生命周期 telemetry：开始、重试、成功、错误和取消事件，包含耗时、attempt、来源、状态、行数和脱敏错误字段；默认不携带 query/cache key。

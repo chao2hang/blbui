@@ -104,6 +104,16 @@ counts for loads, retries, successes, errors and aborts. This is an example
 of a host integration, not a bundled exporter; production applications should
 forward only the fields approved by their observability policy.
 
+Snapshot subscribers are isolated from one another: an exception thrown by a
+`subscribe()` callback is swallowed after the snapshot has been stored, so one
+view cannot prevent another framework binding from receiving the update. The
+same isolation applies to the initial snapshot delivered by `subscribe()`.
+
+`dispose()` cancels an active request and emits a final `load-abort` telemetry
+event with `reason: "dispose"`; explicit `abort()` uses `reason: "abort"`, while
+a newer `load()` uses `reason: "superseded"`. Calling `dispose()` more than once
+is safe and does not emit duplicate lifecycle events.
+
 The resource is framework-neutral. React can subscribe with
 `useSyncExternalStore`, Vue with `onMounted`/`onBeforeUnmount`, Svelte with
 `onMount`, and Web Components can update properties from the subscription.

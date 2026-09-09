@@ -1,6 +1,6 @@
 # BLBUI 组件库实施计划
 
-> **状态（0.0.25 更新）**：Core 现有 **104 个组件**、Business 25 个、React/Vue 为 104:1 完整 Core 绑定、Svelte 提供注册入口、29 个常用封装（共 31 个公开导出）；9 套主题均支持 light/dark，并提供语义 CSS utilities。当前已接入 token lint、governance audit、Vitest、Playwright/a11y/E2E、文档 smoke、SSR 检查、四套 playground 构建与真实浏览器 parity、公共 API 文档检查、数据 adapter contract、chart adapter contract、Line/AreaChart 多系列、Heatmap/Funnel/Gantt、编辑器 adapter、Markdown/Rich Text 安全序列化、外部宿主迁移示例、versioned parity fixture、Business parity fixture、docs 性能预算、visual matrix/golden 和人工视觉验收；文档站覆盖 129 个组件。异步数据/业务组件已统一 permission denied、retry 事件与具名插槽，四套 playground 已共用真实 `AdminDataResource` 生命周期，并新增有限重试/指数退避、请求缓存、stale-while-revalidate、缓存观测钩子、稳定缓存事件统计、隐私安全请求 telemetry 和跨框架观测面板，发布预检已接入 format/release gate；docs-site 已提供异步状态实验台和恢复交互回归，固定 runner golden 已通过完整 manifest 提升流程维护。
+> **状态（0.0.26 更新）**：Core 现有 **104 个组件**、Business 25 个、React/Vue 为 104:1 完整 Core 绑定、Svelte 提供注册入口、29 个常用封装（共 31 个公开导出）；9 套主题均支持 light/dark，并提供语义 CSS utilities。当前已接入 token lint、governance audit、Vitest、Playwright/a11y/E2E、文档 smoke、SSR 检查、四套 playground 构建与真实浏览器 parity、公共 API 文档检查、数据 adapter contract、chart adapter contract、Line/AreaChart 多系列、Heatmap/Funnel/Gantt、编辑器 adapter、Markdown/Rich Text 安全序列化、外部宿主迁移示例、versioned parity fixture、Business parity fixture、docs 性能预算、visual matrix/golden 和人工视觉验收；文档站覆盖 129 个组件。异步数据/业务组件已统一 permission denied、retry 事件与具名插槽，四套 playground 已共用真实 `AdminDataResource` 生命周期，并新增有限重试/指数退避、请求缓存、stale-while-revalidate、缓存观测钩子、稳定缓存事件统计、隐私安全请求 telemetry、订阅者异常隔离、明确的 dispose telemetry 和跨框架观测面板，发布预检已接入 format/release gate；docs-site 已提供异步状态实验台和恢复交互回归，固定 runner golden 已通过完整 manifest 提升流程维护。
 > 后续质量收口新增 Business Vue/Svelte 直接 Custom Elements 指南（25 个元素）、编辑器安全渲染、图表窄屏/主题 E2E、Popover 内部焦点恢复和 npm 发布 job summary；真实 `web/` 宿主迁移仍需宿主源码进入工作区后逐页执行。
 > 下文历史路径说明：`docs/admin-style-guide.md` 位于 `chaos-ui` 风格规范仓库（本仓库不复制全文，tokens 已提取进 `core/src/tokens.css`）；`packages/blbui` 与 `web/` 是规划阶段的占位命名，实际落地为仓库顶层的 `core/ react/ vue/ svelte/ business/ business-react/ docs-site/` workspace。
 
@@ -101,6 +101,7 @@
 - [x] 发布 0.0.23 小版本：共享 parity fixture 缓存面板、四框架缓存事件顺序 E2E、缓存统计 contract 和数据能力文档纳入稳定发布流程。
 - [x] 发布 0.0.24 小版本：Markdown/Rich Text 编辑器安全渲染、Popover/Dropdown 键盘与焦点语义、129 组件目录和人工视觉审计纳入稳定发布流程。
 - [x] 发布 0.0.25 小版本：`AdminDataResource` 隐私安全请求 telemetry、四框架观测面板、竞态取消/重试/错误行为测试和 TagInput Backspace 交互纳入稳定发布流程。
+- [x] 发布 0.0.26 小版本：隔离 snapshot subscriber 异常、区分 dispose telemetry abort reason、补数据源/API 文档回归和 320×720 视觉证据修正。
 - [x] 以 docs-site 作为 API 文档与交互式组件目录的 Storybook/Ladle 等价入口，并由 API/catalog 门禁保持同步。
 
 ## 验收标准

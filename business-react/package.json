@@ -1,6 +1,6 @@
 {
   "name": "@chaos_team/blbui-business-react",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "React bindings for BLBUI business components.",
   "homepage": "https://github.com/chao2hang/blbui#readme",
   "license": "AGPL-3.0-or-later",
@@ -28,7 +28,7 @@
   },
   "scripts": {},
   "peerDependencies": {
-      "@chaos_team/blbui-business": "^0.0.25",
+      "@chaos_team/blbui-business": "^0.0.26",
     "react": ">=18.0.0"
   }
 }

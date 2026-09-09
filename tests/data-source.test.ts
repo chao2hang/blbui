@@ -420,4 +420,42 @@ describe("business data source contract", () => {
         expect(attempts).toBe(1);
         expect(resource.getSnapshot().status).toBe("loading");
     });
+
+    it("isolates snapshot subscriber failures from initial and later publishes", async () => {
+        const healthySnapshots: string[] = [];
+        const resource = new AdminDataResource<Row>({
+            loader: async () => ({ rows: [{ id: "safe", label: "Safe" }] }),
+        });
+
+        expect(() =>
+            resource.subscribe(() => {
+                throw new Error("view crashed during initial snapshot");
+            }),
+        ).not.toThrow();
+        resource.subscribe((snapshot) => healthySnapshots.push(snapshot.status));
+
+        await expect(resource.load()).resolves.toMatchObject({ status: "ready" });
+        expect(healthySnapshots).toEqual(["idle", "loading", "ready"]);
+        expect(resource.getSnapshot().rows).toEqual([{ id: "safe", label: "Safe" }]);
+    });
+
+    it("reports dispose as a distinct telemetry abort reason", async () => {
+        const telemetry: Array<{ type: string; reason?: string }> = [];
+        const resource = new AdminDataResource<Row>({
+            telemetry: { onEvent: (event) => telemetry.push(event) },
+            loader: ({ signal }) =>
+                new Promise<{ rows: Row[] }>((_, reject) => {
+                    signal.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError")), {
+                        once: true,
+                    });
+                }),
+        });
+
+        const load = resource.load();
+        resource.dispose();
+        await load;
+
+        expect(telemetry).toContainEqual(expect.objectContaining({ type: "load-abort", reason: "dispose" }));
+        expect(telemetry).not.toContainEqual(expect.objectContaining({ type: "load-abort", reason: "abort" }));
+    });
 });
