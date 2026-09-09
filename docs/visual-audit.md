@@ -19,6 +19,12 @@
 - 自动化补充：129/129 catalog、9 套主题 × light/dark、axe、编辑器安全、Popover 键盘、320px、性能预算与视觉重复渲染门禁通过；固定 runner golden 仍保持 432/432 × 2 profile 合同。
 - 结果：0.0.24 的新增组件和交互质量完成发布前视觉收口；真实外部 `web/` 宿主仍未进入工作区，Users、Channels、Usage Logs 不宣称已迁移。
 
+### 0.0.24 固定 runner golden 收口（run 34317083582）
+
+- Windows Chromium 与 Ubuntu Chromium 均生成了本次 commit 的完整 432 张矩阵 artifact；人工抽查 DataGrid、SchemaForm、FormWizard、PermissionMatrix、Area/Pie/Gauge 和三种视口下的代表截图，确认内容、主题 token、图形和组件内部布局正确。
+- 对照既有 profile-specific golden 后确认差异是确定性的元素边界/高度变化（含 1px 截取边界），不是随机渲染漂移；按 `VISUAL_MATRIX_PROMOTE=1` 和完整 manifest 提升 Windows 378 张、Ubuntu 342 张，分别保留 54/90 张像素一致文件。
+- 提升后以同一 artifact 逐张复核 Windows 432/432、Ubuntu 432/432，均为 0 diff；pixelmatch threshold 0.1 与 `maxDifferentPixels=0` 合同保持不变。
+
 
 ### 0.0.23 发布前人工复核（2026-09-09）
 
