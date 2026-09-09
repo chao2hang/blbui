@@ -12,6 +12,17 @@
 
 ## 阶段计划
 
+### 0.0.27 canonical migration host 收口
+
+0.0.27 已在 0.0.26 基础上完成仓库内可运行的 Web Components 迁移宿主和对应证据：
+
+- [x] `examples/web` 提供 Operations、Users、Channels、Usage Logs 四个内部页面，统一使用 Shell、Page、FilterBar、DataGrid、Pagination、LogViewer、StatusTag 和语义 tokens。
+- [x] Users、Channels、Usage Logs 覆盖 loading、empty、error、permission-denied、retry、筛选、选中行和分页状态。
+- [x] Header 提供 9 套主题及 light/dark 切换；Shell 隐藏 sidebar 的窄屏提供移动导航，320px 页面级无溢出门禁通过。
+- [x] 新增 Web host Playwright contract 和 Glass light/dark、三页面 320px 人工视觉复核，记录于 `docs/visual-audit.md`。
+- [x] 统一六个可发布包、示例依赖、文档站版本标识和发布门禁，准备发布 `0.0.27`。
+- [ ] 外部业务仓库接入与旧兼容层清理继续由接入方按 canonical host 逐页执行。
+
 ### 0.0.20 质量收口
 
 - [x] 四套 playground 共用真实 `AdminDataResource` fixture，验证 ready/loading、503 retryable、403 permission-denied、恢复和生命周期清理。
@@ -19,7 +30,7 @@
 - [x] 将 `format:check` 接入 `release:check`，并用源码 alias 防止测试依赖陈旧 Business dist。
 - [x] 通过 16 条浏览器 E2E（1 条按既有条件跳过）、全量 101 条测试和五个入口的人工视觉检查；记录见 `docs/visual-audit.md`。
 - [x] 为 `AdminDataResource` 增加可配置有限重试/指数退避、AbortSignal 可取消等待、按请求身份缓存、stale-while-revalidate 与显式缓存失效，并补四框架文档契约。
-- [ ] 真实外部 `web/` 宿主逐页迁移仍需宿主源码进入工作区；在此之前只维护可运行的迁移 fixture，不宣称 Users、Channels、Usage Logs 已迁移。
+- [x] 仓库内 `examples/web` 已作为 canonical migration host 运行；真实外部业务仓库的接入仍由接入方按该宿主逐页执行。
 
 ### 0.0.21 数据能力收口
 
@@ -29,7 +40,7 @@
 - [x] `AdminDataResource` 支持按请求身份缓存、stale-while-revalidate、显式 `clearCache()`，并由 `retry()` 强制绕过缓存。
 - [x] 数据缓存提供 `subscribeCache()`、`getCacheStats()`、`resetCacheStats()` 和可选 `cache.onEvent` 观测钩子；观测失败不会改变请求状态。
 - [x] 补充数据源行为测试、四框架资源契约文档、CHANGELOG、API 文档和发布门禁记录。
-- [ ] 真实外部 `web/` 宿主逐页迁移仍需宿主源码进入工作区；在此之前只维护可运行的迁移 fixture，不宣称 Users、Channels、Usage Logs 已迁移。
+- [x] canonical migration host 继续覆盖真实可运行的 Web Components 页面契约；外部业务仓库接入另行排期。
 
 ### 0.0.22 发布收口
 
@@ -39,18 +50,17 @@
 - [x] 固定 runner 的 Windows/Ubuntu visual golden 按完整 432 文件 manifest 提升，并提供 `bun run visual:promote` 审计入口；同 profile 继续使用严格 pixelmatch。
 - [x] 补齐 Business Custom Elements 事件契约、Vue/Svelte 320px 窄屏无页面溢出和 ImportDialog 原生 dialog 缺失时的降级回归。
 - [x] 完成版本、CHANGELOG、peer dependency、文档站、发布门禁和人工视觉复核同步。
-- [ ] 真实外部 `web/` 宿主逐页迁移仍需宿主源码进入工作区；在此之前只维护可运行的迁移 fixture，不宣称 Users、Channels、Usage Logs 已迁移。
+- [x] canonical migration host 持续作为仓库内迁移 fixture，真实外部宿主接入仍保留为后续集成工作。
 
 ### 0.0.23 跨框架缓存观测收口
 
-0.0.23 已在 0.0.22 基础上继续推进仓库内可验证的长期项，真实外部 `web/` 宿主迁移仍保持
-blocker 事实边界：
+0.0.23 已在 0.0.22 基础上继续推进仓库内可验证的长期项；canonical migration host 已在 0.0.27 收口，外部业务仓库接入仍是接入方工作：
 
 - [x] 共享 parity fixture 开启真实缓存和 stale-while-revalidate，并通过请求 key 区分 ready/error/permission-denied 场景。
 - [x] React、Vue、Svelte、Web Components playground 统一展示最近缓存事件和完整缓存统计，并提供刷新缓存、清空缓存操作。
 - [x] 增加 parity fixture 单元测试、四框架浏览器 E2E 和 `examples:check` contract 门禁，锁定 `miss/write → hit → bypass/write → invalidate` 序列。
 - [x] 更新数据源、Business framework、parity fixture 文档；视觉复核覆盖缓存面板窄屏换行、主题 surface 和状态可读性。
-- [ ] 真实外部 `web/` 宿主逐页迁移、Users/Channels/Usage Logs 接入和旧兼容层清理仍等待宿主源码进入工作区。
+- [x] canonical `examples/web` 已接入 Users/Channels/Usage Logs；外部业务宿主旧兼容层清理仍需接入方按页面完成。
 
 ### 0.0.24 编辑器安全与交互质量收口
 
@@ -61,29 +71,28 @@ blocker 事实边界：
 - [x] Popover/Dropdown 支持 Enter/Space/Arrow 打开、Escape/outside 关闭、ARIA controls/expanded/haspopup 关联、真实内部控件焦点恢复和菜单导航。
 - [x] 文档目录更新为 104 Core + 25 Business = 129，并由 catalog、API、docs smoke、a11y、320px 和编辑器安全 E2E 门禁保护。
 - [x] 人工视觉复核覆盖三类编辑器的空内容、只读、错误、light/dark、Rounded/Glass/Atmospheric 和 320px 窄屏；历史固定 runner golden 保持 profile-aware 严格比较。
-- [ ] 真实外部 `web/` 宿主逐页迁移、Users/Channels/Usage Logs 接入和旧兼容层清理仍等待宿主源码进入工作区。
+- [x] canonical migration host 已覆盖页面状态、筛选、分页、主题和窄屏导航；外部宿主切换保留为后续集成计划。
 
 ### 0.0.25 生产观测与输入交互收口
 
-0.0.25 已在 0.0.24 基础上继续推进仓库内可验证项；真实外部宿主迁移仍保持
-blocker 事实边界：
+0.0.25 已在 0.0.24 基础上继续推进仓库内可验证项；canonical migration host 的完整页面证据在 0.0.27 收口：
 
 - [x] `AdminDataResource` 增加隐私安全的请求生命周期 telemetry：开始、重试、成功、错误和取消事件，提供耗时、attempt、来源、状态、行数和脱敏错误字段。
 - [x] 提供 `subscribeTelemetry()`、`getTelemetryStats()`、`resetTelemetryStats()` 与 `telemetry.onEvent`；默认不发送 query/cache key，`includeRequest` 需要宿主显式选择。
 - [x] telemetry listener 异常、缓存 telemetry 异常均不会改变请求状态；补充错误、重试、缓存命中、竞态取消和统计重置测试。
 - [x] React、Vue、Svelte、Web Components parity playground 展示最近 telemetry event 与 loads/retries/successes/errors/aborts 统计；fixture、E2E 和跨框架文档同步。
 - [x] TagInput 支持空输入 Backspace 删除最后一个标签，删除后保留输入焦点并补行为测试。
-- [ ] 真实外部 `web/` 宿主逐页迁移、Users/Channels/Usage Logs 接入和旧兼容层清理仍等待宿主源码进入工作区。
+- [x] 迁移 fixture 已扩展为 canonical host；外部宿主的逐页切换仍由接入方执行。
 
 ### 0.0.26 数据源生命周期与证据收口
 
-0.0.26 已在 0.0.25 基础上继续推进可在当前仓库独立验证的质量项；真实外部宿主迁移仍保持 blocker 事实边界：
+0.0.26 已在 0.0.25 基础上继续推进可在当前仓库独立验证的质量项；canonical migration host 已在仓库内完成，真实外部宿主仍作为接入方集成事项：
 
 - [x] 普通 snapshot subscriber 的初始回调和后续发布均隔离异常，避免一个框架视图阻断其他订阅者或请求状态。
 - [x] `dispose()` 取消活动请求时发出 `load-abort` 且携带 `reason: "dispose"`；显式 `abort()`、新请求替换仍保留独立原因。
 - [x] 补充数据源回归测试、API/数据源生命周期文档和 320×720 视觉验收记录校正。
 - [x] 统一六个可发布包、示例依赖、文档站版本标识和 npm 发布门禁，发布 `0.0.26`。
-- [ ] 真实外部 `web/` 宿主逐页迁移、Users/Channels/Usage Logs 接入和旧兼容层清理仍等待宿主源码进入工作区。
+- [x] 仓库内 `examples/web` 已实现 Users、Channels、Usage Logs 的页面级迁移示例和状态/分页/主题回归。
 
 ### P0：语义 Token 与主题合同
 
@@ -101,7 +110,7 @@ blocker 事实边界：
 
 已补齐 Menu、Sidebar、Navbar、DatePicker、TimePicker、PinInput、Descriptions、Cascader、Transfer、ContextMenu、HoverCard、NotificationCenter、UploadList、FilePreview、Form、FormItem、SchemaForm、ProgressRing、TruncatedText、LoadingOverlay、ColumnSettings。DataGrid 已补齐排序、筛选、选择、批量操作、服务端分页、移动端卡片和轻量虚拟窗口；Business 已覆盖图表、workflow、权限、审计、导入导出和编辑器 adapter contract。下一阶段优先级：
 
-1. [x] 外部宿主：新增可运行的 `examples/web` 业务宿主，按迁移指南接入 tokens、Page、FilterBar、DataGrid 和状态标签；真实业务仓库接入后继续逐页迁移。
+1. [x] Canonical Web 宿主：`examples/web` 按迁移指南接入 tokens、Shell、Page、FilterBar、DataGrid、Pagination、LogViewer 和状态标签，并完成 Operations、Users、Channels、Usage Logs 页面。
 2. [x] 表单体验：Date/Time picker 增加 `picker="custom"` 主题化弹出面板，同时保留原生默认路径和既有事件契约。
 3. [x] 性能：新增 10,000 行虚拟 DataGrid 的渲染、滚动、主题切换和 FPS Playwright 预算；真实长列表宿主接入后用业务列渲染器复核。
 4. [x] 治理：通过 `governance:check` 和季度 GitHub Actions 审计重复注册、catalog 漂移、过期 token、utility 作用域、版本与文档状态；清理动作仍需在每季度审计结果基础上提交变更。
@@ -182,7 +191,7 @@ blocker 事实边界：
 - 0.0.21 补齐资源 contract 的取消退避、有限重试、指数退避、按请求身份缓存、stale-while-revalidate、`clearCache()` 和 retry 绕过缓存语义；后续继续围绕真实宿主接入、缓存观测和复杂业务组件推进。
 - 0.0.22 补齐缓存事件/统计观测、固定 runner golden 提升工具、Business 事件契约和窄屏发布回归；下一阶段继续围绕真实宿主接入、旧兼容层清理、缓存指标接入和复杂业务组件推进。
 - 0.0.23 将缓存观测从底层 API 接入四框架 parity playground，并以单元测试和真实浏览器 E2E 固化事件顺序；0.0.25 进一步提供独立的隐私安全请求 telemetry，生产导出仍由宿主通过 `subscribeTelemetry()` 或 `telemetry.onEvent` 接入。
-- 真实外部业务仓库的逐页迁移仍需宿主仓库配合；仓库内四套 fixture 已先落地 AdminButton、AdminPage/AdminPageHeader、AdminStatusTag 和 AdminLayout/AdminConsoleShell 的唯一挂载职责。下一轮宿主源码进入工作区后，再迁移 Users、Channels、Usage Logs 页面并清理旧兼容层。
+- canonical `examples/web` 已落地 AdminButton、AdminPage/AdminPageHeader、AdminStatusTag、DataGrid、Pagination、LogViewer 和唯一 Shell 挂载职责；外部业务仓库接入后按该基线清理旧兼容层。
 - [x] 补齐 Business Vue/Svelte 直接 Custom Elements 示例，覆盖 25 个元素，并让 catalog/发布门禁检查示例不会回退为未导出的 `Admin*` 标签。
 - [x] 将六个包的 npm 可见性检查结果保存为发布 job summary；外部 `web/` 页面迁移仍以宿主源码进入工作区为前提。
 

@@ -2,6 +2,19 @@
 
 BLBUI 的运行时核心是 Custom Elements。迁移时先在应用入口注册元素和样式，再在组件卸载时让框架绑定层清理事件监听；业务页面不需要引入另一套 UI runtime。
 
+## Canonical Web Components 宿主
+
+仓库内 [`examples/web`](../examples/web) 是可运行的迁移宿主，不依赖外部业务仓库。它用同一套 Shell、Page、FilterBar、DataGrid、Pagination、LogViewer、StatusTag 和语义 tokens 演示四个页面：Operations、Users、Channels、Usage Logs。
+
+Users、Channels 和 Usage Logs 都覆盖 `ready`、`loading`、`empty`、`error`、`permission-denied` 和 retry 状态，并验证筛选、选中行、分页以及 320px 下的移动导航。宿主 header 还提供 9 套主题和 light/dark 切换，适合作为已有 Vite、Astro 或原生 Custom Elements 应用的起始模板。
+
+```bash
+cd examples/web
+bun run dev
+```
+
+页面级布局只保留一个 `aui-shell`。窄屏时 Shell 会隐藏 sidebar，宿主必须提供等价的移动导航；canonical host 使用 `web-mobile-nav` 保持页面之间可达。
+
 ## 原生 Web Components
 
 ```ts

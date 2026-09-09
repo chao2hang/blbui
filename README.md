@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-当前版本为 `0.0.26`，已经提供 104 个已注册的无框架 Web Components，以及 React/Vue/Svelte 适配入口；连同 25 个 Business 组件，文档站共覆盖 129 个组件：
+当前版本为 `0.0.27`，已经提供 104 个已注册的无框架 Web Components，以及 React/Vue/Svelte 适配入口；连同 25 个 Business 组件，文档站共覆盖 129 个组件：
 
 | 包                         | 用途                                              |
 | -------------------------- | ------------------------------------------------- |
@@ -221,6 +221,8 @@ Core 事件使用 `aui-*` 前缀并通过 `CustomEvent.detail` 传递结构化�
 4. Vue/Svelte 应用接入时只安装对应 bindings 和 core，不需要 React runtime。
 
 完整的原生 Web Components、React、Vue、Svelte 注册时机、事件清理和 SSR 迁移示例见 [`docs/migration.md`](docs/migration.md)。
+
+仓库内的 [`examples/web`](examples/web) 是可直接运行的 canonical migration host，包含 Operations、Users、Channels、Usage Logs 四个后台页面，覆盖筛选、状态恢复、权限提示、分页、日志查看器、主题切换和 320px 移动导航；可作为已有 Vite、Astro 或原生 Custom Elements 宿主的迁移起点。
 
 CodeMirror、TipTap、Monaco 的可选接入和 React/Vue/Svelte/Web Components 生命周期示例见 [`docs/editor-adapters.md`](docs/editor-adapters.md)。
 

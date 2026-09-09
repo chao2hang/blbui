@@ -7,10 +7,10 @@
     "build": "tsc --noEmit && vite build"
   },
   "dependencies": {
-    "@chaos_team/blbui-core": "^0.0.26",
-    "@chaos_team/blbui-react": "^0.0.26",
-    "@chaos_team/blbui-business": "^0.0.26",
-    "@chaos_team/blbui-business-react": "^0.0.26",
+    "@chaos_team/blbui-core": "^0.0.27",
+    "@chaos_team/blbui-react": "^0.0.27",
+    "@chaos_team/blbui-business": "^0.0.27",
+    "@chaos_team/blbui-business-react": "^0.0.27",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

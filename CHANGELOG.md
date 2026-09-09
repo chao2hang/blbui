@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.27 — 2026-09-09
+
+- 将 `examples/web` 完善为可运行的迁移宿主：新增 Operations、Users、Channels、Usage Logs 四个内部页面，覆盖筛选、状态、选择、分页、日志和主题切换。
+- 为 Users、Channels、Usage Logs 增加 loading、empty、error、permission-denied、retry、选中行和分页状态，并以 Web Components E2E 固化交互契约。
+- 新增 320px 移动导航，修复 Shell 隐藏 sidebar 后迁移宿主无法切页的问题；补充 Glass light/dark、状态和窄屏人工视觉检查。
+- 六个可发布包及示例依赖统一升级到 `0.0.27`。
+
 ## 0.0.26 — 2026-09-09
 
 - `AdminDataResource` 现在隔离普通 snapshot subscriber 异常：一个框架视图崩溃不会阻断其他订阅者、状态存储或后续请求。

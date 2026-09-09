@@ -3,12 +3,21 @@
 ## 本次验收
 
 - 日期：2026-09-09
-- 版本：0.0.26
-- 入口：http://127.0.0.1:4176/
+- 版本：0.0.27
+- 入口：http://127.0.0.1:4177/
 - 浏览器：Codex In-app Browser
 - 视口：桌面约 1280 × 720（页面有效宽度 1265px）；窄屏 320 × 720
 - 组件目录：129 个组件卡片，8 个分类
 - 主题矩阵：9 套主题 × light/dark = 18 个组合
+
+### 0.0.27 canonical Web host 人工复核（2026-09-09）
+
+- 在 Web Components migration host 逐一查看 Operations、Users、Channels、Usage Logs；桌面布局中的 Shell、Page、FilterBar、DataGrid、Pagination、LogViewer、状态标签和业务图表均正常渲染。
+- 在 Users、Channels、Usage Logs 手动切换 ready/loading/empty/error/permission 状态，验证 error 的 retry 能恢复数据，筛选、选中行、分页和日志级别/关键字过滤均可见且没有改变主题 token。
+- 在 Glass light 与 Glass dark 下检查 Users、Channels、Usage Logs 的 surface、边框、输入控件、状态栏、日志文字和焦点轮廓；未发现不可读文字、层级丢失或毛玻璃降级异常。
+- 在 320 × 720 下确认 Shell 隐藏 sidebar 后移动导航仍可到达四页；Users/Channels 使用移动卡片，Usage Logs 保持内部日志滚动，页面级 `scrollWidth` 与 viewport 一致。
+- 自动化补充：`tests/e2e/web-host.spec.ts` 6/6 通过，覆盖页面导航、筛选、分页、选择、状态恢复、主题/明暗切换和三页 320px 无溢出；`examples/web` typecheck/build 通过。
+- 结果：canonical migration host 的四页能力、主题切换、状态矩阵和窄屏导航完成发布前视觉收口；真实外部业务仓库的接入仍按迁移指南作为后续集成工作。
 
 ### 0.0.26 发布前人工复核（2026-09-09）
 
