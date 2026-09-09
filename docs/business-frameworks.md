@@ -5,6 +5,16 @@ runtime 带进 Business 包。Vue 3 和 Svelte 5 宿主直接注册 Business Cus
 Elements，并把数组、对象和文件数据通过 DOM property 传入；这样可以和
 `AdminDataResource`、Core 组件以及 SSR 注册流程共用同一份契约。
 
+## 真实资源与生命周期 parity
+
+四套 playground 共用 `examples/parity/data-resource.ts` 中的真实
+`AdminDataResource` fixture。它统一演示 ready/loading、503 可重试错误、403
+permission-denied、`aui-retry` 恢复，以及卸载时取消订阅和 `dispose()`。
+这意味着框架差异只存在于生命周期接入方式：React 使用 effect cleanup，
+Vue 使用 `onBeforeUnmount`，Svelte 返回 `onMount` cleanup，原生 Web
+Components 在 `pagehide` 中清理。新增 Business 组件或宿主场景时，应优先
+复用这份 fixture，避免各框架重新实现一套异步状态语义。
+
 ## Vue 3
 
 ```vue

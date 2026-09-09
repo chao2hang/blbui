@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { registerBusinessElements } from "@chaos_team/blbui-business/register";
+import { createParityAsyncResource, parityAsyncState } from "../../parity/data-resource";
 import fixture from "../../parity/fixture.json";
 import {
     AdminButton,
@@ -18,11 +19,15 @@ const contract = fixture.parityContract.assertions;
 const activeTab = ref(fixture.tabs[0].id);
 const open = ref(contract.initialDialog);
 const page = ref(contract.initialPage);
-const asyncState = ref<"ready" | "error" | "permission-denied">("ready");
 const retryCount = ref(0);
+const asyncResource = createParityAsyncResource();
+const asyncSnapshot = ref(asyncResource.resource.getSnapshot());
+const asyncState = computed(() => parityAsyncState(asyncSnapshot.value.status));
+let stopAsyncSubscription = () => undefined;
 const recoverFromAsyncError = () => {
     retryCount.value += 1;
-    asyncState.value = "ready";
+    asyncResource.setMode("ready");
+    void asyncResource.resource.retry();
 };
 query.value = contract.initialQuery;
 const tabs = fixture.tabs;
@@ -76,6 +81,10 @@ const toasts = ref([
 ]);
 onMounted(() => {
     registerBusinessElements();
+    stopAsyncSubscription = asyncResource.resource.subscribe((snapshot) => {
+        asyncSnapshot.value = snapshot;
+    });
+    void asyncResource.resource.load();
     const table = document.createElement("aui-advanced-table") as HTMLElement &
         Record<string, unknown>;
     table.id = "business-table";
@@ -91,6 +100,10 @@ onMounted(() => {
             );
     });
     document.querySelector("#business-table-mount")?.append(table);
+});
+onBeforeUnmount(() => {
+    stopAsyncSubscription();
+    asyncResource.resource.dispose();
 });
 const visibleRows = computed(() => {
     const normalizedQuery = query.value.trim().toLowerCase();
@@ -145,14 +158,31 @@ const visibleRows = computed(() => {
             </AdminTable>
             <section aria-label="Async data contract" style="margin-top: 20px">
                 <div style="display: flex; gap: 8px; margin-bottom: 8px">
-                    <AdminButton @click="asyncState = 'error'">Simulate data error</AdminButton>
-                    <AdminButton @click="asyncState = 'permission-denied'"
+                    <AdminButton
+                        @click="
+                            asyncResource.setMode('error');
+                            asyncResource.resource.load();
+                        "
+                        >Simulate data error</AdminButton
+                    >
+                    <AdminButton
+                        @click="
+                            asyncResource.setMode('permission-denied');
+                            asyncResource.resource.load();
+                        "
                         >Simulate permission denial</AdminButton
                     >
-                    <AdminButton @click="asyncState = 'ready'">Recover data</AdminButton>
+                    <AdminButton
+                        @click="
+                            asyncResource.setMode('ready');
+                            asyncResource.resource.load();
+                        "
+                        >Recover data</AdminButton
+                    >
                 </div>
                 <AdminTable
                     id="async-table"
+                    :loading="asyncSnapshot.status === 'loading'"
                     :error="asyncState === 'error'"
                     :permission-denied="asyncState === 'permission-denied'"
                     @retry="recoverFromAsyncError"

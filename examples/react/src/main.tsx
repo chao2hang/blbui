@@ -1,4 +1,4 @@
-import { StrictMode, useState } from "react";
+import { StrictMode, useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import fixture from "../../parity/fixture.json";
 import {
@@ -18,6 +18,7 @@ import {
     AdminHeatmap,
 } from "@chaos_team/blbui-business-react";
 import { registerBusinessElements } from "@chaos_team/blbui-business/register";
+import { createParityAsyncResource, parityAsyncState } from "../../parity/data-resource";
 import "@chaos_team/blbui-core/styles.css";
 import "@chaos_team/blbui-business/styles.css";
 
@@ -29,8 +30,23 @@ function App() {
     const [query, setQuery] = useState(contract.initialQuery);
     const [open, setOpen] = useState(contract.initialDialog);
     const [page, setPage] = useState(contract.initialPage);
-    const [asyncState, setAsyncState] = useState<"ready" | "error" | "permission-denied">("ready");
     const [retryCount, setRetryCount] = useState(0);
+    const asyncResource = useMemo(() => createParityAsyncResource(), []);
+    const asyncMounts = useRef(0);
+    const [asyncSnapshot, setAsyncSnapshot] = useState(() => asyncResource.resource.getSnapshot());
+    const asyncState = parityAsyncState(asyncSnapshot.status);
+    useEffect(() => {
+        asyncMounts.current += 1;
+        const unsubscribe = asyncResource.resource.subscribe(setAsyncSnapshot);
+        void asyncResource.resource.load();
+        return () => {
+            unsubscribe();
+            asyncMounts.current -= 1;
+            queueMicrotask(() => {
+                if (asyncMounts.current === 0) asyncResource.resource.dispose();
+            });
+        };
+    }, [asyncResource]);
     const [toasts, setToasts] = useState([
         {
             id: "parity",
@@ -97,23 +113,40 @@ function App() {
                 </AdminTable>
                 <section aria-label="Async data contract" style={{ marginTop: 20 }}>
                     <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-                        <AdminButton onClick={() => setAsyncState("error")}>
+                        <AdminButton
+                            onClick={() => {
+                                asyncResource.setMode("error");
+                                void asyncResource.resource.load();
+                            }}
+                        >
                             Simulate data error
                         </AdminButton>
-                        <AdminButton onClick={() => setAsyncState("permission-denied")}>
+                        <AdminButton
+                            onClick={() => {
+                                asyncResource.setMode("permission-denied");
+                                void asyncResource.resource.load();
+                            }}
+                        >
                             Simulate permission denial
                         </AdminButton>
-                        <AdminButton onClick={() => setAsyncState("ready")}>
+                        <AdminButton
+                            onClick={() => {
+                                asyncResource.setMode("ready");
+                                void asyncResource.resource.load();
+                            }}
+                        >
                             Recover data
                         </AdminButton>
                     </div>
                     <AdminTable
                         id="async-table"
+                        loading={asyncSnapshot.status === "loading"}
                         error={asyncState === "error"}
                         permissionDenied={asyncState === "permission-denied"}
                         onRetry={() => {
                             setRetryCount((count) => count + 1);
-                            setAsyncState("ready");
+                            asyncResource.setMode("ready");
+                            void asyncResource.resource.retry();
                         }}
                     >
                         <table>

@@ -118,7 +118,11 @@ button {
 }
 .docs-nav a[aria-current="page"] {
     border-left-color: var(--aui-primary);
-    background: linear-gradient(90deg, color-mix(in srgb, var(--aui-primary) 8%, transparent), transparent);
+    background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--aui-primary) 8%, transparent),
+        transparent
+    );
     color: var(--aui-text-primary);
 }
 .sidebar-footer {
@@ -1401,10 +1405,27 @@ h2 {
 .docs-app :where(.docs-hero h1, h2, .component-card h3, .catalog-card h3, .a11y-list span) {
     color: var(--aui-text-primary);
 }
-.docs-app :where(.hero-lede, .text-link, .token-copy p, .section-intro, .component-card > p, .catalog-card p, .dialog-placeholder) {
+.docs-app
+    :where(
+        .hero-lede,
+        .text-link,
+        .token-copy p,
+        .section-intro,
+        .component-card > p,
+        .catalog-card p,
+        .dialog-placeholder
+    ) {
     color: var(--aui-text-secondary);
 }
-.docs-app :where(.header-tools a:hover, .header-menu:hover, .text-link:hover, .framework-tabs button:hover, .component-card-footer a:hover, .code-toggle:hover) {
+.docs-app
+    :where(
+        .header-tools a:hover,
+        .header-menu:hover,
+        .text-link:hover,
+        .framework-tabs button:hover,
+        .component-card-footer a:hover,
+        .code-toggle:hover
+    ) {
     color: var(--aui-text-primary);
 }
 .docs-app .docs-hero h1 em {

@@ -115,7 +115,8 @@ export function fromTable<Row extends Record<string, unknown>>(
         selectedKeys,
         sortKey: sorting?.id,
         sortDirection: sorting ? (sorting.desc ? "desc" : "asc") : "none",
-        page: pagination?.pageIndex === undefined ? undefined : Math.max(1, pagination.pageIndex + 1),
+        page:
+            pagination?.pageIndex === undefined ? undefined : Math.max(1, pagination.pageIndex + 1),
         pageSize: pagination?.pageSize,
         total,
     };

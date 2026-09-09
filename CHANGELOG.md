@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.20 — 2026-09-09
+
+- 将四套 playground 的异步演示统一接入真实 `AdminDataResource` 生命周期，覆盖 ready/loading、503 可重试错误、403 permission-denied、retry、订阅清理和 `dispose()`。
+- 新增 Business React 的 Heatmap、FunnelChart、GanttChart DOM property、事件 detail、回调更新和卸载清理回归测试。
+- 发布门禁新增全 workspace `format:check`，并修正 Vitest Business 源码 alias，避免测试误用陈旧 dist；全量测试达到 101 项通过。
+- 完成 React/Vue/Svelte/Web Components playground 的真实浏览器 parity 与 320px 窄屏检查，docs-site 主题、图表、异步状态、a11y 和视觉稳定性检查通过。
+- 发布版本统一为 `0.0.20`；真实外部 `web/` 宿主逐页迁移仍保留为下一阶段 blocker。
+
 ## Unreleased
 
 - Business Custom Elements 新增真实 DOM 事件契约回归，覆盖 PermissionMatrix、AuditLog、ImportDialog、ExportButton 和 BulkActionsToolbar 的跨宿主事件细节。

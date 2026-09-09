@@ -1,6 +1,7 @@
 import { registerAdminElements } from "@chaos_team/blbui-core/register";
 import { registerBusinessElements } from "@chaos_team/blbui-business/register";
 import { setAdminTheme } from "@chaos_team/blbui-core";
+import { createParityAsyncResource, parityAsyncState } from "../../parity/data-resource";
 import "@chaos_team/blbui-core/styles.css";
 import "@chaos_team/blbui-business/styles.css";
 
@@ -114,24 +115,46 @@ const asyncState = document.querySelector<HTMLOutputElement>("#async-state");
 if (!asyncGrid || !asyncState) throw new Error("Async contract host is missing");
 asyncGrid.columns = [{ key: "label", label: "STATE" }];
 asyncGrid.rows = [{ id: "async-ready", label: "Async contract row" }];
-asyncGrid.retryable = true;
+const asyncResource = createParityAsyncResource();
 let retryCount = 0;
-const setAsyncState = (state: "ready" | "error" | "permission-denied") => {
+const applyAsyncSnapshot = (snapshot: ReturnType<typeof asyncResource.resource.getSnapshot>) => {
+    const state = parityAsyncState(snapshot.status);
+    asyncGrid.loading = snapshot.status === "loading";
     asyncGrid.error = state === "error";
     asyncGrid.permissionDenied = state === "permission-denied";
+    asyncGrid.retryable = snapshot.error?.retryable ?? true;
+    asyncGrid.rows = snapshot.rows;
     asyncState.dataset.parityAsyncState = state;
     asyncState.textContent = `Async state: ${state} · retries: ${retryCount}`;
 };
-document.querySelector("#simulate-error")?.addEventListener("click", () => setAsyncState("error"));
-document
-    .querySelector("#simulate-permission")
-    ?.addEventListener("click", () => setAsyncState("permission-denied"));
-document.querySelector("#recover-data")?.addEventListener("click", () => setAsyncState("ready"));
+const unsubscribeAsync = asyncResource.resource.subscribe(applyAsyncSnapshot);
+void asyncResource.resource.load();
+document.querySelector("#simulate-error")?.addEventListener("click", () => {
+    asyncResource.setMode("error");
+    void asyncResource.resource.load();
+});
+document.querySelector("#simulate-permission")?.addEventListener("click", () => {
+    asyncResource.setMode("permission-denied");
+    void asyncResource.resource.load();
+});
+document.querySelector("#recover-data")?.addEventListener("click", () => {
+    asyncResource.setMode("ready");
+    void asyncResource.resource.load();
+});
 asyncGrid.addEventListener("aui-retry", () => {
     retryCount += 1;
     asyncState.dataset.parityRetryCount = String(retryCount);
-    setAsyncState("ready");
+    asyncResource.setMode("ready");
+    void asyncResource.resource.retry();
 });
+window.addEventListener(
+    "pagehide",
+    () => {
+        unsubscribeAsync();
+        asyncResource.resource.dispose();
+    },
+    { once: true },
+);
 grid.columns = [
     { key: "name", label: "Service", sortable: true },
     { key: "status", label: "Status" },

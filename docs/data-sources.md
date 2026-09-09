@@ -46,6 +46,29 @@ The resource is framework-neutral. React can subscribe with
 The component layer remains responsible for rendering the state and emitting
 `aui-retry`.
 
+## Four-framework parity lifecycle
+
+The React, Vue, Svelte and Web Components playgrounds use the same
+`AdminDataResource` fixture rather than four mock implementations. Each host
+subscribes before the initial load, maps the snapshot to the same component
+properties, handles `aui-retry`, and releases both the subscription and the
+resource on unmount/page hide.
+
+The fixture deliberately exercises the same state sequence in every host:
+
+| State | Contract |
+| --- | --- |
+| `ready` / `loading` | rows remain controlled by the resource snapshot and loading is exposed to the table |
+| `error` | a transient 503 is retryable and keeps the error action visible |
+| `permission-denied` | a 403 is non-retryable and uses the permission slot/label |
+| recovery | the host changes the fixture mode and calls `load()` or `retry()` |
+
+This keeps transport state out of page markup while making lifecycle leaks
+observable in real browser parity checks. The Web Components host additionally
+calls `unsubscribe()` and `resource.dispose()` from a one-shot `pagehide`
+handler; framework hosts return the equivalent cleanup from their lifecycle
+hooks.
+
 ## Vue 3 direct usage
 
 The Vue binding can consume the same resource without a framework-specific

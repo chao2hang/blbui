@@ -3,13 +3,16 @@
   import fixture from '../../parity/fixture.json'
   import { registerAdminElements } from '@chaos_team/blbui-svelte'
   import { registerBusinessElements } from '@chaos_team/blbui-business/register'
+  import { createParityAsyncResource, parityAsyncState } from '../../parity/data-resource'
   import { AdminButton, AdminDialog, AdminInput, AdminPage, AdminPageHeader, AdminPagination, AdminShell, AdminStatusTag, AdminTable, AdminToastManager } from '@chaos_team/blbui-svelte'
 
   const contract = fixture.parityContract.assertions
   let query = contract.initialQuery
   let open = contract.initialDialog
   let page = contract.initialPage
-  let asyncState: 'ready' | 'error' | 'permission-denied' = 'ready'
+  const asyncResource = createParityAsyncResource()
+  let asyncSnapshot = asyncResource.resource.getSnapshot()
+  $: asyncState = parityAsyncState(asyncSnapshot.status)
   let retryCount = 0
   let activeTab = fixture.tabs[0].id
   $: normalizedQuery = query.trim().toLowerCase()
@@ -57,7 +60,18 @@
       { id: 'adapter', label: 'Adapter rollout', group: 'RUNTIME', start: 22, end: 66, status: 'active' },
       { id: 'audit', label: 'Audit sign-off', group: 'SECURITY', start: 62, end: 96, status: 'pending' },
     ]
+    const unsubscribe = asyncResource.resource.subscribe((snapshot) => (asyncSnapshot = snapshot))
+    void asyncResource.resource.load()
+    return () => {
+      unsubscribe()
+      asyncResource.resource.dispose()
+    }
   })
+  const retryAsync = () => {
+    retryCount += 1
+    asyncResource.setMode('ready')
+    void asyncResource.resource.retry()
+  }
 </script>
 
 <svelte:head><title>BLBUI Svelte Playground</title></svelte:head>
@@ -82,15 +96,16 @@
     </AdminTable>
     <section aria-label="Async data contract" style="margin-top: 20px">
       <div style="display: flex; gap: 8px; margin-bottom: 8px">
-        <AdminButton on:click={() => (asyncState = 'error')}>Simulate data error</AdminButton>
-        <AdminButton on:click={() => (asyncState = 'permission-denied')}>Simulate permission denial</AdminButton>
-        <AdminButton on:click={() => (asyncState = 'ready')}>Recover data</AdminButton>
+        <AdminButton on:click={() => { asyncResource.setMode('error'); void asyncResource.resource.load() }}>Simulate data error</AdminButton>
+        <AdminButton on:click={() => { asyncResource.setMode('permission-denied'); void asyncResource.resource.load() }}>Simulate permission denial</AdminButton>
+        <AdminButton on:click={() => { asyncResource.setMode('ready'); void asyncResource.resource.load() }}>Recover data</AdminButton>
       </div>
       <AdminTable
         id="async-table"
+        loading={asyncSnapshot.status === 'loading'}
         error={asyncState === 'error'}
         permissionDenied={asyncState === 'permission-denied'}
-        onRetry={() => { retryCount += 1; asyncState = 'ready' }}
+        onRetry={retryAsync}
       >
         <table><tbody><tr><td>Async contract row</td><td>{retryCount}</td></tr></tbody></table>
         <span slot="permission">Request access to continue.</span>

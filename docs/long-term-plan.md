@@ -12,9 +12,17 @@
 
 ## 阶段计划
 
+### 0.0.20 质量收口
+
+- [x] 四套 playground 共用真实 `AdminDataResource` fixture，验证 ready/loading、503 retryable、403 permission-denied、恢复和生命周期清理。
+- [x] 为 Business React Heatmap/Funnel/Gantt 增加 DOM property、事件 detail、回调更新和卸载清理测试。
+- [x] 将 `format:check` 接入 `release:check`，并用源码 alias 防止测试依赖陈旧 Business dist。
+- [x] 通过 16 条浏览器 E2E（1 条按既有条件跳过）、全量 101 条测试和五个入口的人工视觉检查；记录见 `docs/visual-audit.md`。
+- [ ] 真实外部 `web/` 宿主逐页迁移仍需宿主源码进入工作区；在此之前只维护可运行的迁移 fixture，不宣称 Users、Channels、Usage Logs 已迁移。
+
 ### P0：语义 Token 与主题合同
 
-0.0.19 已在 0.0.18 基础上继续收紧：
+0.0.20 已在 0.0.19 基础上继续收紧：
 
 - 固化 surface、text、border、focus、status、overlay、shadow、radius、motion、form color-scheme 等 token。
 - 9 套主题均维护 light/dark 两套值；新增主题必须提供同一份 token 清单。
@@ -90,7 +98,7 @@
 | 框架 | Web Components、React、Vue、Svelte 的属性与事件行为一致                     |
 | 文档 | catalog 条目、预览、props/events、四框架 usage、截图和已知限制              |
 
-## 当前组件缺口（0.0.19 后）
+## 当前组件缺口（0.0.20 后）
 
 短期缺口集中在可复用的复杂交互，而不是继续堆叠展示型组件：
 
@@ -104,6 +112,7 @@
 - 0.0.12 增加 LineChart 与 AreaChart 多系列共享坐标域、图例和 series-aware 点位事件；AreaChart 多系列已补充文档站预览、React 类型、行为测试和主题/窄屏人工复核。编辑器 adapter 已补充 CodeMirror/TipTap/Monaco 和四种宿主生命周期示例。
 - 0.0.18 在 0.0.17 的基础上补齐 docs-site 异步状态实验台、错误重试与权限恢复回归，并修复 Table permission-denied 可见性；0.0.16 的移动端 SchemaForm 控件尺寸和 Windows/Ubuntu profile-specific visual golden 继续作为稳定基线；原生 picker 仍保留为默认兼容模式。
 - 0.0.19 新增 Heatmap、FunnelChart、GanttChart：三者均保持 framework-neutral、只依赖 `--aui-*` 语义 token，支持可访问焦点/点位或任务事件；docs-site 已提供预览、主题切换和 320px 组件内部滚动回归。
+- 0.0.20 完成四框架真实资源生命周期 parity、Business React 图表行为回归、Web Components pagehide 清理和全量 format release gate；下一轮优先把资源 contract 接入更多真实分页/筛选宿主，并补充取消、重试退避和缓存策略的长期验证。
 - 真实外部业务仓库的逐页迁移仍需宿主仓库配合，下一轮应优先落地 AdminButton、AdminPage/AdminPageHeader、AdminStatusTag 和 AdminLayout/AdminConsoleShell 的唯一挂载职责，再迁移 Users、Channels、Usage Logs 页面并清理旧兼容层。
 - [x] 补齐 Business Vue/Svelte 直接 Custom Elements 示例，覆盖 22 个元素，并让 catalog/发布门禁检查示例不会回退为未导出的 `Admin*` 标签。
 - [x] 将六个包的 npm 可见性检查结果保存为发布 job summary；外部 `web/` 页面迁移仍以宿主源码进入工作区为前提。

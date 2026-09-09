@@ -3,12 +3,19 @@
 ## 本次验收
 
 - 日期：2026-09-08
-- 版本：0.0.19
+- 版本：0.0.20
 - 入口：http://127.0.0.1:4176/
 - 浏览器：Codex In-app Browser
 - 视口：桌面约 1280 × 720（页面有效宽度 1265px）；窄屏 390 × 844（页面有效宽度 375px）
 - 组件目录：126 个组件卡片，8 个分类
 - 主题矩阵：9 套主题 × light/dark = 18 个组合
+
+### 0.0.20 发布前人工收口（2026-09-09）
+
+- 重新检查 docs-site、React、Vue、Svelte 和 Web Components 五个实际入口；文档目录仍显示 126 个组件，四个 playground 均显示表格、异步状态控制、Business 图表和通知/分页等关键区域。
+- docs-site 确认 9 套主题选择器与 light/dark 控制存在；Heatmap、Funnel Chart、Gantt Chart 的数据、标签、任务条、内部滚动和焦点语义均可见。
+- React/Vue/Svelte 确认共享 `AdminDataResource` 的 ready 状态、异步控制按钮、Business AdvancedTable 和图表渲染；Web Components 确认 pagehide 生命周期对应的 async contract、表格和图表仍稳定。
+- 结果：未发现新增主题缺失、页面级横向溢出、图表裁切、异步状态不可见或跨框架 parity 视觉差异；本轮不提升既有 pixel golden，继续由固定 runner 视觉矩阵维护基线。
 
 ### 0.0.19 发布前人工收口（2026-09-09）
 

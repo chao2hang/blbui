@@ -236,7 +236,7 @@ root.innerHTML = `
     <div class="sidebar-rule"></div>
     <label class="docs-search"><span aria-hidden="true">⌕</span><input id="docs-search" type="search" placeholder="SEARCH ${totalComponents} COMPONENTS..." aria-label="Search components" /></label>
     <nav class="docs-nav" aria-label="Documentation navigation"></nav>
-    <div class="sidebar-footer"><span class="pulse"></span><span>CORE STATUS / STABLE</span><span class="version">v0.0.19</span></div>
+    <div class="sidebar-footer"><span class="pulse"></span><span>CORE STATUS / STABLE</span><span class="version">v0.0.20</span></div>
   </aside>
   <div class="docs-main">
     <header class="docs-header">
@@ -245,7 +245,7 @@ root.innerHTML = `
     </header>
     <main class="docs-content">
       <section class="docs-hero" id="overview">
-      <div class="hero-kicker"><span></span> OBSIDIAN INDUSTRIAL CONSOLE / 0.0.19</div>
+      <div class="hero-kicker"><span></span> OBSIDIAN INDUSTRIAL CONSOLE / 0.0.20</div>
         <h1>BLBUI<br><em>DOCUMENTATION</em></h1>
         <p class="hero-lede">A sharp, data-first cross-framework component system for enterprise operational consoles. All ${totalComponents} components with interactive previews, live properties, and usage across Web Components, React, Vue, and Svelte.</p>
         <div class="hero-actions"><aui-button variant="primary" id="hero-explore">EXPLORE ${totalComponents} COMPONENTS</aui-button><a class="text-link" href="#frameworks">VIEW FRAMEWORKS <span>→</span></a></div>
@@ -338,7 +338,10 @@ function syncThemeControls(): void {
     if (modeToggle) modeToggle.textContent = current.mode === "light" ? "NIGHT" : "DAY";
     root.querySelectorAll<HTMLElement>("[data-token-value]").forEach((item) => {
         const variable = item.dataset.tokenValue;
-        if (variable) item.textContent = getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+        if (variable)
+            item.textContent = getComputedStyle(document.documentElement)
+                .getPropertyValue(variable)
+                .trim();
     });
 }
 themeSelect?.addEventListener("change", () => {

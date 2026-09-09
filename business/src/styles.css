@@ -5,6 +5,6 @@ it under the terms of the GNU Affero General Public License.
 */
 
 .aui-business {
-  color: var(--aui-text);
-  font-family: var(--aui-font-ui);
+    color: var(--aui-text);
+    font-family: var(--aui-font-ui);
 }

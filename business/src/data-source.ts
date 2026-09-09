@@ -90,7 +90,9 @@ export class AdminDataError extends Error {
 }
 
 function asRecord(value: unknown): Record<string, unknown> | undefined {
-    return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : undefined;
+    return value !== null && typeof value === "object"
+        ? (value as Record<string, unknown>)
+        : undefined;
 }
 
 function readStatus(value: Record<string, unknown> | undefined): number | undefined {
@@ -113,10 +115,8 @@ function defaultRetryable(status: number | undefined): boolean {
 export function getAdminDataErrorMeta(error: unknown): AdminDataErrorMeta {
     const record = asRecord(error);
     const status = readStatus(record);
-    const permissionDenied =
-        record?.permissionDenied === true || status === 401 || status === 403;
-    const explicitRetryable =
-        typeof record?.retryable === "boolean" ? record.retryable : undefined;
+    const permissionDenied = record?.permissionDenied === true || status === 401 || status === 403;
+    const explicitRetryable = typeof record?.retryable === "boolean" ? record.retryable : undefined;
     const message =
         error instanceof Error && error.message
             ? error.message
@@ -216,7 +216,12 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
                 error: undefined,
             });
         } catch (error) {
-            if (this.disposed || requestId !== this.sequence || controller.signal.aborted || isAbortError(error)) {
+            if (
+                this.disposed ||
+                requestId !== this.sequence ||
+                controller.signal.aborted ||
+                isAbortError(error)
+            ) {
                 return this.snapshot;
             }
             this.activeController = undefined;
