@@ -75,7 +75,7 @@ const captureVisualTarget = async (target: Locator, path: string) => {
 test.describe("BLBUI documentation quality matrix", () => {
     test("renders every catalog card without page-level overflow", async ({ page }) => {
         await page.goto("/");
-        await expect(page.locator("[data-catalog-id]")).toHaveCount(123);
+        await expect(page.locator("[data-catalog-id]")).toHaveCount(126);
         await expect
             .poll(() =>
                 page.evaluate(
@@ -157,6 +157,44 @@ test.describe("BLBUI documentation quality matrix", () => {
             await wrapper.locator("[data-async-request-access]").click();
             await expect(control("ready")).toHaveClass(/is-active/);
         }
+    });
+
+    test("keeps Business analytics charts interactive across themes and narrow screens", async ({ page }) => {
+        await page.goto("/");
+        const heatmap = page.locator("#preview-heatmap");
+        const funnel = page.locator("#preview-funnel-chart");
+        const gantt = page.locator("#preview-gantt-chart");
+        await expect(heatmap).toBeVisible();
+        await expect(funnel).toBeVisible();
+        await expect(gantt).toBeVisible();
+        await expect(heatmap.locator('[role="gridcell"]')).toHaveCount(12);
+        await expect(funnel.locator(".bar")).toHaveCount(4);
+        await expect(gantt.locator(".task")).toHaveCount(3);
+
+        const firstCell = heatmap.locator('[role="gridcell"]').first();
+        await firstCell.focus();
+        await expect(heatmap.locator('[role="tooltip"]')).toBeVisible();
+        await funnel.locator(".bar").first().click();
+        await expect(funnel.locator('[role="tooltip"]')).toBeVisible();
+        await gantt.locator(".task").first().focus();
+
+        await page.locator("#theme-select").selectOption("glass");
+        await page.locator("#mode-toggle").click();
+        await expect(heatmap).toBeVisible();
+        await expect(funnel).toBeVisible();
+        await expect(gantt).toBeVisible();
+
+        await page.setViewportSize({ width: 320, height: 720 });
+        await expect
+            .poll(() =>
+                page.evaluate(
+                    () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+                ),
+            )
+            .toBe(true);
+        await expect(heatmap.locator(".chart")).toHaveCSS("overflow-x", "auto");
+        await expect(gantt.locator(".chart")).toHaveCSS("overflow-x", "auto");
+        await expect(funnel.locator(".chart")).not.toHaveCSS("overflow-x", "scroll");
     });
 
     test("captures representative desktop and mobile visual baselines", async ({
@@ -335,7 +373,7 @@ test.describe("BLBUI documentation quality matrix", () => {
                 ),
             )
             .toBe(true);
-        expect(await page.locator("[data-catalog-id]").count()).toBe(123);
+        expect(await page.locator("[data-catalog-id]").count()).toBe(126);
         for (const scene of visualMatrix.scenes.filter((item) => item.id !== "catalog")) {
             await expect(page.locator(scene.selector).first()).toBeVisible();
         }
@@ -350,7 +388,7 @@ test.describe("BLBUI documentation quality matrix", () => {
                 "navigation",
             )[0] as PerformanceNavigationTiming,
         }));
-        expect(budget.cards).toBe(123);
+        expect(budget.cards).toBe(126);
         expect(budget.nodes).toBeLessThan(20_000);
         expect(
             budget.navigation.domContentLoadedEventEnd - budget.navigation.startTime,

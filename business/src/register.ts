@@ -10,7 +10,10 @@ import { AdminAdvancedTableElement, AdminCrudPageElement, AdminCrudToolbarElemen
 import {
     AdminBarChartElement,
     AdminAreaChartElement,
+    AdminFunnelChartElement,
     AdminGaugeElement,
+    AdminGanttChartElement,
+    AdminHeatmapElement,
     AdminLineChartElement,
     AdminMetricCardElement,
     AdminMetricGridElement,
@@ -39,6 +42,9 @@ export function registerBusinessElements(): void {
     defineOnce("aui-metric-grid", AdminMetricGridElement);
     defineOnce("aui-bar-chart", AdminBarChartElement);
     defineOnce("aui-area-chart", AdminAreaChartElement);
+    defineOnce("aui-heatmap", AdminHeatmapElement);
+    defineOnce("aui-funnel-chart", AdminFunnelChartElement);
+    defineOnce("aui-gantt-chart", AdminGanttChartElement);
     defineOnce("aui-pie-chart", AdminPieChartElement);
     defineOnce("aui-gauge", AdminGaugeElement);
     defineOnce("aui-line-chart", AdminLineChartElement);

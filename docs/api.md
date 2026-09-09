@@ -2,7 +2,7 @@
 
 > Generated from `docs-site/src/catalog.ts`. Run `bun run api:docs` after changing a component contract.
 
-The catalog currently describes **123 components** across Core and Business packages.
+The catalog currently describes **126 components** across Core and Business packages.
 
 | Component | Custom Element | Category | Properties | Events |
 | --- | --- | --- | --- | --- |
@@ -129,6 +129,9 @@ The catalog currently describes **123 components** across Core and Business pack
 | Import Dialog | `aui-import-dialog` | business | `open`, `title`, `accept`, `max-size`, `loading`, `rows`, `error` | `aui-import-parse`, `aui-import-submit`, `aui-import-cancel` |
 | Export Button | `aui-export-button` | business | `data`, `format`, `filename`, `label`, `disabled`, `loading` | `aui-export` |
 | Bulk Actions Toolbar | `aui-bulk-actions-toolbar` | business | `selected`, `actions`, `loading`, `clear-label` | `aui-bulk-action`, `aui-bulk-clear` |
+| Heatmap | `aui-heatmap` | business | `data`, `height`, `label`, `show-tooltip` | `aui-chart-point` |
+| Funnel Chart | `aui-funnel-chart` | business | `data`, `height`, `label`, `show-tooltip` | `aui-chart-point` |
+| Gantt Chart | `aui-gantt-chart` | business | `tasks`, `min`, `max`, `height`, `label` | `aui-gantt-task` |
 
 ## Cross-framework contract
 

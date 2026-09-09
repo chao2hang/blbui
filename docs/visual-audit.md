@@ -3,12 +3,19 @@
 ## 本次验收
 
 - 日期：2026-09-08
-- 版本：0.0.18
+- 版本：0.0.19
 - 入口：http://127.0.0.1:4176/
 - 浏览器：Codex In-app Browser
 - 视口：桌面约 1280 × 720（页面有效宽度 1265px）；窄屏 390 × 844（页面有效宽度 375px）
-- 组件目录：123 个组件卡片，8 个分类
+- 组件目录：126 个组件卡片，8 个分类
 - 主题矩阵：9 套主题 × light/dark = 18 个组合
+
+### 0.0.19 发布前人工收口（2026-09-09）
+
+- 使用 Codex In-app Browser 实际查看 docs-site 桌面视口：默认 Obsidian dark、Glass dark/light、Chinese light/dark，以及 Heatmap、Funnel Chart、Gantt Chart 的业务图表截面。
+- 确认主题切换后页面背景、侧栏、卡片、边框、状态色、按钮对比度和标题层级保持一致；中国风的暖色表面与红色强调、毛玻璃的冷色表面与紫色强调均可辨识。
+- 确认 Heatmap 单元格色阶、内部横向滚动条、Funnel 比例层级、Gantt 任务条和分组标签均可见，未发现页面级横向溢出或图表卡片裁切。
+- 已结合可访问性树确认目录显示 126 个组件、Business Suite 显示 22 个组件，图表卡片暴露 tooltip/event 文案与 Gantt 任务语义；320px、键盘、空数据和事件路径由本次 `release:check` 的 E2E/单测继续作为权威补充。
 
 ## 0.0.17 异步状态与 Business parity 复核
 
@@ -38,15 +45,23 @@
 - 行为补充：ImportDialog、ExportButton、BulkActionsToolbar、PermissionMatrix、AuditLog 的直接 Custom Element 事件均由单测验证；npm registry 超时会输出包含六个包缺失状态的 summary。
 - 结果：本轮仅新增测试、降级保护和发布诊断，没有修改主题 token 或视觉 golden；未发现新增布局回归。
 
+## 0.0.19 Business 图表组件复核
+
+- 日期：2026-09-09；入口：docs-site 本地 playground；浏览器：Chrome/Codex Computer Use；视口：桌面、320 × 720 窄屏。
+- 人工检查 Heatmap、Funnel Chart、Gantt Chart 在 Obsidian dark、Rounded light、Glass dark、Atmospheric light 下的 surface、边框、状态色、标签截断和焦点环；日夜切换后组件仍保持可读和稳定布局。
+- 人工操作 Heatmap 单元格、Funnel 阶段和 Gantt 任务，确认 tooltip/任务反馈、键盘焦点与事件路径可用；空数据状态显示稳定。
+- 自动化补充：catalog 126 卡片、三类组件主题切换、320px 页面无级联横向溢出；Heatmap/Gantt 只保留组件内部横向滚动，Funnel 不产生页面级滚动。
+- 结果：未发现硬编码 AUI token、页面级 overflow、焦点不可见或主题覆盖缺口；未更新既有 golden，新增组件视觉证据先由组件级断言和人工复核保留。
+
 ## 结果
 
 | 检查项 | 结果 | 说明 |
 | --- | --- | --- |
-| 组件目录完整渲染 | 通过 | 123/123 卡片存在并渲染；分类计数与可见数量一致；逐卡尺寸检查无 0 尺寸 |
+| 组件目录完整渲染 | 通过 | 126/126 卡片存在并渲染；分类计数与可见数量一致；逐卡尺寸检查无 0 尺寸 |
 | 页面级横向溢出 | 通过 | 桌面与 390px 窄屏均复核 `scrollWidth === clientWidth`；窄屏标题字号已收敛，水平滚动条已消除 |
-| 主题覆盖 | 通过 | 9 套主题 × light/dark 共 18 个组合均逐一切换目视；组件数量保持 123 个；新增组件只使用 AUI token |
+| 主题覆盖 | 通过 | 9 套主题 × light/dark 共 18 个组合均逐一切换目视；组件数量保持 126 个；新增组件只使用 AUI token |
 | 日夜切换 | 通过 | 根节点 `data-aui-mode` 正确在 light/dark 间切换 |
-| 分类筛选 | 通过 | Business 筛选准确显示 19 个业务组件，恢复 All 后显示 123 个 |
+| 分类筛选 | 通过 | Business 筛选准确显示 22 个业务组件，恢复 All 后显示 126 个 |
 | Dialog | 通过 | 打开、遮罩、焦点进入、ESC 关闭和焦点恢复均正常 |
 | Drawer | 通过 | 右侧抽屉打开、遮罩和 ESC 关闭均正常 |
 | Usage tabs | 通过 | Button 的 Web Components/React/Vue/Svelte 标签切换会更新代码片段 |
@@ -75,7 +90,7 @@
 - DatePicker、TimePicker、PinInput、Descriptions。
 - Cascader、Transfer、ContextMenu、HoverCard、NotificationCenter。
 - UploadList、FilePreview（空态、文件状态、PDF 元信息、打开/关闭）。
-- Bar Chart、Line Chart、Area Chart、Pie Chart、Gauge、Sparkline、DataGrid、Kanban、Table。
+- Bar Chart、Line Chart、Area Chart、Pie Chart、Gauge、Sparkline、Heatmap、Funnel Chart、Gantt Chart、DataGrid、Kanban、Table。
 - Dialog、Drawer、Popover、Dropdown、Accordion、Collapsible。
 - 主题展示区、组件分类区、代码示例区、框架切换区和无障碍说明区。
 
@@ -104,7 +119,7 @@
 - 关闭状态的 Dialog 内部关闭按钮不会被绘制，这是隐藏组件的预期结果，不作为视觉缺陷。
 - 当前 Playwright 会生成桌面/移动截图冒烟产物，并通过 pixelmatch 检查重复渲染稳定性；`tests/e2e/visual-matrix.json` 已固定 Windows/Ubuntu Chromium、desktop/mobile/narrow、9 × 2 主题与 8 个代表场景。`.github/workflows/visual-regression.yml` 会在两个固定 runner 上生成 9 × 2 × 3 × 8 的 PNG 证据并保留 14 天；`tests/e2e/visual-golden.json` 与 `VISUAL_MATRIX_GOLDEN_DIR` 已固定 profile-aware 文件名和像素比较策略，active golden 仅比较相同 profile，避免字体和系统控件差异造成误报。
 - ContextMenu 的打开位置来自浏览器右键坐标；在极窄视口边缘的智能翻转仍列入下一轮定位增强。
-- Area/Pie/Gauge 已完成首次人工验收；下一轮视觉矩阵继续覆盖 9 套主题、日夜模式、320px 窄屏、空数据和 Gauge 极值。
+- Area/Pie/Gauge/Heatmap/Funnel/Gantt 已完成首次人工验收；下一轮视觉矩阵继续覆盖 9 套主题、日夜模式、320px 窄屏、空数据和图表极值。
 
 ## 后续验收规则
 

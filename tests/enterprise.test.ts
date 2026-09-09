@@ -20,7 +20,10 @@ import type {
 } from "../business/src/operations";
 import type {
     AdminAreaChartElement,
+    AdminFunnelChartElement,
     AdminGaugeElement,
+    AdminGanttChartElement,
+    AdminHeatmapElement,
     AdminLineChartElement,
     AdminPieChartElement,
 } from "../business/src/analytics";
@@ -215,6 +218,51 @@ describe("enterprise workflow components", () => {
         expect(chart.shadowRoot?.querySelector('[role="tooltip"]')?.textContent).toContain(
             "Reserved · A: 20",
         );
+    });
+
+    it("renders heatmap, funnel and gantt contracts with keyboard/click events", async () => {
+        const heatmap = await element<AdminHeatmapElement>("aui-heatmap");
+        heatmap.data = [
+            { x: "00", y: "API", value: 10 },
+            { x: "06", y: "API", value: 30 },
+            { x: "00", y: "EDGE", value: 20 },
+        ];
+        const points: unknown[] = [];
+        heatmap.addEventListener("aui-chart-point", (event) =>
+            points.push((event as CustomEvent).detail),
+        );
+        await heatmap.updateComplete;
+        expect(heatmap.shadowRoot?.querySelectorAll('[role="gridcell"]')).toHaveLength(3);
+        heatmap.shadowRoot?.querySelector<HTMLButtonElement>('[role="gridcell"]')?.focus();
+        await heatmap.updateComplete;
+        expect(points).toContainEqual({ index: 0, point: heatmap.data[0] });
+        expect(heatmap.shadowRoot?.querySelector('[role="tooltip"]')?.textContent).toContain("API");
+
+        const funnel = await element<AdminFunnelChartElement>("aui-funnel-chart");
+        funnel.data = [
+            { label: "DISCOVERED", value: 100 },
+            { label: "ACTIVE", value: 40 },
+        ];
+        const funnelPoint = vi.fn();
+        funnel.addEventListener("aui-chart-point", (event) =>
+            funnelPoint((event as CustomEvent).detail),
+        );
+        await funnel.updateComplete;
+        expect(funnel.shadowRoot?.querySelectorAll(".stage")).toHaveLength(2);
+        funnel.shadowRoot?.querySelector<HTMLButtonElement>(".bar")?.click();
+        expect(funnelPoint).toHaveBeenCalledWith({ index: 0, point: funnel.data[0] });
+
+        const gantt = await element<AdminGanttChartElement>("aui-gantt-chart");
+        gantt.tasks = [
+            { id: "schema", label: "Schema", start: 0, end: 25, status: "done" },
+            { id: "rollout", label: "Rollout", start: 20, end: 80, status: "active" },
+        ];
+        const task = vi.fn();
+        gantt.addEventListener("aui-gantt-task", (event) => task((event as CustomEvent).detail));
+        await gantt.updateComplete;
+        expect(gantt.shadowRoot?.querySelectorAll(".row")).toHaveLength(2);
+        gantt.shadowRoot?.querySelector<HTMLButtonElement>(".task")?.click();
+        expect(task).toHaveBeenCalledWith(expect.objectContaining({ id: "schema" }));
     });
 
     it("moves through a linear wizard and emits completion", async () => {

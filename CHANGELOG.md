@@ -6,6 +6,13 @@
 - Vue/Svelte 直连 Business playground 新增 320px 窄屏 E2E，校验页面不溢出并保留组件内部表格滚动；npm 发布可见性校验新增 registry 传播超时摘要回归。
 - ImportDialog 在缺少原生 `HTMLDialogElement.close()` 的宿主环境中补充安全降级，保持关闭事件和状态同步。
 
+## 0.0.19 — 2026-09-09
+
+- 新增 Business `Heatmap`、`FunnelChart`、`GanttChart`，保持 framework-neutral、语义 token 驱动和无大型图表运行时依赖。
+- 为三类图表补齐 React 绑定、Vue/Svelte/Web Components 示例、docs-site 预览、键盘焦点/点位或任务事件与空态渲染。
+- 新增图表主题切换与 320px 窄屏 E2E，验证页面无级联横向溢出，Heatmap/Gantt 仅在组件内部保留滚动。
+- 文档目录扩展至 126 个组件，Business 直连指南与跨框架示例更新至 22 个组件；发布版本统一为 0.0.19。
+
 ## 0.0.18 — 2026-09-09
 
 - 新增 Business `AdminDataResource` 与 `createAdminFetchDataSource`：统一分页请求、Abort、stale response 防护、empty/error/permission-denied、retry 和 HTTP 状态归一化，不引入传输层依赖。

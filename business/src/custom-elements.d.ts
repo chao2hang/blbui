@@ -15,6 +15,9 @@ declare global {
         "aui-metric-grid": import("./analytics").AdminMetricGridElement;
         "aui-bar-chart": import("./analytics").AdminBarChartElement;
         "aui-area-chart": import("./analytics").AdminAreaChartElement;
+        "aui-heatmap": import("./analytics").AdminHeatmapElement;
+        "aui-funnel-chart": import("./analytics").AdminFunnelChartElement;
+        "aui-gantt-chart": import("./analytics").AdminGanttChartElement;
         "aui-pie-chart": import("./analytics").AdminPieChartElement;
         "aui-gauge": import("./analytics").AdminGaugeElement;
         "aui-line-chart": import("./analytics").AdminLineChartElement;

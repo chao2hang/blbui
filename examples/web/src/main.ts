@@ -32,16 +32,25 @@ app.innerHTML = `
     </section>
     <aui-advanced-table id="business-table" selectable></aui-advanced-table>
     <output data-parity-business-selection="0">Business selection: 0</output>
+    <section aria-label="Business charts" id="business-charts">
+      <aui-heatmap id="business-heatmap" label="Request density"></aui-heatmap>
+      <aui-funnel-chart id="business-funnel" label="Channel funnel"></aui-funnel-chart>
+      <aui-gantt-chart id="business-gantt" min="0" max="100" label="Release plan"></aui-gantt-chart>
+    </section>
   </aui-page>
 `;
 
-const grid = document.querySelector<HTMLElement & {
-    columns: unknown[];
-    rows: Array<Record<string, unknown>>;
-    mobileCards: boolean;
-}>("#services");
+const grid = document.querySelector<
+    HTMLElement & {
+        columns: unknown[];
+        rows: Array<Record<string, unknown>>;
+        mobileCards: boolean;
+    }
+>("#services");
 if (!grid) throw new Error("DataGrid host is missing");
-const businessTable = document.querySelector<HTMLElement & Record<string, unknown>>("#business-table");
+const businessTable = document.querySelector<HTMLElement & Record<string, unknown>>(
+    "#business-table",
+);
 if (!businessTable) throw new Error("Business table host is missing");
 businessTable.columns = [
     { key: "id", label: "ID", sortable: true },
@@ -54,8 +63,52 @@ businessTable.rows = [
 ];
 businessTable.selectable = true;
 businessTable.addEventListener("aui-selection-change", (event) => {
-    document.querySelector("[data-parity-business-selection]")?.setAttribute("data-parity-business-selection", String((event as CustomEvent<{ keys: unknown[] }>).detail.keys.length));
+    document
+        .querySelector("[data-parity-business-selection]")
+        ?.setAttribute(
+            "data-parity-business-selection",
+            String((event as CustomEvent<{ keys: unknown[] }>).detail.keys.length),
+        );
 });
+const heatmap = document.querySelector<HTMLElement & Record<string, unknown>>("#business-heatmap");
+const funnel = document.querySelector<HTMLElement & Record<string, unknown>>("#business-funnel");
+const gantt = document.querySelector<HTMLElement & Record<string, unknown>>("#business-gantt");
+if (!heatmap || !funnel || !gantt) throw new Error("Business chart hosts are missing");
+heatmap.data = [
+    { x: "00", y: "API", value: 18 },
+    { x: "06", y: "API", value: 34 },
+    { x: "12", y: "API", value: 72 },
+    { x: "18", y: "API", value: 44 },
+    { x: "00", y: "EDGE", value: 42 },
+    { x: "06", y: "EDGE", value: 58 },
+    { x: "12", y: "EDGE", value: 88 },
+    { x: "18", y: "EDGE", value: 64 },
+];
+funnel.data = [
+    { label: "DISCOVERED", value: 1000 },
+    { label: "CONFIGURED", value: 720 },
+    { label: "HEALTHY", value: 510 },
+    { label: "PRODUCTION", value: 340 },
+];
+gantt.tasks = [
+    { id: "schema", label: "Schema review", group: "PLATFORM", start: 0, end: 28, status: "done" },
+    {
+        id: "adapter",
+        label: "Adapter rollout",
+        group: "RUNTIME",
+        start: 22,
+        end: 66,
+        status: "active",
+    },
+    {
+        id: "audit",
+        label: "Audit sign-off",
+        group: "SECURITY",
+        start: 62,
+        end: 96,
+        status: "pending",
+    },
+];
 const asyncGrid = document.querySelector<HTMLElement & Record<string, unknown>>("#async-grid");
 const asyncState = document.querySelector<HTMLOutputElement>("#async-state");
 if (!asyncGrid || !asyncState) throw new Error("Async contract host is missing");
@@ -70,7 +123,9 @@ const setAsyncState = (state: "ready" | "error" | "permission-denied") => {
     asyncState.textContent = `Async state: ${state} · retries: ${retryCount}`;
 };
 document.querySelector("#simulate-error")?.addEventListener("click", () => setAsyncState("error"));
-document.querySelector("#simulate-permission")?.addEventListener("click", () => setAsyncState("permission-denied"));
+document
+    .querySelector("#simulate-permission")
+    ?.addEventListener("click", () => setAsyncState("permission-denied"));
 document.querySelector("#recover-data")?.addEventListener("click", () => setAsyncState("ready"));
 asyncGrid.addEventListener("aui-retry", () => {
     retryCount += 1;

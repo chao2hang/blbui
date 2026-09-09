@@ -24,6 +24,9 @@
   let permissionMatrix: (HTMLElement & Record<string, unknown>) | undefined
   let auditLog: (HTMLElement & Record<string, unknown>) | undefined
   let exportButton: (HTMLElement & Record<string, unknown>) | undefined
+  let heatmap: (HTMLElement & Record<string, unknown>) | undefined
+  let funnel: (HTMLElement & Record<string, unknown>) | undefined
+  let gantt: (HTMLElement & Record<string, unknown>) | undefined
   onMount(() => {
     registerAdminElements()
     registerBusinessElements()
@@ -44,6 +47,16 @@
       exportButton.format = 'csv'
       exportButton.filename = 'channels'
     }
+    if (heatmap) heatmap.data = [
+      { x: '00', y: 'API', value: 18 }, { x: '06', y: 'API', value: 34 }, { x: '12', y: 'API', value: 72 }, { x: '18', y: 'API', value: 44 },
+      { x: '00', y: 'EDGE', value: 42 }, { x: '06', y: 'EDGE', value: 58 }, { x: '12', y: 'EDGE', value: 88 }, { x: '18', y: 'EDGE', value: 64 },
+    ]
+    if (funnel) funnel.data = [{ label: 'DISCOVERED', value: 1000 }, { label: 'CONFIGURED', value: 720 }, { label: 'HEALTHY', value: 510 }, { label: 'PRODUCTION', value: 340 }]
+    if (gantt) gantt.tasks = [
+      { id: 'schema', label: 'Schema review', group: 'PLATFORM', start: 0, end: 28, status: 'done' },
+      { id: 'adapter', label: 'Adapter rollout', group: 'RUNTIME', start: 22, end: 66, status: 'active' },
+      { id: 'audit', label: 'Audit sign-off', group: 'SECURITY', start: 62, end: 96, status: 'pending' },
+    ]
   })
 </script>
 
@@ -89,6 +102,9 @@
       <aui-permission-matrix bind:this={permissionMatrix}></aui-permission-matrix>
       <aui-audit-log bind:this={auditLog} has-more></aui-audit-log>
       <aui-export-button bind:this={exportButton}></aui-export-button>
+      <aui-heatmap bind:this={heatmap} label="Request density"></aui-heatmap>
+      <aui-funnel-chart bind:this={funnel} label="Channel funnel"></aui-funnel-chart>
+      <aui-gantt-chart bind:this={gantt} min={0} max={100} label="Release plan"></aui-gantt-chart>
     </section>
     <AdminPagination {page} totalPages={contract.totalPages} onPageChange={(next) => (page = next)} />
     <AdminToastManager bind:items={toasts} />

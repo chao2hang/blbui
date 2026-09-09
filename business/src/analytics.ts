@@ -719,9 +719,7 @@ export class AdminAreaChartElement extends AdminElement {
                 })}
                 ${series.map((entry) => entry.data.map((point, index) => (point.value === null || !Number.isFinite(point.value) ? null : svg`<circle fill=${entry.color ?? this.color} class=${this.showPoints ? "" : "hit-only"} cx=${sharedScale.x(index)} cy=${sharedScale.y(point.value)} r=${this.showPoints ? "2.2" : "4"} tabindex=${this.showTooltip ? "0" : "-1"} role="img" aria-label=${`${entry.label} · ${point.label}: ${point.value}`} @pointerenter=${() => this.activate(entry.id, index)} @pointerleave=${() => this.clear(entry.id, index)} @focus=${() => this.activate(entry.id, index)} @blur=${() => this.clear(entry.id, index)} @click=${() => this.activate(entry.id, index)}></circle>`)))}
             </svg>`}
-            <div class="labels">
-                ${labels.map((point) => html`<span>${point.label}</span>`)}
-            </div>
+            <div class="labels">${labels.map((point) => html`<span>${point.label}</span>`)}</div>
             ${
                 series.length > 1
                     ? html`<div class="legend" aria-label="Chart series legend">
@@ -1073,5 +1071,467 @@ export class AdminSparklineElement extends AdminElement {
             <line class="baseline" x1="0" y1="49" x2="100" y2="49"></line>
             <polyline points=${points}></polyline>
         </svg>`;
+    }
+}
+
+export interface AdminHeatmapCell {
+    x: string;
+    y: string;
+    value: number;
+    label?: string;
+}
+
+export class AdminHeatmapElement extends AdminElement {
+    static properties = {
+        data: { attribute: false },
+        height: { type: String },
+        label: { type: String },
+        showTooltip: { type: Boolean, attribute: "show-tooltip" },
+    };
+    static styles = css`
+        :host {
+            display: block;
+            min-width: 0;
+        }
+        .chart {
+            overflow-x: auto;
+            min-height: var(--aui-heatmap-height, 220px);
+            padding: 12px;
+            border: 1px solid var(--aui-border);
+            background: var(--aui-surface);
+        }
+        .grid {
+            display: grid;
+            min-width: 420px;
+            gap: 5px;
+        }
+        .axis {
+            color: var(--aui-text-muted);
+            font: 9px/1.2 var(--aui-font-mono);
+            text-transform: uppercase;
+        }
+        .axis.x {
+            text-align: center;
+        }
+        .axis.y {
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .cell {
+            min-height: 28px;
+            border: 1px solid var(--aui-border);
+            background: var(--aui-control-bg);
+            color: var(--aui-text-primary);
+            cursor: pointer;
+            font: 9px/1 var(--aui-font-mono);
+        }
+        .cell[data-level="2"] {
+            background: var(--aui-info);
+        }
+        .cell[data-level="3"] {
+            background: var(--aui-primary);
+        }
+        .cell[data-level="4"] {
+            background: var(--aui-success);
+        }
+        .cell:focus-visible {
+            outline: 2px solid var(--aui-focus);
+            outline-offset: 2px;
+            box-shadow: var(--aui-focus-ring);
+        }
+        .cell:hover {
+            border-color: var(--aui-focus);
+        }
+        .tooltip {
+            margin-top: 8px;
+            color: var(--aui-text-secondary);
+            font: 10px/1.3 var(--aui-font-mono);
+        }
+        .empty {
+            display: grid;
+            min-height: inherit;
+            place-items: center;
+            color: var(--aui-text-muted);
+            font: 10px/1 var(--aui-font-mono);
+            text-transform: uppercase;
+        }
+    `;
+
+    data: AdminHeatmapCell[] = [];
+    height = "220px";
+    label = "Heatmap";
+    showTooltip = true;
+    private activeIndex: number | null = null;
+
+    private activate(index: number): void {
+        if (!this.showTooltip || !this.data[index]) return;
+        this.activeIndex = index;
+        this.requestUpdate();
+        this.dispatchDetail("aui-chart-point", { index, point: this.data[index] });
+    }
+
+    render() {
+        const xLabels = [...new Set(this.data.map((cell) => cell.x))];
+        const yLabels = [...new Set(this.data.map((cell) => cell.y))];
+        if (!xLabels.length || !yLabels.length) {
+            return html`<div
+                class="chart"
+                style=${`--aui-heatmap-height:${this.height}`}
+                role="img"
+                aria-label=${this.label}
+            >
+                <div class="empty">No chart data</div>
+            </div>`;
+        }
+        const max = Math.max(...this.data.map((cell) => Math.max(cell.value, 0)), 1);
+        const cellAt = (x: string, y: string) =>
+            this.data.find((cell) => cell.x === x && cell.y === y);
+        const level = (value: number) =>
+            Math.min(4, Math.max(1, Math.ceil((Math.max(value, 0) / max) * 4)));
+        const active = this.activeIndex === null ? undefined : this.data[this.activeIndex];
+        return html`<div
+            class="chart"
+            style=${`--aui-heatmap-height:${this.height}`}
+            role="group"
+            aria-label=${this.label}
+        >
+            <div
+                class="grid"
+                role="grid"
+                style=${`grid-template-columns: minmax(76px, 1fr) repeat(${xLabels.length}, minmax(54px, 1fr))`}
+            >
+                <span class="axis"></span
+                >${xLabels.map((x) => html`<span class="axis x">${x}</span>`)}
+                ${yLabels.map(
+                    (y) =>
+                        html`<span class="axis y">${y}</span>${xLabels.map((x) => {
+                                const cell = cellAt(x, y);
+                                if (!cell)
+                                    return html`<span class="cell" aria-hidden="true"></span>`;
+                                const index = this.data.indexOf(cell);
+                                return html`<button
+                                    class="cell"
+                                    type="button"
+                                    role="gridcell"
+                                    data-level=${level(cell.value)}
+                                    tabindex=${this.showTooltip ? "0" : "-1"}
+                                    aria-label=${cell.label ?? `${y}, ${x}: ${cell.value}`}
+                                    @focus=${() => this.activate(index)}
+                                    @click=${() => this.activate(index)}
+                                >
+                                    ${cell.value}
+                                </button>`;
+                            })}`,
+                )}
+            </div>
+            ${active ? html`<div class="tooltip" role="tooltip">${active.label ?? `${active.y}, ${active.x}`}: ${active.value}</div>` : null}
+        </div>`;
+    }
+}
+
+export interface AdminFunnelDatum {
+    label: string;
+    value: number;
+    color?: string;
+}
+
+export class AdminFunnelChartElement extends AdminElement {
+    static properties = {
+        data: { attribute: false },
+        height: { type: String },
+        label: { type: String },
+        showTooltip: { type: Boolean, attribute: "show-tooltip" },
+    };
+    static styles = css`
+        :host {
+            display: block;
+            min-width: 0;
+        }
+        .chart {
+            display: grid;
+            gap: 8px;
+            min-height: var(--aui-funnel-height, 220px);
+            padding: 14px;
+            border: 1px solid var(--aui-border);
+            background: var(--aui-surface);
+        }
+        .stage {
+            display: grid;
+            grid-template-columns: minmax(92px, 0.7fr) minmax(120px, 2fr) minmax(54px, 0.4fr);
+            align-items: center;
+            gap: 10px;
+            color: var(--aui-text-secondary);
+            font: 10px/1.2 var(--aui-font-mono);
+        }
+        .stage-label {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .bar {
+            min-width: 20px;
+            min-height: 28px;
+            border: 1px solid var(--aui-border);
+            background: var(--aui-primary);
+            color: var(--aui-primary-content);
+            cursor: pointer;
+            font: inherit;
+            text-align: center;
+        }
+        .bar:focus-visible {
+            outline: 2px solid var(--aui-focus);
+            outline-offset: 2px;
+            box-shadow: var(--aui-focus-ring);
+        }
+        .bar:hover {
+            filter: brightness(1.1);
+        }
+        .value {
+            color: var(--aui-text-primary);
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        .tooltip {
+            color: var(--aui-text-secondary);
+            font-size: 10px;
+        }
+        .empty {
+            display: grid;
+            min-height: inherit;
+            place-items: center;
+            color: var(--aui-text-muted);
+            font: 10px/1 var(--aui-font-mono);
+            text-transform: uppercase;
+        }
+        @media (max-width: 520px) {
+            .stage {
+                grid-template-columns: minmax(76px, 0.7fr) minmax(100px, 2fr) minmax(48px, 0.4fr);
+                gap: 6px;
+            }
+        }
+    `;
+
+    data: AdminFunnelDatum[] = [];
+    height = "220px";
+    label = "Funnel chart";
+    showTooltip = true;
+    private activeIndex: number | null = null;
+
+    private activate(index: number): void {
+        if (!this.showTooltip || !this.data[index]) return;
+        this.activeIndex = index;
+        this.requestUpdate();
+        this.dispatchDetail("aui-chart-point", { index, point: this.data[index] });
+    }
+
+    render() {
+        const max = Math.max(...this.data.map((item) => Math.max(item.value, 0)), 1);
+        const active = this.activeIndex === null ? undefined : this.data[this.activeIndex];
+        if (!this.data.length)
+            return html`<div
+                class="chart"
+                style=${`--aui-funnel-height:${this.height}`}
+                role="img"
+                aria-label=${this.label}
+            >
+                <div class="empty">No chart data</div>
+            </div>`;
+        return html`<div
+            class="chart"
+            style=${`--aui-funnel-height:${this.height}`}
+            role="group"
+            aria-label=${this.label}
+        >
+            ${this.data.map((item, index) => html`<div class="stage"><span class="stage-label">${item.label}</span><button class="bar" type="button" role="img" tabindex=${this.showTooltip ? "0" : "-1"} aria-label=${`${item.label}: ${item.value}`} style=${`width:${Math.max((Math.max(item.value, 0) / max) * 100, 8)}%;${item.color ? `background:${item.color}` : ""}`} @focus=${() => this.activate(index)} @click=${() => this.activate(index)}>${Math.round((item.value / max) * 100)}%</button><span class="value">${item.value}</span></div>`)}
+            ${active ? html`<div class="tooltip" role="tooltip">${active.label}: ${active.value}</div>` : null}
+        </div>`;
+    }
+}
+
+export interface AdminGanttTask {
+    id: string;
+    label: string;
+    start: number;
+    end: number;
+    group?: string;
+    status?: "pending" | "active" | "done" | "blocked";
+    color?: string;
+}
+
+export class AdminGanttChartElement extends AdminElement {
+    static properties = {
+        tasks: { attribute: false },
+        min: { type: Number },
+        max: { type: Number },
+        height: { type: String },
+        label: { type: String },
+    };
+    static styles = css`
+        :host {
+            display: block;
+            min-width: 0;
+        }
+        .chart {
+            overflow-x: auto;
+            min-height: var(--aui-gantt-height, 260px);
+            padding: 12px;
+            border: 1px solid var(--aui-border);
+            background: var(--aui-surface);
+        }
+        .canvas {
+            min-width: 680px;
+        }
+        .axis,
+        .row {
+            display: grid;
+            grid-template-columns: 180px minmax(480px, 1fr);
+            gap: 10px;
+            align-items: center;
+        }
+        .axis {
+            color: var(--aui-text-muted);
+            font: 9px/1 var(--aui-font-mono);
+            text-transform: uppercase;
+        }
+        .ticks {
+            display: flex;
+            justify-content: space-between;
+        }
+        .row {
+            min-height: 38px;
+            border-top: 1px solid var(--aui-border);
+        }
+        .task-label {
+            overflow: hidden;
+            color: var(--aui-text-secondary);
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font: 10px/1.2 var(--aui-font-mono);
+        }
+        .task-label small {
+            display: block;
+            margin-top: 3px;
+            color: var(--aui-text-muted);
+            font-size: 9px;
+            text-transform: uppercase;
+        }
+        .track {
+            position: relative;
+            height: 28px;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent 0,
+                transparent calc(20% - 1px),
+                var(--aui-grid-line-strong) 20%
+            );
+        }
+        .task {
+            position: absolute;
+            top: 4px;
+            min-width: 14px;
+            height: 20px;
+            border: 1px solid var(--aui-border-hover);
+            background: var(--aui-primary);
+            color: var(--aui-primary-content);
+            cursor: pointer;
+            font: 9px/18px var(--aui-font-mono);
+            text-align: center;
+            white-space: nowrap;
+        }
+        .task[data-status="done"] {
+            background: var(--aui-success);
+        }
+        .task[data-status="active"] {
+            background: var(--aui-info);
+        }
+        .task[data-status="blocked"] {
+            background: var(--aui-danger);
+        }
+        .task:focus-visible {
+            outline: 2px solid var(--aui-focus);
+            outline-offset: 2px;
+            box-shadow: var(--aui-focus-ring);
+        }
+        .empty {
+            display: grid;
+            min-height: inherit;
+            place-items: center;
+            color: var(--aui-text-muted);
+            font: 10px/1 var(--aui-font-mono);
+            text-transform: uppercase;
+        }
+    `;
+
+    tasks: AdminGanttTask[] = [];
+    min = 0;
+    max = 0;
+    height = "260px";
+    label = "Gantt chart";
+
+    private select(task: AdminGanttTask): void {
+        this.dispatchDetail("aui-gantt-task", { id: task.id, task });
+    }
+
+    render() {
+        if (!this.tasks.length)
+            return html`<div
+                class="chart"
+                style=${`--aui-gantt-height:${this.height}`}
+                role="img"
+                aria-label=${this.label}
+            >
+                <div class="empty">No tasks</div>
+            </div>`;
+        const low =
+            Number.isFinite(this.min) && this.min !== 0
+                ? this.min
+                : Math.min(...this.tasks.map((task) => task.start), 0);
+        const high =
+            Number.isFinite(this.max) && this.max !== 0
+                ? this.max
+                : Math.max(...this.tasks.map((task) => task.end), 1);
+        const range = Math.max(high - low, 1);
+        const percent = (value: number) =>
+            Math.min(100, Math.max(0, ((value - low) / range) * 100));
+        return html`<div
+            class="chart"
+            style=${`--aui-gantt-height:${this.height}`}
+            role="group"
+            aria-label=${this.label}
+        >
+            <div class="canvas">
+                <div class="axis">
+                    <span></span
+                    ><span class="ticks"
+                        ><span>${low}</span><span>${Math.round((low + high) / 2)}</span
+                        ><span>${high}</span></span
+                    >
+                </div>
+                ${this.tasks.map(
+                    (task) =>
+                        html`<div class="row">
+                            <span class="task-label"
+                                >${task.label}${task.group ? html`<small>${task.group}</small>` : null}</span
+                            >
+                            <div class="track">
+                                <button
+                                    class="task"
+                                    type="button"
+                                    data-status=${task.status ?? "pending"}
+                                    aria-label=${`${task.label}: ${task.start} to ${task.end}`}
+                                    style=${`left:${percent(task.start)}%;width:${Math.max(percent(task.end) - percent(task.start), 3)}%;${task.color ? `background:${task.color}` : ""}`}
+                                    @click=${() => this.select(task)}
+                                >
+                                    ${task.status ?? ""}
+                                </button>
+                            </div>
+                        </div>`,
+                )}
+            </div>
+        </div>`;
     }
 }

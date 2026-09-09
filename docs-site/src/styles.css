@@ -1149,6 +1149,14 @@ h2 {
     }
 }
 @media (max-width: 520px) {
+    .header-tools {
+        gap: 8px;
+    }
+    .docs-app .theme-control select {
+        max-width: 100px;
+        padding-right: 4px;
+        padding-left: 4px;
+    }
     .catalog-grid {
         grid-template-columns: 1fr;
     }

@@ -1,6 +1,6 @@
 # @chaos_team/blbui-business
 
-Optional framework-neutral business components for enterprise systems (19 components).
+Optional framework-neutral business components for enterprise systems (22 components).
 
 Sixteen composable building blocks:
 
@@ -12,6 +12,7 @@ Sixteen composable building blocks:
 - `aui-metric-card` / `aui-metric-grid` — KPI cards with trend tone
 - `aui-bar-chart` / `aui-line-chart` / `aui-area-chart` — lightweight trend visualization
 - `aui-pie-chart` / `aui-gauge` / `aui-sparkline` — breakdown, range and inline visualization
+- `aui-heatmap` / `aui-funnel-chart` / `aui-gantt-chart` — matrix density, conversion stages and task timelines
 - `aui-form-wizard` — linear or non-linear multi-step workflow with slotted steps
 - `aui-permission-matrix` — editable role/resource permission grid
 - `aui-audit-log` — filterable audit stream with loading/error/pagination contracts

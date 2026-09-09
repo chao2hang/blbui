@@ -137,7 +137,7 @@ registered Business element:
   `aui-approval-timeline`
 - Analytics: `aui-metric-card`, `aui-metric-grid`, `aui-bar-chart`,
   `aui-line-chart`, `aui-area-chart`, `aui-pie-chart`, `aui-gauge`,
-  `aui-sparkline`
+  `aui-sparkline`, `aui-heatmap`, `aui-funnel-chart`, `aui-gantt-chart`
 - Enterprise and operations: `aui-permission-matrix`, `aui-audit-log`,
   `aui-import-dialog`, `aui-export-button`, `aui-bulk-actions-toolbar`
 

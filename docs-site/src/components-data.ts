@@ -1033,7 +1033,18 @@ export const components: ComponentItem[] = [
         description:
             "Data-first tabular layout with horizontally scrollable frame and stable states.",
         status: "stable",
-        props: ["loading", "empty", "error", "permission-denied", "loading-label", "empty-label", "error-label", "permission-denied-label", "retryable", "retry-label"],
+        props: [
+            "loading",
+            "empty",
+            "error",
+            "permission-denied",
+            "loading-label",
+            "empty-label",
+            "error-label",
+            "permission-denied-label",
+            "retryable",
+            "retry-label",
+        ],
         events: ["aui-retry"],
         previewHtml: `<div class="async-preview" data-async-preview="table" style="width:100%;"><div class="async-preview-controls" aria-label="Table async state preview"><span>STATE</span><button type="button" data-async-state="ready" class="is-active">READY</button><button type="button" data-async-state="loading">LOADING</button><button type="button" data-async-state="empty">EMPTY</button><button type="button" data-async-state="error">ERROR</button><button type="button" data-async-state="permission-denied">PERMISSION</button></div><aui-table id="preview-table"><table><thead><tr><th>GATEWAY</th><th>STATUS</th><th>LATENCY</th></tr></thead><tbody><tr><td>US-EAST</td><td><aui-status-tag status="success">ONLINE</aui-status-tag></td><td>18ms</td></tr><tr><td>EU-CENTRAL</td><td><aui-status-tag status="success">ONLINE</aui-status-tag></td><td>32ms</td></tr></tbody></table><button slot="permission" type="button" data-async-request-access>REQUEST ACCESS</button></aui-table></div>`,
         usage: {
@@ -1050,7 +1061,18 @@ export const components: ComponentItem[] = [
         category: "data",
         description: "Virtualized tabular matrix with sorting, selection and column sizing.",
         status: "stable",
-        props: ["columns", "rows", "loading", "error", "permission-denied", "empty-label", "error-label", "permission-denied-label", "retryable", "retry-label"],
+        props: [
+            "columns",
+            "rows",
+            "loading",
+            "error",
+            "permission-denied",
+            "empty-label",
+            "error-label",
+            "permission-denied-label",
+            "retryable",
+            "retry-label",
+        ],
         events: ["aui-sort-change", "aui-selection-change", "aui-retry"],
         initKey: "data-grid",
         previewHtml: `<div class="async-preview" data-async-preview="data-grid" style="width:100%;"><div class="async-preview-controls" aria-label="Data grid async state preview"><span>STATE</span><button type="button" data-async-state="ready" class="is-active">READY</button><button type="button" data-async-state="loading">LOADING</button><button type="button" data-async-state="empty">EMPTY</button><button type="button" data-async-state="error">ERROR</button><button type="button" data-async-state="permission-denied">PERMISSION</button></div><aui-data-grid id="preview-data-grid"><button slot="permission" type="button" data-async-request-access>REQUEST ACCESS</button></aui-data-grid></div>`,
@@ -1481,7 +1503,8 @@ export const components: ComponentItem[] = [
         tag: "aui-date-picker",
         name: "Date Picker",
         category: "forms",
-        description: "Theme-aware date field with native compatibility and an optional fully themed calendar.",
+        description:
+            "Theme-aware date field with native compatibility and an optional fully themed calendar.",
         status: "stable",
         props: ["value", "min", "max", "label", "disabled", "picker"],
         events: ["aui-date-change", "aui-change"],
@@ -1498,7 +1521,8 @@ export const components: ComponentItem[] = [
         tag: "aui-time-picker",
         name: "Time Picker",
         category: "forms",
-        description: "Theme-aware time field with native compatibility and an optional themed time panel.",
+        description:
+            "Theme-aware time field with native compatibility and an optional themed time panel.",
         status: "stable",
         props: ["value", "min", "max", "step", "label", "disabled", "picker"],
         events: ["aui-time-change", "aui-change"],
@@ -1883,7 +1907,19 @@ export const components: ComponentItem[] = [
         description:
             "Enterprise table with built-in selection, column sorters, pagination and actions.",
         status: "stable",
-        props: ["columns", "rows", "selectable", "loading", "error", "permission-denied", "empty-label", "error-label", "permission-denied-label", "retryable", "retry-label"],
+        props: [
+            "columns",
+            "rows",
+            "selectable",
+            "loading",
+            "error",
+            "permission-denied",
+            "empty-label",
+            "error-label",
+            "permission-denied-label",
+            "retryable",
+            "retry-label",
+        ],
         events: ["aui-selection-change", "aui-sort-change", "aui-retry"],
         initKey: "advanced-table",
         previewHtml: `<div class="async-preview" data-async-preview="advanced-table" style="width:100%;"><div class="async-preview-controls" aria-label="Advanced table async state preview"><span>STATE</span><button type="button" data-async-state="ready" class="is-active">READY</button><button type="button" data-async-state="loading">LOADING</button><button type="button" data-async-state="empty">EMPTY</button><button type="button" data-async-state="error">ERROR</button><button type="button" data-async-state="permission-denied">PERMISSION</button></div><aui-advanced-table id="preview-advanced-table" selectable><button slot="permission" type="button" data-async-request-access>REQUEST ACCESS</button></aui-advanced-table></div>`,
@@ -2002,6 +2038,63 @@ export const components: ComponentItem[] = [
         },
     },
     {
+        id: "heatmap",
+        tag: "aui-heatmap",
+        name: "Heatmap",
+        category: "business",
+        description:
+            "Keyboard-accessible density matrix for telemetry, schedules and operational capacity.",
+        status: "stable",
+        props: ["data", "height", "label", "show-tooltip"],
+        events: ["aui-chart-point"],
+        initKey: "heatmap",
+        previewHtml: `<div style="width:100%;max-width:420px;"><aui-heatmap id="preview-heatmap" height="150px" label="REQUEST DENSITY"></aui-heatmap></div>`,
+        usage: {
+            wc: `<aui-heatmap id="request-density" data={heatmapData} label="Request density"></aui-heatmap>`,
+            react: `import { AdminHeatmap } from '@chaos_team/blbui-business-react'\n\n<AdminHeatmap data={heatmapData} label="Request density" onPoint={(detail) => console.log(detail)} />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-heatmap :data.prop="heatmapData" label="Request density" />`,
+            svelte: `<script lang="ts">\nimport { onMount } from 'svelte'\nlet heatmap: HTMLElement & Record<string, unknown>\nonMount(() => { heatmap.data = heatmapData })\n</script>\n\n<aui-heatmap bind:this={heatmap} label="Request density"></aui-heatmap>`,
+        },
+    },
+    {
+        id: "funnel-chart",
+        tag: "aui-funnel-chart",
+        name: "Funnel Chart",
+        category: "business",
+        description:
+            "Dependency-free conversion funnel with proportional stages and keyboard tooltips.",
+        status: "stable",
+        props: ["data", "height", "label", "show-tooltip"],
+        events: ["aui-chart-point"],
+        initKey: "funnel-chart",
+        previewHtml: `<div style="width:100%;max-width:420px;"><aui-funnel-chart id="preview-funnel-chart" height="170px" label="CHANNEL FUNNEL"></aui-funnel-chart></div>`,
+        usage: {
+            wc: `<aui-funnel-chart id="channel-funnel" data={funnelData} label="Channel funnel"></aui-funnel-chart>`,
+            react: `import { AdminFunnelChart } from '@chaos_team/blbui-business-react'\n\n<AdminFunnelChart data={funnelData} label="Channel funnel" onPoint={(detail) => console.log(detail)} />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-funnel-chart :data.prop="funnelData" label="Channel funnel" />`,
+            svelte: `<aui-funnel-chart data={funnelData} label="Channel funnel"></aui-funnel-chart>`,
+        },
+    },
+    {
+        id: "gantt-chart",
+        tag: "aui-gantt-chart",
+        name: "Gantt Chart",
+        category: "business",
+        description:
+            "Theme-aware task timeline with grouped work, status colors and responsive internal scrolling.",
+        status: "stable",
+        props: ["tasks", "min", "max", "height", "label"],
+        events: ["aui-gantt-task"],
+        initKey: "gantt-chart",
+        previewHtml: `<div style="width:100%;"><aui-gantt-chart id="preview-gantt-chart" height="180px" label="RELEASE PLAN"></aui-gantt-chart></div>`,
+        usage: {
+            wc: `<aui-gantt-chart id="release-plan" tasks={tasks} min={0} max={100}></aui-gantt-chart>`,
+            react: `import { AdminGanttChart } from '@chaos_team/blbui-business-react'\n\n<AdminGanttChart tasks={tasks} min={0} max={100} onTask={(detail) => console.log(detail)} />`,
+            vue: `import { registerBusinessElements } from '@chaos_team/blbui-business/register'\n\nregisterBusinessElements()\n\n<aui-gantt-chart :tasks.prop="tasks" :min="0" :max="100" />`,
+            svelte: `<aui-gantt-chart tasks={tasks} min={0} max={100}></aui-gantt-chart>`,
+        },
+    },
+    {
         id: "line-chart",
         tag: "aui-line-chart",
         name: "Line Chart",
@@ -2102,7 +2195,17 @@ export const components: ComponentItem[] = [
         category: "data",
         description: "Selectable operational list with loading, empty and error state contracts.",
         status: "stable",
-        props: ["items", "loading", "error", "permission-denied", "selectable", "selected-keys", "permission-denied-label", "retryable", "retry-label"],
+        props: [
+            "items",
+            "loading",
+            "error",
+            "permission-denied",
+            "selectable",
+            "selected-keys",
+            "permission-denied-label",
+            "retryable",
+            "retry-label",
+        ],
         events: ["aui-list-view-select", "aui-retry"],
         initKey: "list-view",
         previewHtml: `<div style="width:100%;max-width:360px;"><aui-list-view id="preview-list-view"></aui-list-view></div>`,
@@ -2211,7 +2314,18 @@ export const components: ComponentItem[] = [
         description:
             "Filterable operational audit stream with loading, error and load-more states.",
         status: "stable",
-        props: ["entries", "loading", "error", "permission-denied", "query", "status", "has-more", "permission-denied-label", "retryable", "retry-label"],
+        props: [
+            "entries",
+            "loading",
+            "error",
+            "permission-denied",
+            "query",
+            "status",
+            "has-more",
+            "permission-denied-label",
+            "retryable",
+            "retry-label",
+        ],
         events: ["aui-audit-filter-change", "aui-audit-load-more", "aui-retry"],
         initKey: "audit-log",
         previewHtml: `<div class="async-preview" data-async-preview="audit-log" style="width:100%;"><div class="async-preview-controls" aria-label="Audit log async state preview"><span>STATE</span><button type="button" data-async-state="ready" class="is-active">READY</button><button type="button" data-async-state="loading">LOADING</button><button type="button" data-async-state="empty">EMPTY</button><button type="button" data-async-state="error">ERROR</button><button type="button" data-async-state="permission-denied">PERMISSION</button></div><aui-audit-log id="preview-audit-log"><button slot="permission" type="button" data-async-request-access>REQUEST ACCESS</button></aui-audit-log></div>`,
@@ -2336,7 +2450,8 @@ export function initComponentDemo(root: HTMLElement): void {
             setFlag("error", state === "error");
             setFlag("permissionDenied", state === "permission-denied");
             if (state === "empty") element[rows === "audit-log" ? "entries" : "rows"] = [];
-            else if (state === "ready") element[rows === "audit-log" ? "entries" : "rows"] = stateRows[rows ?? ""] ?? [];
+            else if (state === "ready")
+                element[rows === "audit-log" ? "entries" : "rows"] = stateRows[rows ?? ""] ?? [];
         }
         preview.querySelectorAll<HTMLButtonElement>("[data-async-state]").forEach((button) => {
             button.classList.toggle("is-active", button.dataset.asyncState === state);
@@ -2348,14 +2463,18 @@ export function initComponentDemo(root: HTMLElement): void {
 
     root.querySelectorAll<HTMLElement>("[data-async-preview]").forEach((preview) => {
         preview.querySelectorAll<HTMLButtonElement>("[data-async-state]").forEach((button) => {
-            button.addEventListener("click", () => setAsyncState(preview, button.dataset.asyncState ?? "ready"));
+            button.addEventListener("click", () =>
+                setAsyncState(preview, button.dataset.asyncState ?? "ready"),
+            );
         });
         preview.querySelector("[data-async-request-access]")?.addEventListener("click", () => {
             setAsyncState(preview, "ready");
         });
-        preview.querySelector("aui-table, aui-data-grid, aui-advanced-table, aui-audit-log")?.addEventListener("aui-retry", () => {
-            setAsyncState(preview, "ready");
-        });
+        preview
+            .querySelector("aui-table, aui-data-grid, aui-advanced-table, aui-audit-log")
+            ?.addEventListener("aui-retry", () => {
+                setAsyncState(preview, "ready");
+            });
         setAsyncState(preview, "ready");
     });
 
@@ -2524,7 +2643,7 @@ export function initComponentDemo(root: HTMLElement): void {
     setProp("#preview-descriptions", "items", [
         { label: "REGION", value: "us-east-1", description: "Primary" },
         { label: "STATUS", value: "ONLINE" },
-        { label: "VERSION", value: "v0.0.18" },
+        { label: "VERSION", value: "v0.0.19" },
         { label: "OWNER", value: "Platform Ops" },
     ]);
     setProp("#preview-accordion", "items", [
@@ -2825,6 +2944,52 @@ export function initComponentDemo(root: HTMLElement): void {
     ]);
     setProp("#preview-gauge", "value", 78);
     setProp("#preview-sparkline", "values", [18, 22, 29, 25, 20, 17, 24, 18]);
+    setProp("#preview-heatmap", "data", [
+        { x: "00", y: "API", value: 18 },
+        { x: "06", y: "API", value: 34 },
+        { x: "12", y: "API", value: 72 },
+        { x: "18", y: "API", value: 44 },
+        { x: "00", y: "EDGE", value: 42 },
+        { x: "06", y: "EDGE", value: 58 },
+        { x: "12", y: "EDGE", value: 88 },
+        { x: "18", y: "EDGE", value: 64 },
+        { x: "00", y: "WORKER", value: 12 },
+        { x: "06", y: "WORKER", value: 26 },
+        { x: "12", y: "WORKER", value: 48 },
+        { x: "18", y: "WORKER", value: 38 },
+    ]);
+    setProp("#preview-funnel-chart", "data", [
+        { label: "DISCOVERED", value: 1000 },
+        { label: "CONFIGURED", value: 720 },
+        { label: "HEALTHY", value: 510 },
+        { label: "PRODUCTION", value: 340 },
+    ]);
+    setProp("#preview-gantt-chart", "tasks", [
+        {
+            id: "schema",
+            label: "Schema review",
+            group: "PLATFORM",
+            start: 0,
+            end: 28,
+            status: "done",
+        },
+        {
+            id: "adapter",
+            label: "Adapter rollout",
+            group: "RUNTIME",
+            start: 22,
+            end: 66,
+            status: "active",
+        },
+        {
+            id: "audit",
+            label: "Audit sign-off",
+            group: "SECURITY",
+            start: 62,
+            end: 96,
+            status: "pending",
+        },
+    ]);
     setProp("#preview-form-wizard", "steps", [
         { id: "account", label: "ACCOUNT", description: "Identity" },
         { id: "policy", label: "POLICY", description: "Access rules" },

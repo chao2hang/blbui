@@ -16,6 +16,9 @@ import type {
     AdminWizardStep,
     AdminBulkAction,
     AdminImportRow,
+    AdminFunnelDatum,
+    AdminGanttTask,
+    AdminHeatmapCell,
 } from "@chaos_team/blbui-business";
 type AdminAsyncStateProps = {
     permissionDenied?: boolean;
@@ -234,7 +237,11 @@ export function AdminAdvancedTable(props: AdminAdvancedTableProps) {
         "retryLabel",
         "onRetry",
     ]);
-    return createElement("aui-advanced-table", { ...rest, ref, className: props.className }, props.children);
+    return createElement(
+        "aui-advanced-table",
+        { ...rest, ref, className: props.className },
+        props.children,
+    );
 }
 
 export interface AdminFormBuilderProps extends CommonProps {
@@ -331,6 +338,71 @@ export function AdminBarChart(props: AdminBarChartProps) {
     );
     const rest = restProps(props, ["data", "height", "label", "showTooltip", "onPoint"]);
     return createElement("aui-bar-chart", { ...rest, ref, className: props.className });
+}
+
+export interface AdminHeatmapProps extends CommonProps {
+    data?: AdminHeatmapCell[];
+    height?: string;
+    label?: string;
+    showTooltip?: boolean;
+    onPoint?: (detail: { index: number; point: AdminHeatmapCell }) => void;
+}
+export function AdminHeatmap(props: AdminHeatmapProps) {
+    const { ref } = useBusinessElement(
+        {
+            data: props.data,
+            height: props.height,
+            label: props.label,
+            showTooltip: props.showTooltip,
+        },
+        { "aui-chart-point": props.onPoint },
+    );
+    const rest = restProps(props, ["data", "height", "label", "showTooltip", "onPoint"]);
+    return createElement("aui-heatmap", { ...rest, ref, className: props.className });
+}
+
+export interface AdminFunnelChartProps extends CommonProps {
+    data?: AdminFunnelDatum[];
+    height?: string;
+    label?: string;
+    showTooltip?: boolean;
+    onPoint?: (detail: { index: number; point: AdminFunnelDatum }) => void;
+}
+export function AdminFunnelChart(props: AdminFunnelChartProps) {
+    const { ref } = useBusinessElement(
+        {
+            data: props.data,
+            height: props.height,
+            label: props.label,
+            showTooltip: props.showTooltip,
+        },
+        { "aui-chart-point": props.onPoint },
+    );
+    const rest = restProps(props, ["data", "height", "label", "showTooltip", "onPoint"]);
+    return createElement("aui-funnel-chart", { ...rest, ref, className: props.className });
+}
+
+export interface AdminGanttChartProps extends CommonProps {
+    tasks?: AdminGanttTask[];
+    min?: number;
+    max?: number;
+    height?: string;
+    label?: string;
+    onTask?: (detail: { id: string; task: AdminGanttTask }) => void;
+}
+export function AdminGanttChart(props: AdminGanttChartProps) {
+    const { ref } = useBusinessElement(
+        {
+            tasks: props.tasks,
+            min: props.min,
+            max: props.max,
+            height: props.height,
+            label: props.label,
+        },
+        { "aui-gantt-task": props.onTask },
+    );
+    const rest = restProps(props, ["tasks", "min", "max", "height", "label", "onTask"]);
+    return createElement("aui-gantt-chart", { ...rest, ref, className: props.className });
 }
 
 export interface AdminSparklineProps extends CommonProps {
@@ -659,7 +731,11 @@ export function AdminAuditLog(props: AdminAuditLogProps) {
         "retryLabel",
         "onRetry",
     ]);
-    return createElement("aui-audit-log", { ...rest, ref, className: props.className }, props.children);
+    return createElement(
+        "aui-audit-log",
+        { ...rest, ref, className: props.className },
+        props.children,
+    );
 }
 
 export interface AdminImportDialogProps extends CommonProps {
