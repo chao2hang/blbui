@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.22 — 2026-09-09
+
+- `AdminDataResource` 新增缓存命中/过期命中/绕过/写入/失效事件、可读缓存统计和可选 telemetry hook；观测回调异常不会破坏请求状态。
+- Business Custom Elements 新增真实 DOM 事件契约回归，覆盖 PermissionMatrix、AuditLog、ImportDialog、ExportButton 和 BulkActionsToolbar 的跨宿主事件细节。
+- Vue/Svelte 直连 Business playground 新增 320px 窄屏 E2E，校验页面不溢出并保留组件内部表格滚动；npm 发布可见性校验新增 registry 传播超时摘要回归。
+- ImportDialog 在缺少原生 `HTMLDialogElement.close()` 的宿主环境中补充安全降级，保持关闭事件和状态同步。
+- 固定 runner 的 Windows/Ubuntu visual golden 已按完整 432 文件 manifest 提升，后续基准更新由 `bun run visual:promote` 审计。
+- 修复 Windows 本地 release preflight 调用 npm CLI 的兼容性，`BLBUI_CHECK_NPM=1` 现在可正确识别版本未占用状态。
+
+## Unreleased
+
 ## 0.0.21 — 2026-09-09
 
 - `AdminDataResource` 新增可配置有限重试与指数退避，退避等待响应 `AbortSignal`，避免瞬态网络故障造成无限请求。
@@ -13,12 +24,6 @@
 - 发布门禁新增全 workspace `format:check`，并修正 Vitest Business 源码 alias，避免测试误用陈旧 dist；全量测试达到 101 项通过。
 - 完成 React/Vue/Svelte/Web Components playground 的真实浏览器 parity 与 320px 窄屏检查，docs-site 主题、图表、异步状态、a11y 和视觉稳定性检查通过。
 - 发布版本统一为 `0.0.20`；真实外部 `web/` 宿主逐页迁移仍保留为下一阶段 blocker。
-
-## Unreleased
-
-- Business Custom Elements 新增真实 DOM 事件契约回归，覆盖 PermissionMatrix、AuditLog、ImportDialog、ExportButton 和 BulkActionsToolbar 的跨宿主事件细节。
-- Vue/Svelte 直连 Business playground 新增 320px 窄屏 E2E，校验页面不溢出并保留组件内部表格滚动；npm 发布可见性校验新增 registry 传播超时摘要回归。
-- ImportDialog 在缺少原生 `HTMLDialogElement.close()` 的宿主环境中补充安全降级，保持关闭事件和状态同步。
 
 ## 0.0.19 — 2026-09-09
 

@@ -31,6 +31,10 @@ const resource = new AdminDataResource<Service>({
 组件 props，不应在 React effect、Vue watcher、Svelte store 或 Web
 Components listener 中另写一套缓存或重试逻辑。
 
+如果需要接入统一监控，资源还提供 `subscribeCache()`、`getCacheStats()` 和
+`resetCacheStats()`；也可以在 `cache.onEvent` 中接入宿主 telemetry。事件回调
+抛错不会影响请求状态，四个框架仍共享同一套命中、stale、绕过和失效语义。
+
 ## Vue 3
 
 ```vue

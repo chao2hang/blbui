@@ -2,13 +2,20 @@
 
 ## 本次验收
 
-- 日期：2026-09-08
-- 版本：0.0.21
+- 日期：2026-09-09
+- 版本：0.0.22
 - 入口：http://127.0.0.1:4176/
 - 浏览器：Codex In-app Browser
 - 视口：桌面约 1280 × 720（页面有效宽度 1265px）；窄屏 390 × 844（页面有效宽度 375px）
 - 组件目录：126 个组件卡片，8 个分类
 - 主题矩阵：9 套主题 × light/dark = 18 个组合
+
+### 0.0.22 发布前人工复核（2026-09-09）
+
+- 使用 Codex In-app Browser 查看 docs-site 的 Obsidian dark、Rounded light、Glass dark 和 Chinese light 截面；确认版本标识已更新为 `0.0.22`，侧栏、主题选择器、组件目录、代码区和状态栏层级清晰。
+- 切换 light/dark 与主题后，表单、DataGrid、Business 图表、权限矩阵和异步状态卡片的 surface、边框、文字对比度、圆角和焦点状态均保持可读；未发现页面级横向溢出或内容裁切。
+- 自动化补充：`release:check` 完成 16 条 E2E（1 条按既有条件跳过）、108 条测试、docs smoke、类型检查、打包检查和固定 runner golden contract；当前视觉基线仅更新为已人工复核的固定 runner 产物。
+- 结果：版本标识和本轮缓存观测文档没有引入新的视觉回归；真实外部 `web/` 宿主仍未进入工作区，Users、Channels、Usage Logs 不宣称已迁移。
 
 ### 0.0.20 发布前人工收口（2026-09-09）
 
@@ -139,6 +146,12 @@
 ## 后续验收规则
 
 每次新增或修改组件必须更新本记录对应矩阵，并至少复核：默认 light/dark、圆角主题、Glass/Atmospheric、窄屏、键盘焦点、禁用/加载/空/错误状态。发布前运行 `bun run release:check`，并将新的视觉差异和已知限制写入本文件。
+
+## 0.0.21 后续矩阵复核（run 34302925489）
+
+- Windows Chromium 与 Ubuntu Chromium 在同一提交 `41cf613` 上各生成完整 `432/432` 张 PNG；两次连续 run `34301636829` 与 `34302925489` 的同 profile 产物逐张一致，确认 runner 渲染稳定。
+- 当前实现与 `0.0.13` 遗留 golden 的差异集中在 SchemaForm、DataGrid、FormWizard、PermissionMatrix、AreaChart、PieChart、Gauge；代表性截图人工复核确认内容、颜色、主题 token、图形和组件内部布局正确，差异来自异步状态/图表能力落地后的边界与绘制更新，而非随机环境漂移。
+- 已建立 `bun run visual:promote` 固定 runner 提升脚本：强制要求 profile、完整 432 文件清单和显式 `VISUAL_MATRIX_PROMOTE=1`，只复制像素不同文件；后续基准更新不再手工绕过 manifest 校验。
 
 ## 0.0.16 移动端 SchemaForm golden 复核
 

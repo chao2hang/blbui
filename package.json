@@ -1,6 +1,6 @@
 {
     "name": "@chaos_team/blbui",
-    "version": "0.0.21",
+    "version": "0.0.22",
     "private": true,
     "description": "Obsidian Industrial Console component library for React, Vue and Svelte.",
     "workspaces": [
@@ -26,6 +26,7 @@
         "theme:check": "node scripts/check-themes.mjs",
         "visual:check": "node scripts/check-visual-matrix.mjs",
         "visual:golden:check": "node scripts/check-visual-golden.mjs",
+        "visual:promote": "node scripts/promote-visual-golden.mjs",
         "token:check": "node scripts/check-tokens.mjs",
         "governance:check": "node scripts/check-governance.mjs",
         "typecheck": "bun run typecheck:core && bun run typecheck:react && bun run typecheck:vue && bun run typecheck:business && bun run typecheck:business-react && bun run typecheck:docs",

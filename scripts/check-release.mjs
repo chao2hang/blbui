@@ -6,6 +6,7 @@ it under the terms of the GNU Affero General Public License.
 
 import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
@@ -38,9 +39,12 @@ if (isTagBuild && tag !== `blbui-v${version}`) {
 }
 
 if (process.env.BLBUI_CHECK_NPM === "1") {
+  const npmCommand = process.platform === "win32" ? process.execPath : "npm";
+  const npmCli = join(dirname(process.execPath), "node_modules", "npm", "bin", "npm-cli.js");
   for (const manifest of manifests) {
     try {
-      const result = execFileSync("npm", ["view", `${manifest.name}@${version}`, "version", "--json", "--registry", "https://registry.npmjs.org"], {
+      const npmArgs = ["view", `${manifest.name}@${version}`, "version", "--json", "--registry", "https://registry.npmjs.org"];
+      const result = execFileSync(npmCommand, process.platform === "win32" ? [npmCli, ...npmArgs] : npmArgs, {
         cwd: root,
         encoding: "utf8",
         stdio: ["ignore", "pipe", "pipe"],

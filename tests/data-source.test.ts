@@ -186,6 +186,90 @@ describe("business data source contract", () => {
         expect(loader).toHaveBeenCalledTimes(1);
     });
 
+    it("exposes cache metrics and resilient cache events without changing request behavior", async () => {
+        const events: string[] = [];
+        const loader = vi.fn(async () => ({ rows: [{ id: "observed", label: "Observed" }] }));
+        const resource = new AdminDataResource<Row>({
+            loader,
+            cache: {
+                ttlMs: 60_000,
+                onEvent: (event) => {
+                    events.push(event.type);
+                    throw new Error("telemetry sink unavailable");
+                },
+            },
+        });
+        const unsubscribe = resource.subscribeCache((event) => events.push(`sub:${event.type}`));
+
+        await resource.load({ page: 1 });
+        await resource.load({ page: 1 });
+        await resource.retry();
+        resource.clearCache();
+
+        expect(loader).toHaveBeenCalledTimes(2);
+        expect(resource.getCacheStats()).toMatchObject({
+            entries: 0,
+            misses: 1,
+            hits: 1,
+            bypasses: 1,
+            writes: 2,
+            invalidations: 1,
+            staleHits: 0,
+            revalidations: 0,
+        });
+        expect(events).toEqual([
+            "sub:miss",
+            "miss",
+            "sub:write",
+            "write",
+            "sub:hit",
+            "hit",
+            "sub:bypass",
+            "bypass",
+            "sub:write",
+            "write",
+            "sub:invalidate",
+            "invalidate",
+        ]);
+
+        unsubscribe();
+        resource.resetCacheStats();
+        expect(resource.getCacheStats()).toEqual({
+            entries: 0,
+            hits: 0,
+            staleHits: 0,
+            misses: 0,
+            bypasses: 0,
+            writes: 0,
+            invalidations: 0,
+            revalidations: 0,
+        });
+    });
+
+    it("reports stale hits and revalidation separately from fresh hits", async () => {
+        let version = 1;
+        const events: string[] = [];
+        const resource = new AdminDataResource<Row>({
+            loader: async () => ({ rows: [{ id: `v${version}`, label: `Version ${version}` }] }),
+            cache: { ttlMs: 0, staleWhileRevalidate: true },
+        });
+        resource.subscribeCache((event) => events.push(event.type));
+
+        await resource.load({ page: 1 });
+        version = 2;
+        await resource.load({ page: 1 });
+
+        expect(resource.getSnapshot().rows[0]?.id).toBe("v2");
+        expect(resource.getCacheStats()).toMatchObject({
+            entries: 1,
+            misses: 1,
+            staleHits: 1,
+            revalidations: 1,
+            writes: 2,
+        });
+        expect(events).toEqual(["miss", "write", "stale-hit", "write"]);
+    });
+
     it("cancels a retry backoff when the resource is aborted", async () => {
         let attempts = 0;
         const resource = new AdminDataResource<Row>({

@@ -27,7 +27,18 @@
 
 - [x] `AdminDataResource` 支持可配置有限重试、指数退避，以及由 `AbortSignal` 取消等待中的退避。
 - [x] `AdminDataResource` 支持按请求身份缓存、stale-while-revalidate、显式 `clearCache()`，并由 `retry()` 强制绕过缓存。
+- [x] 数据缓存提供 `subscribeCache()`、`getCacheStats()`、`resetCacheStats()` 和可选 `cache.onEvent` 观测钩子；观测失败不会改变请求状态。
 - [x] 补充数据源行为测试、四框架资源契约文档、CHANGELOG、API 文档和发布门禁记录。
+- [ ] 真实外部 `web/` 宿主逐页迁移仍需宿主源码进入工作区；在此之前只维护可运行的迁移 fixture，不宣称 Users、Channels、Usage Logs 已迁移。
+
+### 0.0.22 发布收口
+
+0.0.22 已在 0.0.21 基础上完成缓存可观测性、跨宿主事件回归和视觉基线治理：
+
+- [x] `AdminDataResource` 暴露缓存命中、stale-hit、绕过、写入、失效事件，以及可重置的缓存统计；telemetry 回调失败不会影响请求状态。
+- [x] 固定 runner 的 Windows/Ubuntu visual golden 按完整 432 文件 manifest 提升，并提供 `bun run visual:promote` 审计入口；同 profile 继续使用严格 pixelmatch。
+- [x] 补齐 Business Custom Elements 事件契约、Vue/Svelte 320px 窄屏无页面溢出和 ImportDialog 原生 dialog 缺失时的降级回归。
+- [x] 完成版本、CHANGELOG、peer dependency、文档站、发布门禁和人工视觉复核同步。
 - [ ] 真实外部 `web/` 宿主逐页迁移仍需宿主源码进入工作区；在此之前只维护可运行的迁移 fixture，不宣称 Users、Channels、Usage Logs 已迁移。
 
 ### P0：语义 Token 与主题合同
@@ -108,7 +119,7 @@
 | 框架 | Web Components、React、Vue、Svelte 的属性与事件行为一致                     |
 | 文档 | catalog 条目、预览、props/events、四框架 usage、截图和已知限制              |
 
-## 当前组件缺口（0.0.21 后）
+## 当前组件缺口（0.0.22 后）
 
 短期缺口集中在可复用的复杂交互，而不是继续堆叠展示型组件：
 
@@ -124,6 +135,7 @@
 - 0.0.19 新增 Heatmap、FunnelChart、GanttChart：三者均保持 framework-neutral、只依赖 `--aui-*` 语义 token，支持可访问焦点/点位或任务事件；docs-site 已提供预览、主题切换和 320px 组件内部滚动回归。
 - 0.0.20 完成四框架真实资源生命周期 parity、Business React 图表行为回归、Web Components pagehide 清理和全量 format release gate。
 - 0.0.21 补齐资源 contract 的取消退避、有限重试、指数退避、按请求身份缓存、stale-while-revalidate、`clearCache()` 和 retry 绕过缓存语义；后续继续围绕真实宿主接入、缓存观测和复杂业务组件推进。
+- 0.0.22 补齐缓存事件/统计观测、固定 runner golden 提升工具、Business 事件契约和窄屏发布回归；下一阶段继续围绕真实宿主接入、旧兼容层清理、缓存指标接入和复杂业务组件推进。
 - 真实外部业务仓库的逐页迁移仍需宿主仓库配合；仓库内四套 fixture 已先落地 AdminButton、AdminPage/AdminPageHeader、AdminStatusTag 和 AdminLayout/AdminConsoleShell 的唯一挂载职责。下一轮宿主源码进入工作区后，再迁移 Users、Channels、Usage Logs 页面并清理旧兼容层。
 - [x] 补齐 Business Vue/Svelte 直接 Custom Elements 示例，覆盖 22 个元素，并让 catalog/发布门禁检查示例不会回退为未导出的 `Admin*` 标签。
 - [x] 将六个包的 npm 可见性检查结果保存为发布 job summary；外部 `web/` 页面迁移仍以宿主源码进入工作区为前提。

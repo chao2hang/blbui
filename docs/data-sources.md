@@ -51,6 +51,26 @@ cursor, sort and filters. A fresh cache hit completes without a network call;
 it. `retry()` always bypasses the cache, and `clearCache()` can invalidate all
 entries or a custom-key entry after a mutation.
 
+Cache behavior can be measured without coupling BLBUI to a telemetry SDK:
+
+```ts
+const stopCacheMetrics = services.subscribeCache((event) => {
+  metrics.count(`blbui.data.cache.${event.type}`)
+})
+
+console.log(services.getCacheStats())
+// { entries, hits, staleHits, misses, bypasses, writes, invalidations,
+//   revalidations }
+
+services.resetCacheStats()
+stopCacheMetrics()
+```
+
+The equivalent `cache.onEvent` option is useful when the resource owns the
+telemetry sink. Both hooks receive the normalized request and cache key where
+available. Listener errors are swallowed so a failed metrics exporter cannot
+change loading, retry, or recovery behavior.
+
 The resource is framework-neutral. React can subscribe with
 `useSyncExternalStore`, Vue with `onMounted`/`onBeforeUnmount`, Svelte with
 `onMount`, and Web Components can update properties from the subscription.
