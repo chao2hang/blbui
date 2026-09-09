@@ -1477,6 +1477,16 @@ export class AdminTagInputElement extends AdminElement {
         this.dispatchDetail("aui-tags-change", { values: this.values });
         this.requestUpdate();
     }
+    private removeLastOnBackspace(event: KeyboardEvent): void {
+        if (event.key !== "Backspace") return;
+        const input = event.target as HTMLInputElement;
+        if (input.value || !this.values.length) return;
+        event.preventDefault();
+        this.values = this.values.slice(0, -1);
+        this.dispatchDetail("aui-tags-change", { values: this.values });
+        this.requestUpdate();
+        void this.updateComplete.then(() => input.focus());
+    }
     private removeValue(value: string): void {
         this.values = this.values.filter((item) => item !== value);
         this.dispatchDetail("aui-tags-change", { values: this.values });
@@ -1498,7 +1508,10 @@ export class AdminTagInputElement extends AdminElement {
             )}<input
                 placeholder=${this.placeholder}
                 ?disabled=${this.disabled}
-                @keydown=${this.add}
+                @keydown=${(event: KeyboardEvent) => {
+                    this.removeLastOnBackspace(event);
+                    this.add(event);
+                }}
             />
         </div>`;
     }

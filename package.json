@@ -1,6 +1,6 @@
 {
     "name": "@chaos_team/blbui",
-    "version": "0.0.24",
+    "version": "0.0.25",
     "private": true,
     "description": "Obsidian Industrial Console component library for React, Vue and Svelte.",
     "workspaces": [

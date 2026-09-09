@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.25 — 2026-09-09
+
+- `AdminDataResource` 新增隐私安全的请求生命周期 telemetry：开始、重试、成功、错误和取消事件，包含耗时、attempt、来源、状态、行数和脱敏错误字段；默认不携带 query/cache key。
+- 新增 `subscribeTelemetry()`、`getTelemetryStats()`、`resetTelemetryStats()` 和 `telemetry.onEvent`，并验证观测回调异常不会改变请求状态。
+- React、Vue、Svelte、Web Components parity playground 展示最近 telemetry event 与 loads/retries/successes/errors/aborts 统计，补充跨框架 E2E contract。
+- TagInput 支持空输入 Backspace 删除最后一个标签，删除后保留输入焦点并补行为回归。
+- 六个可发布包统一升级到 `0.0.25`，同步 peer dependency、API/路线图/长期计划、示例与发布门禁。
+
+## Unreleased
+
 ## 0.0.24 — 2026-09-09
 
 - 新增 `MarkdownEditor`、`MarkdownViewer` 和 `RichTextEditor`，支持受控编辑、预览、表单关联、只读/空态/错误状态和跨框架文档示例。
@@ -23,8 +33,6 @@
 - 新增缓存观测刷新/清空操作，并以单元测试和真实浏览器 E2E 固化 `miss/write → hit → bypass/write → invalidate` 事件顺序。
 - 将缓存观测面板优化为 token 驱动的可换行指标网格，补充桌面、320px 窄屏、dark/light 和四框架人工视觉复核记录。
 - 同步数据源、Business framework、parity fixture 文档与版本化 release gate；真实外部 `web/` 宿主逐页迁移仍等待宿主源码进入工作区。
-
-## Unreleased
 
 ## 0.0.21 — 2026-09-09
 

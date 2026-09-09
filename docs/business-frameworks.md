@@ -35,11 +35,21 @@ Components listener 中另写一套缓存或重试逻辑。
 `resetCacheStats()`；也可以在 `cache.onEvent` 中接入宿主 telemetry。事件回调
 抛错不会影响请求状态，四个框架仍共享同一套命中、stale、绕过和失效语义。
 
+请求生命周期 telemetry 使用独立的 `subscribeTelemetry()`、
+`getTelemetryStats()`、`resetTelemetryStats()` 和 `telemetry.onEvent` 契约。
+事件包含 `load-start`、`load-retry`、`load-success`、`load-error` 和
+`load-abort`，以及耗时、尝试次数、成功来源和不含原始 `cause` 的安全错误字段。
+默认不会携带 query 或 cache key；只有明确设置
+`telemetry: { includeRequest: true }` 才会附带请求对象，宿主应先执行自己的
+数据敏感性审查。telemetry 回调异常同样不会改变 loading、retry 或 recovery。
+
 parity fixture 已把这套观测能力接入四个 playground：面板显示最近一次
 cache event 和完整的 `entries`、`hits`、`staleHits`、`misses`、`bypasses`、
 `writes`、`invalidations`、`revalidations` 统计，并提供刷新缓存和清空缓存
 操作。真实浏览器门禁会按 `miss/write → hit → bypass/write → invalidate`
 顺序校验 React、Vue、Svelte 和原生 Web Components 的显示结果一致。
+四个 playground 也显示最近 telemetry event 与 loads/retries/successes/errors/aborts
+聚合统计，作为宿主接入示例而不是内置 exporter。
 
 ## Vue 3
 

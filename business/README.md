@@ -46,6 +46,14 @@ leaving CodeMirror, TipTap or Monaco as host-owned dependencies.
 See [`docs/editor-adapters.md`](../docs/editor-adapters.md) for concrete
 runtime mappings and cleanup patterns for all supported host lifecycles.
 
+`AdminDataResource` provides the shared loading/empty/error/permission-denied
+state machine, retry/backoff, request-identity cache and stale-while-revalidate
+behavior. Cache metrics use `subscribeCache()` and `getCacheStats()`; production
+request telemetry is opt-in through `subscribeTelemetry()`,
+`getTelemetryStats()` and `telemetry.onEvent`. Telemetry is privacy-safe by
+default and omits request/query data unless the host explicitly sets
+`telemetry.includeRequest: true` after its own sensitivity review.
+
 They depend on `@chaos_team/blbui-core` and register on top of it.
 
 ```ts

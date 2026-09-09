@@ -28,6 +28,18 @@ for (const playground of frameworkPlaygrounds) {
         const parityTable = page.locator("aui-table").first();
         await expect(parityTable).toContainText("gateway-prod");
         await expect(root).toHaveAttribute("data-parity-async-state", "ready");
+        await expect(page.locator("#telemetry-event")).toHaveAttribute(
+            "data-parity-telemetry-event",
+            "load-success",
+        );
+        await expect(page.locator("#telemetry-stats")).toHaveAttribute(
+            "data-parity-telemetry-loads",
+            "1",
+        );
+        await expect(page.locator("#telemetry-stats")).toHaveAttribute(
+            "data-parity-telemetry-successes",
+            "1",
+        );
         await expect(page.locator("#cache-stats")).toHaveAttribute("data-parity-cache-misses", "1");
         await expect(page.locator("#cache-stats")).toHaveAttribute("data-parity-cache-writes", "1");
         await page.getByRole("button", { name: "Refresh cached data" }).click();
@@ -158,6 +170,18 @@ test("Web Components playground updates a DataGrid through DOM properties and ev
     const servicesGrid = page.locator("#services");
     await expect(servicesGrid).toContainText("Gateway / Production");
     await expect(page.locator("#async-state")).toHaveAttribute("data-parity-async-state", "ready");
+    await expect(page.locator("#telemetry-event")).toHaveAttribute(
+        "data-parity-telemetry-event",
+        "load-success",
+    );
+    await expect(page.locator("#telemetry-stats")).toHaveAttribute(
+        "data-parity-telemetry-loads",
+        "1",
+    );
+    await expect(page.locator("#telemetry-stats")).toHaveAttribute(
+        "data-parity-telemetry-successes",
+        "1",
+    );
     await expect(page.locator("#cache-stats")).toHaveAttribute("data-parity-cache-misses", "1");
     await expect(page.locator("#cache-stats")).toHaveAttribute("data-parity-cache-writes", "1");
     await page.locator("#refresh-cache").getByRole("button").click();

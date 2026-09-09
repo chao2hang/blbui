@@ -72,6 +72,63 @@ export interface AdminDataCacheEvent<Query = Record<string, unknown>> {
     request?: AdminDataLoadOptions<Query>;
 }
 
+/**
+ * Lifecycle events for production metrics/tracing integrations.
+ *
+ * The resource never sends these events anywhere by itself. Hosts can attach a
+ * listener and add their own redaction, sampling and correlation policy before
+ * forwarding the safe event payload to an observability system.
+ */
+export type AdminDataTelemetryEventType =
+    | "load-start"
+    | "load-retry"
+    | "load-success"
+    | "load-error"
+    | "load-abort";
+
+export interface AdminDataTelemetryError {
+    status?: number;
+    code?: string;
+    message: string;
+    permissionDenied: boolean;
+    retryable: boolean;
+}
+
+export interface AdminDataTelemetryEvent<Query = Record<string, unknown>> {
+    type: AdminDataTelemetryEventType;
+    requestId: number;
+    /** Included only when `telemetry.includeRequest` is explicitly enabled. */
+    request?: AdminDataLoadOptions<Query>;
+    key?: string;
+    /** One-based loader attempt. Cache-only success events use attempt 0. */
+    attempt: number;
+    /** Elapsed time from load-start to this event, in milliseconds. */
+    durationMs: number;
+    status?: AdminDataStatus;
+    source?: "cache" | "network";
+    rows?: number;
+    total?: number;
+    nextAttempt?: number;
+    reason?: "superseded" | "abort" | "dispose";
+    /** Deliberately excludes the original `cause` to avoid leaking transport objects. */
+    error?: AdminDataTelemetryError;
+}
+
+export interface AdminDataTelemetryOptions<Query = Record<string, unknown>> {
+    /** Include the request object in events only after the host accepts its data sensitivity. */
+    includeRequest?: boolean;
+    /** Observe request lifecycle events without coupling the resource to an SDK. */
+    onEvent?: (event: AdminDataTelemetryEvent<Query>) => void;
+}
+
+export interface AdminDataTelemetryStats {
+    loads: number;
+    retries: number;
+    successes: number;
+    errors: number;
+    aborts: number;
+}
+
 export interface AdminDataCacheStats {
     entries: number;
     hits: number;
@@ -108,6 +165,7 @@ export interface AdminDataResourceOptions<Row, Query = Record<string, unknown>> 
     initialTotal?: number;
     retry?: AdminDataRetryOptions;
     cache?: AdminDataCacheOptions<Query>;
+    telemetry?: AdminDataTelemetryOptions<Query>;
 }
 
 export interface AdminDataErrorOptions {
@@ -216,6 +274,15 @@ export function getAdminDataErrorMeta(error: unknown): AdminDataErrorMeta {
 
 type Listener<Row, Query> = (snapshot: AdminDataSnapshot<Row, Query>) => void;
 type CacheListener<Query> = (event: AdminDataCacheEvent<Query>) => void;
+type TelemetryListener<Query> = (event: AdminDataTelemetryEvent<Query>) => void;
+
+interface AdminDataActiveLoad<Query> {
+    requestId: number;
+    request: AdminDataLoadOptions<Query>;
+    key?: string;
+    startedAt: number;
+    attempt: number;
+}
 
 const emptyCacheStats = (): Omit<AdminDataCacheStats, "entries"> => ({
     hits: 0,
@@ -225,6 +292,14 @@ const emptyCacheStats = (): Omit<AdminDataCacheStats, "entries"> => ({
     writes: 0,
     invalidations: 0,
     revalidations: 0,
+});
+
+const emptyTelemetryStats = (): AdminDataTelemetryStats => ({
+    loads: 0,
+    retries: 0,
+    successes: 0,
+    errors: 0,
+    aborts: 0,
 });
 
 /**
@@ -238,6 +313,7 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
     private loader: AdminDataLoader<Row, Query>;
     private readonly listeners = new Set<Listener<Row, Query>>();
     private readonly cacheListeners = new Set<CacheListener<Query>>();
+    private readonly telemetryListeners = new Set<TelemetryListener<Query>>();
     private readonly retryOptions: Required<AdminDataRetryOptions>;
     private readonly cacheOptions?: {
         ttlMs: number;
@@ -245,9 +321,12 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
         key: (request: AdminDataLoadOptions<Query>) => string;
         onEvent?: (event: AdminDataCacheEvent<Query>) => void;
     };
+    private readonly telemetryOptions?: AdminDataTelemetryOptions<Query>;
     private readonly cache = new Map<string, { page: AdminDataPage<Row>; expiresAt: number }>();
     private cacheStats = emptyCacheStats();
+    private telemetryStats = emptyTelemetryStats();
     private activeController: AbortController | undefined;
+    private activeLoad: AdminDataActiveLoad<Query> | undefined;
     private lastRequest: AdminDataLoadOptions<Query> = {};
     private sequence = 0;
     private disposed = false;
@@ -268,6 +347,7 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
                   onEvent: options.cache.onEvent,
               }
             : undefined;
+        this.telemetryOptions = options.telemetry;
         const rows = options.initialRows ?? [];
         this.snapshot = {
             status: "idle",
@@ -295,6 +375,21 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
         if (this.disposed) return () => undefined;
         this.cacheListeners.add(listener);
         return () => this.cacheListeners.delete(listener);
+    }
+
+    /** Subscribe to request lifecycle events for metrics, tracing or debugging. */
+    subscribeTelemetry(listener: TelemetryListener<Query>): () => void {
+        if (this.disposed) return () => undefined;
+        this.telemetryListeners.add(listener);
+        return () => this.telemetryListeners.delete(listener);
+    }
+
+    getTelemetryStats(): AdminDataTelemetryStats {
+        return { ...this.telemetryStats };
+    }
+
+    resetTelemetryStats(): void {
+        this.telemetryStats = emptyTelemetryStats();
     }
 
     getCacheStats(): AdminDataCacheStats {
@@ -355,6 +450,67 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
         }
     }
 
+    private emitTelemetryEvent(event: AdminDataTelemetryEvent<Query>): void {
+        switch (event.type) {
+            case "load-start":
+                this.telemetryStats.loads += 1;
+                break;
+            case "load-retry":
+                this.telemetryStats.retries += 1;
+                break;
+            case "load-success":
+                this.telemetryStats.successes += 1;
+                break;
+            case "load-error":
+                this.telemetryStats.errors += 1;
+                break;
+            case "load-abort":
+                this.telemetryStats.aborts += 1;
+                break;
+        }
+        for (const listener of this.telemetryListeners) {
+            try {
+                listener(event);
+            } catch {
+                // Observability must never change request state or break recovery.
+            }
+        }
+        try {
+            this.telemetryOptions?.onEvent?.(event);
+        } catch {
+            // Observability must never change request state or break recovery.
+        }
+    }
+
+    private finishTelemetry(
+        context: AdminDataActiveLoad<Query>,
+        event: Omit<AdminDataTelemetryEvent<Query>, "requestId" | "request" | "key" | "durationMs">,
+    ): void {
+        this.emitTelemetryEvent({
+            ...event,
+            requestId: context.requestId,
+            ...(this.telemetryOptions?.includeRequest ? { request: { ...context.request } } : {}),
+            ...(this.telemetryOptions?.includeRequest && context.key !== undefined
+                ? { key: context.key }
+                : {}),
+            durationMs: Math.max(0, Date.now() - context.startedAt),
+        });
+    }
+
+    private abortActiveLoad(reason: "superseded" | "abort" | "dispose"): void {
+        const context = this.activeLoad;
+        if (context) {
+            this.finishTelemetry(context, {
+                type: "load-abort",
+                attempt: context.attempt,
+                reason,
+            });
+            this.activeLoad = undefined;
+        }
+        this.activeController?.abort();
+        this.activeController = undefined;
+    }
+
     private publishPage(
         page: AdminDataPage<Row>,
         requestId: number,
@@ -378,13 +534,22 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
         bypassCache: boolean,
     ): Promise<AdminDataSnapshot<Row, Query>> {
         if (this.disposed) return this.snapshot;
-        this.activeController?.abort();
+        this.abortActiveLoad("superseded");
         const controller = new AbortController();
         const requestId = ++this.sequence;
         this.activeController = controller;
         this.lastRequest = { ...options };
 
         const cacheKey = this.cacheKey(options);
+        const context: AdminDataActiveLoad<Query> = {
+            requestId,
+            request: { ...options },
+            ...(cacheKey === undefined ? {} : { key: cacheKey }),
+            startedAt: Date.now(),
+            attempt: 1,
+        };
+        this.activeLoad = context;
+        this.finishTelemetry(context, { type: "load-start", attempt: 1 });
         const cached = cacheKey === undefined ? undefined : this.cache.get(cacheKey);
         const cacheIsFresh = cached !== undefined && cached.expiresAt > Date.now();
         if (cacheKey !== undefined) {
@@ -394,6 +559,15 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
                 this.emitCacheEvent({ type: "hit", key: cacheKey, request: { ...options } });
                 this.publishPage(cached.page, requestId, options);
                 this.activeController = undefined;
+                this.activeLoad = undefined;
+                this.finishTelemetry(context, {
+                    type: "load-success",
+                    attempt: 0,
+                    source: "cache",
+                    status: this.snapshot.status,
+                    rows: this.snapshot.rows.length,
+                    total: this.snapshot.total,
+                });
                 return this.snapshot;
             } else if (cached && this.cacheOptions?.staleWhileRevalidate) {
                 this.emitCacheEvent({
@@ -416,12 +590,14 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
         });
 
         for (let retry = 0; ; retry += 1) {
+            context.attempt = retry + 1;
             try {
                 const page = await this.loader({ ...options, signal: controller.signal });
                 if (this.disposed || requestId !== this.sequence || controller.signal.aborted) {
                     return this.snapshot;
                 }
                 this.activeController = undefined;
+                this.activeLoad = undefined;
                 if (cacheKey !== undefined && this.cacheOptions) {
                     this.cache.set(cacheKey, {
                         page,
@@ -430,7 +606,25 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
                     this.emitCacheEvent({ type: "write", key: cacheKey, request: { ...options } });
                 }
                 this.publishPage(page, requestId, options);
+                this.finishTelemetry(context, {
+                    type: "load-success",
+                    attempt: retry + 1,
+                    source: "network",
+                    status: this.snapshot.status,
+                    rows: this.snapshot.rows.length,
+                    total: this.snapshot.total,
+                });
             } catch (error) {
+                if (isAbortError(error) && this.activeLoad?.requestId === requestId) {
+                    this.activeController = undefined;
+                    this.activeLoad = undefined;
+                    this.finishTelemetry(context, {
+                        type: "load-abort",
+                        attempt: retry + 1,
+                        reason: "abort",
+                    });
+                    return this.snapshot;
+                }
                 if (
                     this.disposed ||
                     requestId !== this.sequence ||
@@ -441,6 +635,18 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
                 }
                 const meta = getAdminDataErrorMeta(error);
                 if (meta.retryable && retry < this.retryOptions.maxRetries) {
+                    this.finishTelemetry(context, {
+                        type: "load-retry",
+                        attempt: retry + 1,
+                        nextAttempt: retry + 2,
+                        error: {
+                            ...(meta.status === undefined ? {} : { status: meta.status }),
+                            ...(meta.code === undefined ? {} : { code: meta.code }),
+                            message: meta.message,
+                            permissionDenied: meta.permissionDenied,
+                            retryable: meta.retryable,
+                        },
+                    });
                     const delay =
                         this.retryOptions.delayMs * this.retryOptions.backoffMultiplier ** retry;
                     try {
@@ -451,12 +657,25 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
                     continue;
                 }
                 this.activeController = undefined;
+                this.activeLoad = undefined;
                 this.publish({
                     ...this.snapshot,
                     status: meta.permissionDenied ? "permission-denied" : "error",
                     requestId,
                     request: { ...options },
                     error: meta,
+                });
+                this.finishTelemetry(context, {
+                    type: "load-error",
+                    attempt: retry + 1,
+                    status: this.snapshot.status,
+                    error: {
+                        ...(meta.status === undefined ? {} : { status: meta.status }),
+                        ...(meta.code === undefined ? {} : { code: meta.code }),
+                        message: meta.message,
+                        permissionDenied: meta.permissionDenied,
+                        retryable: meta.retryable,
+                    },
                 });
             }
             return this.snapshot;
@@ -479,8 +698,7 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
 
     abort(): void {
         this.sequence += 1;
-        this.activeController?.abort();
-        this.activeController = undefined;
+        this.abortActiveLoad("abort");
     }
 
     dispose(): void {
@@ -489,6 +707,7 @@ export class AdminDataResource<Row, Query = Record<string, unknown>> {
         this.abort();
         this.listeners.clear();
         this.cacheListeners.clear();
+        this.telemetryListeners.clear();
         this.cache.clear();
     }
 }

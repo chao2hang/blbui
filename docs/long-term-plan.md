@@ -63,6 +63,18 @@ blocker 事实边界：
 - [x] 人工视觉复核覆盖三类编辑器的空内容、只读、错误、light/dark、Rounded/Glass/Atmospheric 和 320px 窄屏；历史固定 runner golden 保持 profile-aware 严格比较。
 - [ ] 真实外部 `web/` 宿主逐页迁移、Users/Channels/Usage Logs 接入和旧兼容层清理仍等待宿主源码进入工作区。
 
+### 0.0.25 生产观测与输入交互收口
+
+0.0.25 已在 0.0.24 基础上继续推进仓库内可验证项；真实外部宿主迁移仍保持
+blocker 事实边界：
+
+- [x] `AdminDataResource` 增加隐私安全的请求生命周期 telemetry：开始、重试、成功、错误和取消事件，提供耗时、attempt、来源、状态、行数和脱敏错误字段。
+- [x] 提供 `subscribeTelemetry()`、`getTelemetryStats()`、`resetTelemetryStats()` 与 `telemetry.onEvent`；默认不发送 query/cache key，`includeRequest` 需要宿主显式选择。
+- [x] telemetry listener 异常、缓存 telemetry 异常均不会改变请求状态；补充错误、重试、缓存命中、竞态取消和统计重置测试。
+- [x] React、Vue、Svelte、Web Components parity playground 展示最近 telemetry event 与 loads/retries/successes/errors/aborts 统计；fixture、E2E 和跨框架文档同步。
+- [x] TagInput 支持空输入 Backspace 删除最后一个标签，删除后保留输入焦点并补行为测试。
+- [ ] 真实外部 `web/` 宿主逐页迁移、Users/Channels/Usage Logs 接入和旧兼容层清理仍等待宿主源码进入工作区。
+
 ### P0：语义 Token 与主题合同
 
 0.0.20 已在 0.0.19 基础上继续收紧：
@@ -141,7 +153,7 @@ blocker 事实边界：
 | 框架 | Web Components、React、Vue、Svelte 的属性与事件行为一致                     |
 | 文档 | catalog 条目、预览、props/events、四框架 usage、截图和已知限制              |
 
-## 当前组件缺口（0.0.24 后）
+## 当前组件缺口（0.0.25 后）
 
 短期缺口集中在可复用的复杂交互，而不是继续堆叠展示型组件：
 
@@ -159,7 +171,7 @@ blocker 事实边界：
 - 0.0.20 完成四框架真实资源生命周期 parity、Business React 图表行为回归、Web Components pagehide 清理和全量 format release gate。
 - 0.0.21 补齐资源 contract 的取消退避、有限重试、指数退避、按请求身份缓存、stale-while-revalidate、`clearCache()` 和 retry 绕过缓存语义；后续继续围绕真实宿主接入、缓存观测和复杂业务组件推进。
 - 0.0.22 补齐缓存事件/统计观测、固定 runner golden 提升工具、Business 事件契约和窄屏发布回归；下一阶段继续围绕真实宿主接入、旧兼容层清理、缓存指标接入和复杂业务组件推进。
-- 0.0.23 将缓存观测从底层 API 接入四框架 parity playground，并以单元测试和真实浏览器 E2E 固化事件顺序；生产 telemetry 仍由宿主通过 `subscribeCache()` 或 `cache.onEvent` 接入。
+- 0.0.23 将缓存观测从底层 API 接入四框架 parity playground，并以单元测试和真实浏览器 E2E 固化事件顺序；0.0.25 进一步提供独立的隐私安全请求 telemetry，生产导出仍由宿主通过 `subscribeTelemetry()` 或 `telemetry.onEvent` 接入。
 - 真实外部业务仓库的逐页迁移仍需宿主仓库配合；仓库内四套 fixture 已先落地 AdminButton、AdminPage/AdminPageHeader、AdminStatusTag 和 AdminLayout/AdminConsoleShell 的唯一挂载职责。下一轮宿主源码进入工作区后，再迁移 Users、Channels、Usage Logs 页面并清理旧兼容层。
 - [x] 补齐 Business Vue/Svelte 直接 Custom Elements 示例，覆盖 25 个元素，并让 catalog/发布门禁检查示例不会回退为未导出的 `Admin*` 标签。
 - [x] 将六个包的 npm 可见性检查结果保存为发布 job summary；外部 `web/` 页面迁移仍以宿主源码进入工作区为前提。

@@ -35,7 +35,9 @@
       "invalidations",
       "revalidations"
     ],
-    "cacheEvents": ["miss", "hit", "stale-hit", "bypass", "write", "invalidate"]
+    "cacheEvents": ["miss", "hit", "stale-hit", "bypass", "write", "invalidate"],
+    "telemetryStats": ["loads", "retries", "successes", "errors", "aborts"],
+    "telemetryEvents": ["load-start", "load-retry", "load-success", "load-error", "load-abort"]
   },
   "steps": [
     { "id": "details", "label": "Details" },
@@ -64,6 +66,9 @@
       "retryCountAfterError": 1,
       "initialCacheMisses": 1,
       "initialCacheWrites": 1,
+      "initialTelemetryLoads": 1,
+      "initialTelemetrySuccesses": 1,
+      "initialTelemetryErrors": 0,
       "cacheHitsAfterRefresh": 1,
       "cacheInvalidationsAfterClear": 1
     }

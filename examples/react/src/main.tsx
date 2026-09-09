@@ -38,6 +38,10 @@ function App() {
     const [asyncSnapshot, setAsyncSnapshot] = useState(() => asyncResource.resource.getSnapshot());
     const [cacheEvent, setCacheEvent] = useState("none");
     const [cacheStats, setCacheStats] = useState(() => asyncResource.resource.getCacheStats());
+    const [telemetryEvent, setTelemetryEvent] = useState("none");
+    const [telemetryStats, setTelemetryStats] = useState(() =>
+        asyncResource.resource.getTelemetryStats(),
+    );
     const asyncState = parityAsyncState(asyncSnapshot.status);
     useEffect(() => {
         asyncMounts.current += 1;
@@ -46,6 +50,10 @@ function App() {
             setCacheEvent(event.type);
             setCacheStats(asyncResource.resource.getCacheStats());
         });
+        const unsubscribeTelemetry = asyncResource.resource.subscribeTelemetry((event) => {
+            setTelemetryEvent(event.type);
+            setTelemetryStats(asyncResource.resource.getTelemetryStats());
+        });
         if (!asyncLoaded.current) {
             asyncLoaded.current = true;
             void asyncResource.load();
@@ -53,6 +61,7 @@ function App() {
         return () => {
             unsubscribe();
             unsubscribeCache();
+            unsubscribeTelemetry();
             asyncMounts.current -= 1;
             queueMicrotask(() => {
                 if (asyncMounts.current === 0) asyncResource.resource.dispose();
@@ -96,6 +105,12 @@ function App() {
             data-parity-cache-writes={cacheStats.writes}
             data-parity-cache-invalidations={cacheStats.invalidations}
             data-parity-cache-revalidations={cacheStats.revalidations}
+            data-parity-telemetry-event={telemetryEvent}
+            data-parity-telemetry-loads={telemetryStats.loads}
+            data-parity-telemetry-retries={telemetryStats.retries}
+            data-parity-telemetry-successes={telemetryStats.successes}
+            data-parity-telemetry-errors={telemetryStats.errors}
+            data-parity-telemetry-aborts={telemetryStats.aborts}
         >
             <AdminShell
                 sidebarWidth="200px"
@@ -264,6 +279,59 @@ function App() {
                                         ["writes", cacheStats.writes],
                                         ["invalidations", cacheStats.invalidations],
                                         ["revalidations", cacheStats.revalidations],
+                                    ].map(([label, value]) => (
+                                        <span
+                                            key={label}
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                minWidth: 0,
+                                                padding: "4px 6px",
+                                                border: "1px solid var(--aui-border)",
+                                                color: "var(--aui-text-secondary)",
+                                                font: "10px/1.25 var(--aui-font-mono)",
+                                                textTransform: "uppercase",
+                                            }}
+                                        >
+                                            <strong style={{ color: "var(--aui-text-primary)" }}>
+                                                {value}
+                                            </strong>
+                                            {label}
+                                        </span>
+                                    ))}
+                                </output>
+                                <output
+                                    id="telemetry-event"
+                                    style={{
+                                        display: "block",
+                                        marginTop: 8,
+                                        overflowWrap: "anywhere",
+                                    }}
+                                    data-parity-telemetry-event={telemetryEvent}
+                                >
+                                    Telemetry event: {telemetryEvent}
+                                </output>
+                                <output
+                                    id="telemetry-stats"
+                                    style={{
+                                        display: "grid",
+                                        gridTemplateColumns: "repeat(auto-fit, minmax(96px, 1fr))",
+                                        gap: 4,
+                                        minWidth: 0,
+                                        marginTop: 8,
+                                    }}
+                                    data-parity-telemetry-loads={telemetryStats.loads}
+                                    data-parity-telemetry-retries={telemetryStats.retries}
+                                    data-parity-telemetry-successes={telemetryStats.successes}
+                                    data-parity-telemetry-errors={telemetryStats.errors}
+                                    data-parity-telemetry-aborts={telemetryStats.aborts}
+                                >
+                                    {[
+                                        ["loads", telemetryStats.loads],
+                                        ["retries", telemetryStats.retries],
+                                        ["successes", telemetryStats.successes],
+                                        ["errors", telemetryStats.errors],
+                                        ["aborts", telemetryStats.aborts],
                                     ].map(([label, value]) => (
                                         <span
                                             key={label}

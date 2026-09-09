@@ -4,7 +4,7 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License.
 */
 
-import { afterEach, beforeAll, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { registerAdminElements } from "../core/src/register";
 import { adminThemes, getAdminTheme, setAdminTheme, toggleAdminThemeMode } from "../core/src/theme";
 import type {
@@ -1081,6 +1081,30 @@ describe("accessibility contracts", () => {
         await tabs.updateComplete;
         expect(tabs.active).toBe("b");
         expect(tabs.shadowRoot?.activeElement).toBe(tabButtons?.[1]);
+    });
+
+    it("removes the last tag with Backspace while keeping input focus", async () => {
+        const tagInput = document.createElement("aui-tag-input") as HTMLElement & {
+            values: string[];
+            updateComplete: Promise<boolean>;
+        };
+        tagInput.values = ["platform", "runtime"];
+        document.body.append(tagInput);
+        await tagInput.updateComplete;
+
+        const changed = vi.fn();
+        tagInput.addEventListener("aui-tags-change", (event) =>
+            changed((event as CustomEvent<{ values: string[] }>).detail),
+        );
+        const input = tagInput.shadowRoot?.querySelector<HTMLInputElement>("input");
+        if (!input) throw new Error("tag input control missing");
+        input.focus();
+        input.dispatchEvent(new KeyboardEvent("keydown", { key: "Backspace", bubbles: true }));
+        await tagInput.updateComplete;
+
+        expect(tagInput.values).toEqual(["platform"]);
+        expect(changed).toHaveBeenCalledWith({ values: ["platform"] });
+        expect(tagInput.shadowRoot?.activeElement).toBe(input);
     });
 
     it("associates a field label with its slotted control", async () => {

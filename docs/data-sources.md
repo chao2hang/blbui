@@ -68,6 +68,42 @@ telemetry sink. Both hooks receive the normalized request and cache key where
 available. Listener errors are swallowed so a failed metrics exporter cannot
 change loading, retry, or recovery behavior.
 
+## Request telemetry
+
+Cache decisions and request lifecycle telemetry are separate contracts. Hosts
+can subscribe to request events without installing a metrics SDK:
+
+```ts
+const stopTelemetry = services.subscribeTelemetry((event) => {
+    metrics.observe(`blbui.data.${event.type}`, event.durationMs, {
+        attempt: event.attempt,
+        source: event.source,
+        status: event.status,
+    });
+});
+
+console.log(services.getTelemetryStats());
+// { loads, retries, successes, errors, aborts }
+```
+
+The event sequence is `load-start` followed by `load-success`, `load-error`,
+or `load-abort`; retryable failures add `load-retry` before the next loader
+attempt. A fresh cache hit emits a success with `source: "cache"` and
+`attempt: 0`; network successes use `source: "network"`. Events include a
+monotonic request id, elapsed milliseconds, attempt number, status and safe
+error fields. The original transport error/cause is never included.
+
+Telemetry is privacy-safe by default: request objects and cache keys are
+omitted. A host may opt in with `telemetry.includeRequest: true` only after
+applying its own data-sensitivity policy. Both `telemetry.onEvent` and
+`subscribeTelemetry()` isolate listener exceptions from request behavior, and
+`getTelemetryStats()` can be reset independently with `resetTelemetryStats()`.
+
+The four parity playgrounds display the last telemetry event and aggregate
+counts for loads, retries, successes, errors and aborts. This is an example
+of a host integration, not a bundled exporter; production applications should
+forward only the fields approved by their observability policy.
+
 The resource is framework-neutral. React can subscribe with
 `useSyncExternalStore`, Vue with `onMounted`/`onBeforeUnmount`, Svelte with
 `onMount`, and Web Components can update properties from the subscription.

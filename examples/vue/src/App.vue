@@ -26,6 +26,8 @@ const asyncSnapshot = ref(asyncResource.resource.getSnapshot());
 const asyncState = computed(() => parityAsyncState(asyncSnapshot.value.status));
 const cacheEvent = ref("none");
 const cacheStats = ref(asyncResource.resource.getCacheStats());
+const telemetryEvent = ref("none");
+const telemetryStats = ref(asyncResource.resource.getTelemetryStats());
 const cacheMetricItems = computed(() => [
     ["entries", cacheStats.value.entries],
     ["hits", cacheStats.value.hits],
@@ -38,6 +40,7 @@ const cacheMetricItems = computed(() => [
 ]);
 let stopAsyncSubscription = () => undefined;
 let stopCacheSubscription = () => undefined;
+let stopTelemetrySubscription = () => undefined;
 const recoverFromAsyncError = () => {
     retryCount.value += 1;
     asyncResource.setMode("ready");
@@ -102,6 +105,10 @@ onMounted(() => {
         cacheEvent.value = event.type;
         cacheStats.value = asyncResource.resource.getCacheStats();
     });
+    stopTelemetrySubscription = asyncResource.resource.subscribeTelemetry((event) => {
+        telemetryEvent.value = event.type;
+        telemetryStats.value = asyncResource.resource.getTelemetryStats();
+    });
     void asyncResource.load();
     const table = document.createElement("aui-advanced-table") as HTMLElement &
         Record<string, unknown>;
@@ -122,6 +129,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
     stopAsyncSubscription();
     stopCacheSubscription();
+    stopTelemetrySubscription();
     asyncResource.resource.dispose();
 });
 const visibleRows = computed(() => {
@@ -156,6 +164,12 @@ const visibleRows = computed(() => {
         :data-parity-cache-writes="cacheStats.writes"
         :data-parity-cache-invalidations="cacheStats.invalidations"
         :data-parity-cache-revalidations="cacheStats.revalidations"
+        :data-parity-telemetry-event="telemetryEvent"
+        :data-parity-telemetry-loads="telemetryStats.loads"
+        :data-parity-telemetry-retries="telemetryStats.retries"
+        :data-parity-telemetry-successes="telemetryStats.successes"
+        :data-parity-telemetry-errors="telemetryStats.errors"
+        :data-parity-telemetry-aborts="telemetryStats.aborts"
     >
         <AdminShell sidebar-width="200px" header-height="56px">
             <template #sidebar>
@@ -285,6 +299,54 @@ const visibleRows = computed(() => {
                             >
                                 <span
                                     v-for="([label, value], index) in cacheMetricItems"
+                                    :key="`${label}-${index}`"
+                                    style="
+                                        display: flex;
+                                        flex-direction: column;
+                                        min-width: 0;
+                                        padding: 4px 6px;
+                                        border: 1px solid var(--aui-border);
+                                        color: var(--aui-text-secondary);
+                                        font: 10px/1.25 var(--aui-font-mono);
+                                        text-transform: uppercase;
+                                    "
+                                >
+                                    <strong style="color: var(--aui-text-primary)">{{
+                                        value
+                                    }}</strong>
+                                    {{ label }}
+                                </span>
+                            </output>
+                            <output
+                                id="telemetry-event"
+                                style="display: block; margin-top: 8px; overflow-wrap: anywhere"
+                                :data-parity-telemetry-event="telemetryEvent"
+                            >
+                                Telemetry event: {{ telemetryEvent }}
+                            </output>
+                            <output
+                                id="telemetry-stats"
+                                style="
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+                                    gap: 4px;
+                                    min-width: 0;
+                                    margin-top: 8px;
+                                "
+                                :data-parity-telemetry-loads="telemetryStats.loads"
+                                :data-parity-telemetry-retries="telemetryStats.retries"
+                                :data-parity-telemetry-successes="telemetryStats.successes"
+                                :data-parity-telemetry-errors="telemetryStats.errors"
+                                :data-parity-telemetry-aborts="telemetryStats.aborts"
+                            >
+                                <span
+                                    v-for="([label, value], index) in [
+                                        ['loads', telemetryStats.loads],
+                                        ['retries', telemetryStats.retries],
+                                        ['successes', telemetryStats.successes],
+                                        ['errors', telemetryStats.errors],
+                                        ['aborts', telemetryStats.aborts],
+                                    ]"
                                     :key="`${label}-${index}`"
                                     style="
                                         display: flex;

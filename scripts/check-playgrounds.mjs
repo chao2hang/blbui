@@ -29,12 +29,18 @@ try {
     assertions?.initialQuery !== "" ||
     assertions?.initialAsyncState !== "ready" ||
     assertions?.retryCountAfterError !== 1 ||
+    assertions?.initialTelemetryLoads !== 1 ||
+    assertions?.initialTelemetrySuccesses !== 1 ||
     fixture.asyncStates?.retryEvent !== "aui-retry" ||
     fixture.asyncStates?.permissionSlot !== "permission" ||
     !fixture.asyncStates?.cacheStats?.includes("entries") ||
     !fixture.asyncStates?.cacheStats?.includes("revalidations") ||
     !fixture.asyncStates?.cacheEvents?.includes("hit") ||
-    !fixture.asyncStates?.cacheEvents?.includes("invalidate")
+    !fixture.asyncStates?.cacheEvents?.includes("invalidate") ||
+    !fixture.asyncStates?.telemetryStats?.includes("loads") ||
+    !fixture.asyncStates?.telemetryStats?.includes("aborts") ||
+    !fixture.asyncStates?.telemetryEvents?.includes("load-start") ||
+    !fixture.asyncStates?.telemetryEvents?.includes("load-success")
   ) {
     errors.push("parity fixture must contain the versioned controlled-state contract and assertions");
   }
@@ -73,8 +79,8 @@ for (const [framework, files] of Object.entries(required)) {
   }
   for (const marker of frameworkChecks) if (!source.includes(marker)) errors.push(`${framework}: missing ${marker}`);
   const asyncMarkers = framework === "web"
-    ? ["data-parity-async-state", "permission", "simulate-error", "simulate-permission", "retryCount", "subscribeCache", "cacheStats", "cache-event", "cache-stats", "refresh-cache", "clear-cache"]
-    : ["data-parity-async-state", "permission", "Simulate data error", "Simulate permission denial", "retryCount", "subscribeCache", "cacheStats", "cache-event", "cache-stats", "Refresh cached data", "Clear cache"];
+    ? ["data-parity-async-state", "permission", "simulate-error", "simulate-permission", "retryCount", "subscribeCache", "cacheStats", "cache-event", "cache-stats", "subscribeTelemetry", "telemetryStats", "telemetry-event", "telemetry-stats", "refresh-cache", "clear-cache"]
+    : ["data-parity-async-state", "permission", "Simulate data error", "Simulate permission denial", "retryCount", "subscribeCache", "cacheStats", "cache-event", "cache-stats", "subscribeTelemetry", "telemetryStats", "telemetry-event", "telemetry-stats", "Refresh cached data", "Clear cache"];
   for (const marker of asyncMarkers) {
     if (!source.includes(marker)) errors.push(`${framework}: async state parity is missing ${marker}`);
   }

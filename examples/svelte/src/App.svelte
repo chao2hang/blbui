@@ -16,6 +16,8 @@
   let retryCount = 0
   let cacheEvent = 'none'
   let cacheStats = asyncResource.resource.getCacheStats()
+  let telemetryEvent = 'none'
+  let telemetryStats = asyncResource.resource.getTelemetryStats()
   $: cacheMetricItems = [
     ['entries', cacheStats.entries],
     ['hits', cacheStats.hits],
@@ -77,10 +79,15 @@
       cacheEvent = event.type
       cacheStats = asyncResource.resource.getCacheStats()
     })
+    const unsubscribeTelemetry = asyncResource.resource.subscribeTelemetry((event) => {
+      telemetryEvent = event.type
+      telemetryStats = asyncResource.resource.getTelemetryStats()
+    })
     void asyncResource.load()
     return () => {
       unsubscribe()
       unsubscribeCache()
+      unsubscribeTelemetry()
       asyncResource.resource.dispose()
     }
   })
@@ -93,7 +100,7 @@
 
 <svelte:head><title>BLBUI Svelte Playground</title></svelte:head>
 
-<div class="aui-root" style="min-height: 100vh" data-parity-query={query} data-parity-page={page} data-parity-dialog={String(open)} data-parity-active-tab={activeTab} data-parity-async-state={asyncState} data-parity-retry-count={retryCount} data-parity-cache-event={cacheEvent} data-parity-cache-hits={cacheStats.hits} data-parity-cache-stale-hits={cacheStats.staleHits} data-parity-cache-misses={cacheStats.misses} data-parity-cache-bypasses={cacheStats.bypasses} data-parity-cache-writes={cacheStats.writes} data-parity-cache-invalidations={cacheStats.invalidations} data-parity-cache-revalidations={cacheStats.revalidations}>
+<div class="aui-root" style="min-height: 100vh" data-parity-query={query} data-parity-page={page} data-parity-dialog={String(open)} data-parity-active-tab={activeTab} data-parity-async-state={asyncState} data-parity-retry-count={retryCount} data-parity-cache-event={cacheEvent} data-parity-cache-hits={cacheStats.hits} data-parity-cache-stale-hits={cacheStats.staleHits} data-parity-cache-misses={cacheStats.misses} data-parity-cache-bypasses={cacheStats.bypasses} data-parity-cache-writes={cacheStats.writes} data-parity-cache-invalidations={cacheStats.invalidations} data-parity-cache-revalidations={cacheStats.revalidations} data-parity-telemetry-event={telemetryEvent} data-parity-telemetry-loads={telemetryStats.loads} data-parity-telemetry-retries={telemetryStats.retries} data-parity-telemetry-successes={telemetryStats.successes} data-parity-telemetry-errors={telemetryStats.errors} data-parity-telemetry-aborts={telemetryStats.aborts}>
   <AdminShell sidebarWidth="168px" headerHeight="48px">
     <div slot="sidebar" style="padding: 16px; font: 700 12px var(--aui-font-mono)">BLBUI</div>
     <div slot="header" style="display: flex; justify-content: flex-end; padding: 0 16px"><AdminStatusTag status="success">CONNECTED</AdminStatusTag></div>
@@ -138,6 +145,12 @@
               <strong style="color: var(--aui-text-primary)">{value}</strong>
               {label}
             </span>
+          {/each}
+        </output>
+        <output id="telemetry-event" style="display: block; margin-top: 8px; overflow-wrap: anywhere" data-parity-telemetry-event={telemetryEvent}>Telemetry event: {telemetryEvent}</output>
+        <output id="telemetry-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 4px; min-width: 0; margin-top: 8px" data-parity-telemetry-loads={telemetryStats.loads} data-parity-telemetry-retries={telemetryStats.retries} data-parity-telemetry-successes={telemetryStats.successes} data-parity-telemetry-errors={telemetryStats.errors} data-parity-telemetry-aborts={telemetryStats.aborts}>
+          {#each [['loads', telemetryStats.loads], ['retries', telemetryStats.retries], ['successes', telemetryStats.successes], ['errors', telemetryStats.errors], ['aborts', telemetryStats.aborts]] as [label, value]}
+            <span style="display: flex; flex-direction: column; min-width: 0; padding: 4px 6px; border: 1px solid var(--aui-border); color: var(--aui-text-secondary); font: 10px/1.25 var(--aui-font-mono); text-transform: uppercase"><strong style="color: var(--aui-text-primary)">{value}</strong>{label}</span>
           {/each}
         </output>
       </section>

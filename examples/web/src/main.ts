@@ -42,6 +42,8 @@ app.innerHTML = `
         <aui-button id="clear-cache">CLEAR CACHE</aui-button>
         <output id="cache-event" style="display: block; margin-top: 8px; overflow-wrap: anywhere" data-parity-cache-event="none">Cache event: none</output>
         <output id="cache-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 4px; min-width: 0; margin-top: 8px"></output>
+        <output id="telemetry-event" style="display: block; margin-top: 8px; overflow-wrap: anywhere" data-parity-telemetry-event="none">Telemetry event: none</output>
+        <output id="telemetry-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 4px; min-width: 0; margin-top: 8px"></output>
       </section>
     </section>
     <aui-advanced-table id="business-table" selectable></aui-advanced-table>
@@ -134,7 +136,10 @@ const asyncResource = createParityAsyncResource();
 let retryCount = 0;
 const cacheEvent = document.querySelector<HTMLOutputElement>("#cache-event");
 const cacheStats = document.querySelector<HTMLOutputElement>("#cache-stats");
-if (!cacheEvent || !cacheStats) throw new Error("Cache observability host is missing");
+const telemetryEvent = document.querySelector<HTMLOutputElement>("#telemetry-event");
+const telemetryStats = document.querySelector<HTMLOutputElement>("#telemetry-stats");
+if (!cacheEvent || !cacheStats || !telemetryEvent || !telemetryStats)
+    throw new Error("Observability host is missing");
 const renderCacheStats = () => {
     const stats = asyncResource.resource.getCacheStats();
     cacheStats.dataset.parityCacheEntries = String(stats.entries);
@@ -161,10 +166,35 @@ const renderCacheStats = () => {
         )
         .join("");
 };
+const renderTelemetryStats = () => {
+    const stats = asyncResource.resource.getTelemetryStats();
+    telemetryStats.dataset.parityTelemetryLoads = String(stats.loads);
+    telemetryStats.dataset.parityTelemetryRetries = String(stats.retries);
+    telemetryStats.dataset.parityTelemetrySuccesses = String(stats.successes);
+    telemetryStats.dataset.parityTelemetryErrors = String(stats.errors);
+    telemetryStats.dataset.parityTelemetryAborts = String(stats.aborts);
+    telemetryStats.innerHTML = [
+        ["loads", stats.loads],
+        ["retries", stats.retries],
+        ["successes", stats.successes],
+        ["errors", stats.errors],
+        ["aborts", stats.aborts],
+    ]
+        .map(
+            ([label, value]) =>
+                `<span style="display:flex;flex-direction:column;min-width:0;padding:4px 6px;border:1px solid var(--aui-border);color:var(--aui-text-secondary);font:10px/1.25 var(--aui-font-mono);text-transform:uppercase"><strong style="color:var(--aui-text-primary)">${value}</strong>${label}</span>`,
+        )
+        .join("");
+};
 const unsubscribeCache = asyncResource.resource.subscribeCache((event) => {
     cacheEvent.dataset.parityCacheEvent = event.type;
     cacheEvent.textContent = `Cache event: ${event.type}`;
     renderCacheStats();
+});
+const unsubscribeTelemetry = asyncResource.resource.subscribeTelemetry((event) => {
+    telemetryEvent.dataset.parityTelemetryEvent = event.type;
+    telemetryEvent.textContent = `Telemetry event: ${event.type}`;
+    renderTelemetryStats();
 });
 const applyAsyncSnapshot = (snapshot: ReturnType<typeof asyncResource.resource.getSnapshot>) => {
     const state = parityAsyncState(snapshot.status);
@@ -208,6 +238,7 @@ window.addEventListener(
     () => {
         unsubscribeAsync();
         unsubscribeCache();
+        unsubscribeTelemetry();
         asyncResource.resource.dispose();
     },
     { once: true },

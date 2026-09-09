@@ -270,6 +270,138 @@ describe("business data source contract", () => {
         expect(events).toEqual(["miss", "write", "stale-hit", "write"]);
     });
 
+    it("exposes redacted request lifecycle telemetry without coupling to an SDK", async () => {
+        let attempts = 0;
+        const telemetry: Array<Record<string, unknown>> = [];
+        const resource = new AdminDataResource<Row, { scope: string }>({
+            retry: { maxRetries: 1, delayMs: 0 },
+            cache: { ttlMs: 60_000 },
+            telemetry: {
+                includeRequest: true,
+                onEvent: () => {
+                    throw new Error("telemetry sink unavailable");
+                },
+            },
+            loader: async () => {
+                attempts += 1;
+                if (attempts === 1) {
+                    throw new AdminDataError("temporary outage", {
+                        status: 503,
+                        code: "UPSTREAM_TIMEOUT",
+                        cause: { authorization: "secret" },
+                    });
+                }
+                return { rows: [{ id: "observed", label: "Observed" }] };
+            },
+        });
+        const unsubscribe = resource.subscribeTelemetry((event) => telemetry.push(event));
+
+        await resource.load({ query: { scope: "ops" } });
+        await resource.load({ query: { scope: "ops" } });
+
+        expect(telemetry.map((event) => event.type)).toEqual([
+            "load-start",
+            "load-retry",
+            "load-success",
+            "load-start",
+            "load-success",
+        ]);
+        expect(telemetry[0]).toMatchObject({
+            requestId: 1,
+            request: { query: { scope: "ops" } },
+            attempt: 1,
+        });
+        expect(telemetry[1]).toMatchObject({
+            type: "load-retry",
+            attempt: 1,
+            nextAttempt: 2,
+            error: {
+                status: 503,
+                code: "UPSTREAM_TIMEOUT",
+                message: "temporary outage",
+                retryable: true,
+            },
+        });
+        expect(telemetry[1]?.error).not.toHaveProperty("cause");
+        expect(telemetry[2]).toMatchObject({
+            type: "load-success",
+            attempt: 2,
+            source: "network",
+            status: "ready",
+            rows: 1,
+        });
+        expect(telemetry[4]).toMatchObject({
+            type: "load-success",
+            attempt: 0,
+            source: "cache",
+            status: "ready",
+        });
+        for (const event of telemetry) expect(event.durationMs).toBeGreaterThanOrEqual(0);
+        expect(resource.getTelemetryStats()).toEqual({
+            loads: 2,
+            retries: 1,
+            successes: 2,
+            errors: 0,
+            aborts: 0,
+        });
+
+        unsubscribe();
+        resource.resetTelemetryStats();
+        expect(resource.getTelemetryStats()).toEqual({
+            loads: 0,
+            retries: 0,
+            successes: 0,
+            errors: 0,
+            aborts: 0,
+        });
+        resource.dispose();
+    });
+
+    it("reports superseded requests as aborted and keeps stale work from publishing", async () => {
+        let resolveFirst: ((page: { rows: Row[] }) => void) | undefined;
+        const telemetry: string[] = [];
+        const resource = new AdminDataResource<Row>({
+            telemetry: { onEvent: (event) => telemetry.push(`${event.type}:${event.reason ?? ""}`) },
+            loader: async ({ page }) =>
+                page === 1
+                    ? new Promise<{ rows: Row[] }>((resolve) => {
+                          resolveFirst = resolve;
+                      })
+                    : { rows: [{ id: "new", label: "Fresh" }] },
+        });
+
+        const firstLoad = resource.load({ page: 1 });
+        const secondLoad = resource.load({ page: 2 });
+        resolveFirst?.({ rows: [{ id: "old", label: "Stale" }] });
+        await Promise.all([firstLoad, secondLoad]);
+
+        expect(telemetry).toContain("load-abort:superseded");
+        expect(telemetry).toContain("load-success:");
+        expect(resource.getSnapshot().rows).toEqual([{ id: "new", label: "Fresh" }]);
+        resource.dispose();
+    });
+
+    it("omits request and cache key from telemetry by default", async () => {
+        const telemetry: Array<Record<string, unknown>> = [];
+        const resource = new AdminDataResource<Row, { scope: string }>({
+            cache: { ttlMs: 60_000 },
+            loader: async () => ({ rows: [{ id: "private", label: "Private" }] }),
+        });
+        resource.subscribeTelemetry((event) => telemetry.push(event));
+
+        await resource.load({ query: { scope: "sensitive" } });
+
+        expect(telemetry).toHaveLength(2);
+        expect(telemetry[0]?.type).toBe("load-start");
+        expect(telemetry[1]?.type).toBe("load-success");
+        expect(telemetry[0]).not.toHaveProperty("request");
+        expect(telemetry[0]).not.toHaveProperty("key");
+        expect(telemetry[1]).not.toHaveProperty("request");
+        expect(telemetry[1]).not.toHaveProperty("key");
+
+        resource.dispose();
+    });
+
     it("cancels a retry backoff when the resource is aborted", async () => {
         let attempts = 0;
         const resource = new AdminDataResource<Row>({

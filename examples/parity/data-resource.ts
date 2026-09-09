@@ -47,6 +47,7 @@ export function createParityAsyncResource(): ParityAsyncResource {
             return { rows: [{ id: "async-ready", label: "Async contract row" }] };
         },
         cache: { ttlMs: 30_000, staleWhileRevalidate: true },
+        telemetry: { includeRequest: false },
     });
     return {
         resource,

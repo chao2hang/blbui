@@ -3,12 +3,22 @@
 ## 本次验收
 
 - 日期：2026-09-09
-- 版本：0.0.24
+- 版本：0.0.25
 - 入口：http://127.0.0.1:4176/
 - 浏览器：Codex In-app Browser
 - 视口：桌面约 1280 × 720（页面有效宽度 1265px）；窄屏 390 × 844（页面有效宽度 375px）
 - 组件目录：129 个组件卡片，8 个分类
 - 主题矩阵：9 套主题 × light/dark = 18 个组合
+
+### 0.0.25 发布前人工复核（2026-09-09）
+
+- 版本：0.0.25
+- 在 React、Vue、Svelte 和 Web Components playground 实际查看 telemetry 面板；初次加载显示 `load-success`，统计卡片显示 loads/successes，重试和错误路径的 event 文案与聚合数字可更新。
+- 在 Obsidian dark、Rounded light、Glass dark 和 Atmospheric light 下查看 telemetry/cache 两组观测面板；surface、边框、文字、按钮焦点和统计网格保持可读。四个 playground 均实际查看了初始 `load-success`、cache `write`、统计网格和通知层。
+- 使用同一 Chromium 以 320 × 720 视口逐一查看 React、Vue、Svelte、Web Components 截图：筛选、表格、异步按钮组和通知层均可读，按钮没有被裁切，页面级内容按纵向流动；Web Components 的移动卡片布局也保持可读。
+- 手工操作 TagInput：输入标签、清空输入后按 Backspace 删除最后一个标签；删除后输入框仍保持焦点，标签和边界状态没有跳动或裁切。
+- 自动化补充：请求 telemetry 的隐私默认值、重试/缓存命中/竞态取消、统计重置、TagInput 键盘行为、四框架 telemetry E2E 和完整 release gate 均通过；视觉组件像素未发生变化，因此不提升既有 golden。
+- 结果：0.0.25 新增数据观测与输入交互完成发布前视觉收口；真实外部 `web/` 宿主仍未进入工作区，Users、Channels、Usage Logs 不宣称已迁移。
 
 ### 0.0.24 发布前人工复核（2026-09-09）
 
