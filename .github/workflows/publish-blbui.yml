@@ -169,6 +169,7 @@ jobs:
       - name: Verify npm publication visibility and write summary
         working-directory: .
         env:
-          BLBUI_NPM_VERIFY_TIMEOUT_MS: "180000"
+          BLBUI_NPM_VERIFY_TIMEOUT_MS: "600000"
           BLBUI_NPM_VERIFY_INTERVAL_MS: "10000"
+          BLBUI_NPM_REQUEST_TIMEOUT_MS: "15000"
         run: bun run npm:verify

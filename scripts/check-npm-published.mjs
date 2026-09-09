@@ -10,8 +10,9 @@ import { fileURLToPath } from "node:url";
 const root = fileURLToPath(new URL("..", import.meta.url));
 const packages = ["core", "react", "vue", "svelte", "business", "business-react"];
 const registry = (process.env.BLBUI_NPM_REGISTRY ?? "https://registry.npmjs.org").replace(/\/$/, "");
-const timeoutMs = Number(process.env.BLBUI_NPM_VERIFY_TIMEOUT_MS ?? 180_000);
+const timeoutMs = Number(process.env.BLBUI_NPM_VERIFY_TIMEOUT_MS ?? 600_000);
 const intervalMs = Number(process.env.BLBUI_NPM_VERIFY_INTERVAL_MS ?? 10_000);
+const requestTimeoutMs = Number(process.env.BLBUI_NPM_REQUEST_TIMEOUT_MS ?? 15_000);
 const manifests = await Promise.all(
     packages.map(async (directory) =>
         JSON.parse(await readFile(`${root}/${directory}/package.json`, "utf8")),
@@ -23,9 +24,17 @@ if (manifests.some((manifest) => manifest.version !== version)) {
 }
 
 async function readPublishedVersion(name) {
-    const response = await fetch(`${registry}/${encodeURIComponent(name)}`, {
-        headers: { accept: "application/json", "cache-control": "no-cache" },
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
+    let response;
+    try {
+        response = await fetch(`${registry}/${encodeURIComponent(name)}`, {
+            headers: { accept: "application/json", "cache-control": "no-cache" },
+            signal: controller.signal,
+        });
+    } finally {
+        clearTimeout(timeout);
+    }
     if (!response.ok) return undefined;
     const metadata = await response.json();
     return metadata.versions?.[version] ? version : undefined;
